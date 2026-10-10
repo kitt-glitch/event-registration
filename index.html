@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Registration System</title>
+    <!-- Load Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load QRCode.js for generating E-Tickets -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4F46E5', // Indigo-600
+                        primaryHover: '#4338CA', // Indigo-700
+                        background: '#F9FAFB', // Gray-50
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: theme('colors.background');
+        }
+
+        /* Loading Spinner */
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Setup Instructions Modal Visibility */
+        #setup-instructions {
+            display: none;
+        }
+        #setup-instructions.active {
+            display: flex;
+        }
+    </style>
+</head>
+<body class="min-h-screen text-gray-800 flex flex-col items-center justify-center p-4 sm:p-8">
+
+    <div class="w-full max-w-3xl flex justify-end mb-4">
+         <button onclick="toggleInstructions()" class="text-sm font-medium text-primary hover:text-primaryHover bg-white px-4 py-2 rounded-lg shadow-sm border border-gray-200 transition-colors flex items-center gap-2">
+            ⚙️ Setup Google Sheets Backend
+        </button>
+    </div>
+
+    <!-- Main Form Container -->
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-3xl overflow-hidden border border-gray-100">
+        
+        <!-- Header -->
+        <div class="bg-primary px-6 py-10 sm:px-10 text-center relative overflow-hidden">
+             <!-- Decorative background shapes -->
+            <div class="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
+                <svg class="absolute -top-10 -left-10 w-40 h-40 text-white fill-current" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50"/></svg>
+                <svg class="absolute top-20 right-[-20px] w-32 h-32 text-white fill-current" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50"/></svg>
+            </div>
+            
+            <h1 class="text-3xl md:text-4xl font-bold text-white mb-2 relative z-10" id="eventTitleDisplay">Annual Tech Conference 2026</h1>
+            <p class="text-indigo-100 text-lg relative z-10" id="eventDateDisplay">October 24 - 26, 2026 • Bangkok, Thailand</p>
+        </div>
+
+        <!-- Event Status Banner (Deadline countdown) -->
+        <div id="eventStatusBanner" class="hidden bg-gray-100 text-gray-800 p-4 text-center border-b border-gray-200">
+            <p id="eventStatusText" class="font-semibold text-lg"></p>
+            <p id="eventCountdown" class="text-sm font-mono mt-1 text-gray-600"></p>
+        </div>
+        
+        <!-- Capacity Progress Bar -->
+        <div class="px-6 sm:px-10 pt-8 pb-4" id="capacityContainer">
+            <div class="flex justify-between text-sm mb-2 font-medium text-gray-700">
+                <span id="capacityLabel">Spots Available</span>
+                <span id="spotsRemainingText">...</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden shadow-inner">
+                <div id="capacityProgressBar" class="bg-primary h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <!-- Form Section -->
+        <div class="p-6 sm:px-10 sm:pb-10 pt-2">
+            <form id="registrationForm" onsubmit="submitForm(event)" class="space-y-6">
+                
+                <!-- URL Warning Alert -->
+                <div id="urlWarning" class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-md">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-amber-400" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-amber-700 font-medium">
+                                Setup Required: Add your Google Apps Script URL in the Javascript code for submissions to work. <button type="button" onclick="toggleInstructions()" class="underline font-bold hover:text-amber-900 transition-colors">See setup instructions.</button>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alert Banner for errors during submission -->
+                <div id="alertContainer" class="hidden p-4 rounded-md text-sm font-medium">
+                    <p id="alertMessage"></p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- First Name -->
+                    <div>
+                        <label for="firstName" class="block text-sm font-medium text-gray-700 mb-1">First Name *</label>
+                        <input type="text" id="firstName" name="firstName" required
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all">
+                    </div>
+                    
+                    <!-- Last Name -->
+                    <div>
+                        <label for="lastName" class="block text-sm font-medium text-gray-700 mb-1">Last Name *</label>
+                        <input type="text" id="lastName" name="lastName" required
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Email -->
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address *</label>
+                        <input type="email" id="email" name="email" required
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all">
+                    </div>
+
+                    <!-- Phone -->
+                    <div>
+                        <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                        <input type="tel" id="phone" name="phone"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all">
+                    </div>
+                </div>
+
+                <!-- Ticket Type -->
+                <div>
+                    <label for="ticketType" class="block text-sm font-medium text-gray-700 mb-1">Ticket Type *</label>
+                    <select id="ticketType" name="ticketType" required
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all bg-white appearance-none">
+                        <option value="" disabled selected>Select a ticket...</option>
+                        <option value="General Admission">General Admission - Free</option>
+                        <option value="VIP Access">VIP Access - $150</option>
+                        <option value="Student">Student/Academic - Free</option>
+                    </select>
+                </div>
+
+                <!-- Dietary Requirements -->
+                <div>
+                    <label for="dietary" class="block text-sm font-medium text-gray-700 mb-1">Dietary Requirements</label>
+                    <input type="text" id="dietary" name="dietary" placeholder="e.g., Vegetarian, Gluten-Free, None"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all">
+                </div>
+
+                <!-- Special Requests -->
+                <div>
+                    <label for="comments" class="block text-sm font-medium text-gray-700 mb-1">Questions or Special Requests</label>
+                    <textarea id="comments" name="comments" rows="3"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all resize-none"></textarea>
+                </div>
+
+                <!-- Waitlist Options (Hidden by default, shown when full) -->
+                <div id="waitlistOptions" class="hidden space-y-4 pt-4 border-t border-gray-100 bg-amber-50/50 p-4 rounded-lg">
+                    <p class="text-sm font-medium text-amber-800">As the event is full, you are joining the waitlist. Please let us know your flexibility:</p>
+                    
+                    <div>
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input type="checkbox" name="virtualOption" value="Yes" class="w-5 h-5 rounded text-primary focus:ring-primary border-gray-300">
+                            <span class="text-sm text-gray-800 font-medium">I would attend a virtual stream of this event if available.</span>
+                        </label>
+                    </div>
+                    <div>
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input type="checkbox" name="futureEvents" value="Yes" class="w-5 h-5 rounded text-primary focus:ring-primary border-gray-300">
+                            <span class="text-sm text-gray-800 font-medium">Notify me about future dates for this event.</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Hidden field to track registration status (Registered vs Waitlisted) -->
+                <input type="hidden" id="registrationStatus" name="registrationStatus" value="Registered">
+
+                <!-- Admin Editor Toggle -->
+                <div class="pt-4 flex justify-end">
+                     <button type="button" onclick="toggleAdminPanel()" class="text-xs text-gray-400 hover:text-gray-600 underline">
+                        Edit Event Constraints (Admin Demo)
+                    </button>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" id="submitBtn" 
+                    class="w-full bg-primary hover:bg-primaryHover text-white font-bold py-4 px-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center text-lg">
+                    <div id="btnSpinner" class="loader hidden"></div>
+                    <span id="btnText">Register Now</span>
+                </button>
+            </form>
+            
+            <!-- Success State (Hidden by default) -->
+            <div id="successState" class="hidden text-center py-10">
+                <div class="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <svg class="w-12 h-12 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                </div>
+                <h2 id="successTitle" class="text-3xl font-bold text-gray-800 mb-3">Registration Complete!</h2>
+                <p id="successMessage" class="text-gray-600 mb-8 max-w-md mx-auto text-lg">Thank you for registering. Your details have been successfully saved. Please save your E-Ticket below.</p>
+                
+                <!-- Ticket Container -->
+                <div id="ticketContainer" class="bg-gray-50 border border-gray-200 rounded-2xl p-8 inline-block mx-auto mb-8 shadow-sm">
+                    <h3 class="font-bold text-gray-400 mb-6 uppercase tracking-widest text-sm">Official E-Ticket</h3>
+                    <div id="qrcode" class="flex justify-center bg-white p-4 rounded-xl shadow-inner mb-6 mx-auto w-fit border border-gray-100"></div>
+                    <p id="ticketNameDisplay" class="font-bold text-2xl text-gray-800 mb-1"></p>
+                    <p id="ticketTypeDisplay" class="text-primary font-medium text-sm"></p>
+                </div>
+                <br>
+
+                <button onclick="resetForm()" class="bg-white border-2 border-gray-200 hover:bg-gray-50 text-gray-800 font-semibold py-3 px-8 rounded-lg transition-colors shadow-sm">
+                    <span id="resetBtnText">Register Another Person</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Panel (Hidden by default) -->
+    <div id="adminPanel" class="hidden bg-white rounded-2xl shadow-xl w-full max-w-3xl mt-6 p-6 border-l-4 border-primary mb-10 transition-all">
+        <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
+            <svg class="w-5 h-5 mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+            Edit Event Details & Constraints
+        </h3>
+        <p class="text-sm text-gray-500 mb-6">Use this panel to simulate changes to your event. Watch how the form reacts when the deadline passes or capacity fills up!</p>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Event Title</label>
+                <input type="text" id="adminTitle" value="Annual Tech Conference 2026" class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-primary focus:border-primary outline-none">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Event Date & Location</label>
+                <input type="text" id="adminDate" value="October 24 - 26, 2026 • Bangkok, Thailand" class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-primary focus:border-primary outline-none">
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5 p-5 bg-gray-50 rounded-xl border border-gray-200">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Registration Opens</label>
+                <input type="datetime-local" id="adminOpenTime" class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-primary focus:border-primary outline-none">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Registration Closes</label>
+                <input type="datetime-local" id="adminCloseTime" class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-primary focus:border-primary outline-none">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Max Capacity</label>
+                <input type="number" id="adminCapacity" value="100" class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-primary focus:border-primary outline-none">
+            </div>
+        </div>
+        
+        <div class="mt-6 flex justify-between items-center bg-indigo-50 p-4 rounded-lg">
+            <div class="text-sm flex items-center space-x-6">
+                <div class="flex items-center gap-2">
+                    <span class="text-gray-600">Current Signups:</span>
+                    <span id="adminCurrentSignups" class="font-bold text-lg text-primary">85</span>
+                    <button onclick="addSimulatedSignup()" title="Simulate someone registering" class="text-xs bg-white border border-gray-300 hover:bg-gray-100 px-2 py-1 rounded shadow-sm transition-colors">+1</button>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="text-gray-600">Waitlist:</span>
+                    <span id="adminWaitlistCount" class="font-bold text-lg text-amber-600">0</span>
+                </div>
+            </div>
+            <button onclick="updateEventDetails()" class="bg-gray-800 text-white font-medium text-sm px-6 py-2.5 rounded-lg hover:bg-gray-700 transition-colors shadow-sm">Apply Changes</button>
+        </div>
+    </div>
+
+    <!-- Setup Instructions Modal -->
+    <div id="setup-instructions" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col">
+            
+            <div class="p-6 border-b border-gray-200 flex justify-between items-center bg-gray-50 rounded-t-2xl">
+                <h2 class="text-2xl font-bold text-gray-800">Google Sheets Connection Guide</h2>
+                <button onclick="toggleInstructions()" class="text-gray-400 hover:text-gray-700 transition-colors bg-gray-200 hover:bg-gray-300 rounded-full p-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            
+            <div class="p-6 sm:p-8 overflow-y-auto flex-grow space-y-8">
+                <!-- Step 1 -->
+                <div>
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold">1</div>
+                        <h3 class="text-xl font-bold text-gray-800">Create your Google Sheet</h3>
+                    </div>
+                    <p class="text-gray-600 mb-4 pl-11">Go to <a href="https://sheets.new" target="_blank" class="text-blue-600 hover:underline font-medium">sheets.new</a> to create a blank spreadsheet.</p>
+                    <p class="text-gray-600 mb-3 pl-11">In the <strong>first row (Row 1)</strong>, type these exact column headers (they must match perfectly):</p>
+                    <div class="flex flex-wrap gap-2 mb-2 pl-11">
+                        <span class="px-2.5 py-1 bg-gray-100 border border-gray-200 rounded text-sm font-mono text-gray-700">Timestamp</span>
+                        <span class="px-2.5 py-1 bg-gray-100 border border-gray-200 rounded text-sm font-mono text-gray-700">firstName</span>
+                        <span class="px-2.5 py-1 bg-gray-100 border border-gray-200 rounded text-sm font-mono text-gray-700">lastName</span>
+                        <span class="px-2.5 py-1 bg-gray-100 border border-gray-200 rounded text-sm font-mono text-gray-700">email</span>
+                        <span class="px-2.5 py-1 bg-gray-100 border border-gray-200 rounded text-sm font-mono text-gray-700">phone</span>
+                        <span class="px-2.5 py-1 bg-gray-100 border border-gray-200 rounded text-sm font-mono text-gray-700">ticketType</span>
+                        <span class="px-2.5 py-1 bg-gray-100 border border-gray-200 rounded text-sm font-mono text-gray-700">dietary</span>
+                        <span class="px-2.5 py-1 bg-gray-100 border border-gray-200 rounded text-sm font-mono text-gray-700">comments</span>
+                        <span class="px-2.5 py-1 bg-amber-50 border border-amber-200 rounded text-sm font-mono text-amber-800">registrationStatus</span>
+                        <span class="px-2.5 py-1 bg-amber-50 border border-amber-200 rounded text-sm font-mono text-amber-800">virtualOption</span>
+                        <span class="px-2.5 py-1 bg-amber-50 border border-amber-200 rounded text-sm font-mono text-amber-800">futureEvents</span>
+                    </div>
+                </div>
+
+                <hr class="border-gray-100">
+
+                <!-- Step 2 -->
+                <div>
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold">2</div>
+                        <h3 class="text-xl font-bold text-gray-800">Add the Google Apps Script</h3>
+                    </div>
+                    <ol class="list-decimal list-inside text-gray-600 space-y-2 pl-11 mb-4">
+                        <li>In your Google Sheet, click <strong>Extensions > Apps Script</strong>.</li>
+                        <li>Delete any existing code in the editor that appears.</li>
+                        <li>Copy and paste the entire block of code below:</li>
+                    </ol>
+                    
+                    <div class="relative pl-11">
+                        <div class="absolute top-3 right-3 flex space-x-2">
+                            <button onclick="copyCode(this)" class="bg-white/10 hover:bg-white/20 text-white text-xs px-3 py-1.5 rounded transition-colors border border-white/20">Copy Code</button>
+                        </div>
+                        <pre class="bg-gray-900 text-gray-300 p-5 rounded-xl text-sm overflow-x-auto font-mono shadow-inner leading-relaxed">
+const sheetName = 'Sheet1'; // Make sure this matches your sheet tab name
+
+function doPost(e) {
+  try {
+    const doc = SpreadsheetApp.getActiveSpreadsheet();
+    const sheet = doc.getSheetByName(sheetName);
+    const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+    
+    // Create new row data based on form submission
+    const newRow = headers.map(function(header) {
+      if (header === 'Timestamp') {
+        return new Date();
+      }
+      // Return the form value matching the header name, or empty string if not found
+      return e.parameter[header] || ''; 
+    });
+
+    // Append to sheet
+    sheet.getRange(sheet.getLastRow() + 1, 1, 1, newRow.length).setValues([newRow]);
+
+    // Return success response to the webpage
+    return ContentService
+      .createTextOutput(JSON.stringify({ 'result': 'success' }))
+      .setMimeType(ContentService.MimeType.JSON);
+
+  } catch (error) {
+    // Return error response
+    return ContentService
+      .createTextOutput(JSON.stringify({ 'result': 'error', 'error': error.toString() }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}</pre>
+                    </div>
+                </div>
+
+                <hr class="border-gray-100">
+
+                <!-- Step 3 -->
+                <div>
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold">3</div>
+                        <h3 class="text-xl font-bold text-gray-800">Deploy as Web App</h3>
+                    </div>
+                    <ol class="list-decimal list-inside text-gray-600 space-y-3 pl-11">
+                        <li>In the Apps Script editor, click the blue <strong>Deploy</strong> button (top right), then select <strong>New deployment</strong>.</li>
+                        <li>Click the gear icon ⚙️ next to "Select type" and choose <strong>Web app</strong>.</li>
+                        <li>Under <strong>Execute as</strong>, select <strong>"Me"</strong>.</li>
+                        <li>Under <strong>Who has access</strong>, select <strong>"Anyone"</strong> (Crucial step!).</li>
+                        <li>Click <strong>Deploy</strong>. <em>(You will need to authorize access. Click 'Review permissions', choose your Google account, click 'Advanced', and then 'Go to Untitled project (unsafe)')</em>.</li>
+                        <li>Copy the <strong>Web app URL</strong> provided on the final screen.</li>
+                    </ol>
+                </div>
+
+                <hr class="border-gray-100">
+
+                <!-- Step 4 -->
+                <div class="pb-4">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold">4</div>
+                        <h3 class="text-xl font-bold text-gray-800">Connect the Code</h3>
+                    </div>
+                    <p class="text-gray-600 mb-3 pl-11">Open the HTML code of this application in any text editor. Scroll down to the Javascript section (around line 400) and find the variable <code>GOOGLE_SCRIPT_URL</code>. Paste your Web App URL there.</p>
+                    <pre class="ml-11 bg-gray-100 text-gray-800 p-4 rounded-xl border border-gray-200 text-sm font-mono shadow-inner">// Change this line in the Javascript code:
+const GOOGLE_SCRIPT_URL = "PASTE_YOUR_COPIED_URL_HERE";</pre>
+                </div>
+            </div>
+            
+            <div class="p-6 border-t border-gray-200 flex justify-end bg-gray-50 rounded-b-2xl">
+                <button onclick="toggleInstructions()" class="bg-gray-800 hover:bg-gray-900 text-white font-medium py-3 px-8 rounded-lg transition-colors shadow-md">
+                    I Understand, Close Guide
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * ==========================================
+         * ⚠️ CONFIGURATION REQUIRED HERE ⚠️
+         * ==========================================
+         * Paste the URL from your Google Apps Script deployment below.
+         * Keep the quotation marks!
+         */
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx3WnV1pH8DTtslZvkDgfovRUXRSvzLXk3QIVBxMggbOz-bFYD5PQUQk2EameAxDs0l/exec"; 
+        
+        // DOM Elements
+        const form = document.getElementById('registrationForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const btnText = document.getElementById('btnText');
+        const btnSpinner = document.getElementById('btnSpinner');
+        const alertContainer = document.getElementById('alertContainer');
+        const alertMessage = document.getElementById('alertMessage');
+        const successState = document.getElementById('successState');
+        const urlWarning = document.getElementById('urlWarning');
+        const instructionsModal = document.getElementById('setup-instructions');
+
+        // --- Event Configuration & State ---
+        // Simulating the event settings that dictate form behavior
+        let eventConfig = {
+            title: "Annual Tech Conference 2026",
+            dateStr: "October 24 - 26, 2026 • Bangkok, Thailand",
+            openTime: new Date(new Date().getTime() - 1000 * 60 * 60 * 24).getTime(), // Opened yesterday
+            closeTime: new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * 7).getTime(), // Closes in 7 days
+            maxCapacity: 100,
+            currentSignups: 85, // Simulated starting signups
+            waitlistCount: 0
+        };
+        let statusInterval;
+
+        // Initialize defaults in Admin Panel when page loads
+        document.getElementById('adminOpenTime').value = new Date(eventConfig.openTime - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+        document.getElementById('adminCloseTime').value = new Date(eventConfig.closeTime - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+
+        // Check if URL is configured on load
+        window.onload = function() {
+            if (GOOGLE_SCRIPT_URL && GOOGLE_SCRIPT_URL.trim() !== "") {
+                urlWarning.classList.add('hidden'); // Hide warning if configured
+            }
+            updateUIState();
+            statusInterval = setInterval(updateUIState, 1000); // Check time and capacity every second
+        };
+
+        // Core logic to determine if form is open, closed, or waitlisted
+        function updateUIState() {
+            const now = new Date().getTime();
+            const spotsRemaining = eventConfig.maxCapacity - eventConfig.currentSignups;
+            const banner = document.getElementById('eventStatusBanner');
+            const statusText = document.getElementById('eventStatusText');
+            const countdown = document.getElementById('eventCountdown');
+            const capacityContainer = document.getElementById('capacityContainer');
+            const waitlistOptions = document.getElementById('waitlistOptions');
+            const statusInput = document.getElementById('registrationStatus');
+            const capacityLabel = document.getElementById('capacityLabel');
+            const progressBar = document.getElementById('capacityProgressBar');
+            
+            let isFormActive = true;
+            let isWaitlistMode = false;
+
+            // Update Capacity Progress Bar UI
+            if (spotsRemaining > 0) {
+                document.getElementById('spotsRemainingText').innerText = `${spotsRemaining} / ${eventConfig.maxCapacity} Left`;
+                capacityLabel.innerText = "Spots Available";
+                const percentFilled = (eventConfig.currentSignups / eventConfig.maxCapacity) * 100;
+                progressBar.style.width = `${Math.min(percentFilled, 100)}%`;
+                progressBar.classList.remove('bg-amber-500', 'bg-red-500');
+                if (percentFilled > 80) progressBar.classList.add('bg-amber-500');
+                else progressBar.classList.add('bg-primary');
+            } else {
+                // Event Full -> Waitlist progress UI
+                document.getElementById('spotsRemainingText').innerText = `${eventConfig.waitlistCount} people waiting`;
+                capacityLabel.innerText = "Waitlist Length";
+                progressBar.style.width = '100%';
+                progressBar.classList.remove('bg-primary', 'bg-amber-500');
+                progressBar.classList.add('bg-red-500');
+            }
+            
+            // Time & Capacity Logic checks
+            if (now < eventConfig.openTime) {
+                // Not open yet
+                isFormActive = false;
+                banner.classList.remove('hidden');
+                banner.className = 'bg-blue-50 text-blue-800 p-4 text-center border-b border-blue-200';
+                statusText.innerText = "Registration Opens Soon";
+                countdown.innerText = `Opens in: ${formatTimeDiff(now, eventConfig.openTime)}`;
+                waitlistOptions.classList.add('hidden');
+            } else if (now > eventConfig.closeTime) {
+                // Deadline passed
+                isFormActive = false;
+                banner.classList.remove('hidden');
+                banner.className = 'bg-gray-100 text-gray-800 p-4 text-center border-b border-gray-200';
+                statusText.innerText = "Registration is Closed";
+                countdown.innerText = "The deadline to register has passed.";
+                waitlistOptions.classList.add('hidden');
+            } else if (spotsRemaining <= 0) {
+                // Event full, activate Waitlist mode instead of completely locking out
+                isWaitlistMode = true;
+                banner.classList.remove('hidden');
+                banner.className = 'bg-amber-50 text-amber-800 p-4 text-center border-b border-amber-200';
+                statusText.innerText = "Event is Currently Full";
+                countdown.innerText = "You can still join the waitlist. We'll notify you if spots open up.";
+                waitlistOptions.classList.remove('hidden');
+                statusInput.value = "Waitlisted";
+                btnText.innerText = 'Join Waitlist';
+            } else {
+                // Registration is Open and spots available
+                banner.classList.add('hidden');
+                waitlistOptions.classList.add('hidden');
+                statusInput.value = "Registered";
+                btnText.innerText = 'Register Now';
+            }
+
+            // Lock/Unlock form inputs based on overall active state
+            Array.from(form.elements).forEach(element => {
+                if(element.tagName !== 'FIELDSET') {
+                    element.disabled = !isFormActive;
+                }
+            });
+            
+            // Adjust submit button visuals if disabled
+            if (!isFormActive) {
+                submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                btnText.innerText = 'Form Unavailable';
+            } else {
+                submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+        }
+
+        // Format countdown timer
+        function formatTimeDiff(start, end) {
+            const diff = end - start;
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            return `${days}d ${hours}h ${minutes}m ${seconds}s`;
+        }
+
+        // Form Submission Logic
+        function submitForm(event) {
+            // Prevent default form submission (page reload)
+            event.preventDefault();
+
+            // 1. Validate if URL is set
+            if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.trim() === "") {
+                showAlert('Error: The Google Script URL is not configured. Please see Setup Instructions.', 'error');
+                toggleInstructions();
+                return;
+            }
+
+            // 2. Set UI to loading state
+            setLoadingState(true);
+            hideAlert();
+
+            // 3. Gather Form Data
+            const formData = new FormData(form);
+            
+            // Apps Script requires data sent via URLSearchParams for standard POST
+            const searchParams = new URLSearchParams();
+            for (const pair of formData) {
+                searchParams.append(pair[0], pair[1]);
+            }
+
+            // 4. Send Data to Google Apps Script Backend
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors', // Important for avoiding CORS errors with Apps Script
+                body: searchParams
+            })
+            .then(() => {
+                setLoadingState(false);
+                const status = formData.get('registrationStatus');
+                
+                // Simulate saving capacity locally so the UI updates
+                if (status === "Waitlisted") {
+                    eventConfig.waitlistCount += 1;
+                    document.getElementById('adminWaitlistCount').innerText = eventConfig.waitlistCount;
+                } else {
+                    eventConfig.currentSignups += 1;
+                    document.getElementById('adminCurrentSignups').innerText = eventConfig.currentSignups;
+                }
+                
+                showSuccessState(formData.get('firstName'), formData.get('lastName'), formData.get('ticketType'), status);
+            })
+            .catch(error => {
+                console.error('Submission Error:', error.message);
+                setLoadingState(false);
+                showAlert('An error occurred while sending your registration. Please check your connection and try again.', 'error');
+            });
+        }
+
+        function setLoadingState(isLoading) {
+            if (isLoading) {
+                btnText.innerText = 'Processing...';
+                btnSpinner.classList.remove('hidden');
+                submitBtn.classList.add('opacity-75', 'cursor-not-allowed');
+                submitBtn.disabled = true;
+                Array.from(form.elements).forEach(element => element.disabled = true);
+            } else {
+                btnText.innerText = 'Register Now'; // Text gets reset by updateUIState anyway
+                btnSpinner.classList.add('hidden');
+                submitBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+                submitBtn.disabled = false;
+                Array.from(form.elements).forEach(element => element.disabled = false);
+                updateUIState(); // Refresh text based on waitlist mode
+            }
+        }
+
+        function showAlert(message, type) {
+            alertMessage.innerText = message;
+            alertContainer.classList.remove('hidden', 'bg-red-50', 'text-red-800', 'border', 'border-red-200');
+            if (type === 'error') {
+                alertContainer.classList.add('bg-red-50', 'text-red-800', 'border', 'border-red-200');
+            }
+        }
+
+        function hideAlert() {
+            alertContainer.classList.add('hidden');
+        }
+
+        function showSuccessState(firstName, lastName, ticketType, status) {
+            form.classList.add('hidden');
+            document.getElementById('capacityContainer').classList.add('hidden');
+            document.getElementById('eventStatusBanner').classList.add('hidden');
+            document.getElementById('urlWarning').classList.add('hidden');
+            successState.classList.remove('hidden');
+
+            const successTitle = document.getElementById('successTitle');
+            const successMessage = document.getElementById('successMessage');
+            const ticketContainer = document.getElementById('ticketContainer');
+            const resetBtnText = document.getElementById('resetBtnText');
+
+            if (status === "Waitlisted") {
+                successTitle.innerText = "Added to Waitlist!";
+                successMessage.innerText = "Thank you for your interest. We have added you to the waitlist and recorded your preferences. We will contact you if a spot becomes available.";
+                ticketContainer.classList.add('hidden');
+                resetBtnText.innerText = "Add Another to Waitlist";
+            } else {
+                successTitle.innerText = "Registration Complete!";
+                successMessage.innerText = "Thank you for registering. Your details have been successfully saved. Please save your E-Ticket below.";
+                ticketContainer.classList.remove('hidden');
+                resetBtnText.innerText = "Register Another Person";
+
+                // Generate E-Ticket QR Code
+                const qrContainer = document.getElementById('qrcode');
+                qrContainer.innerHTML = ''; // Clear previous
+                
+                const ticketID = 'TKT-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+                const qrData = `Event: ${eventConfig.title}\nName: ${firstName} ${lastName}\nType: ${ticketType}\nID: ${ticketID}`;
+                
+                new QRCode(qrContainer, {
+                    text: qrData,
+                    width: 150,
+                    height: 150,
+                    colorDark : "#1f2937", // Gray-800
+                    colorLight : "#ffffff",
+                    correctLevel : QRCode.CorrectLevel.H
+                });
+
+                document.getElementById('ticketNameDisplay').innerText = `${firstName} ${lastName}`;
+                document.getElementById('ticketTypeDisplay').innerText = `${ticketType} • ${ticketID}`;
+            }
+        }
+
+        function resetForm() {
+            form.reset();
+            form.classList.remove('hidden');
+            document.getElementById('capacityContainer').classList.remove('hidden');
+            successState.classList.add('hidden');
+            if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.trim() === "") {
+                document.getElementById('urlWarning').classList.remove('hidden');
+            }
+            hideAlert();
+            updateUIState();
+        }
+
+        // Admin / Event Details Logic
+        function toggleAdminPanel() {
+            const panel = document.getElementById('adminPanel');
+            panel.classList.toggle('hidden');
+        }
+
+        function updateEventDetails() {
+            eventConfig.title = document.getElementById('adminTitle').value;
+            eventConfig.dateStr = document.getElementById('adminDate').value;
+            
+            const openTimeStr = document.getElementById('adminOpenTime').value;
+            const closeTimeStr = document.getElementById('adminCloseTime').value;
+            eventConfig.openTime = openTimeStr ? new Date(openTimeStr).getTime() : eventConfig.openTime;
+            eventConfig.closeTime = closeTimeStr ? new Date(closeTimeStr).getTime() : eventConfig.closeTime;
+            
+            // Adjust signups if admin lowers capacity below current signups
+            const newMax = parseInt(document.getElementById('adminCapacity').value) || 100;
+            if (newMax < eventConfig.currentSignups) {
+                const overflow = eventConfig.currentSignups - newMax;
+                eventConfig.currentSignups = newMax;
+                eventConfig.waitlistCount += overflow;
+                document.getElementById('adminCurrentSignups').innerText = eventConfig.currentSignups;
+                document.getElementById('adminWaitlistCount').innerText = eventConfig.waitlistCount;
+            }
+            eventConfig.maxCapacity = newMax;
+            
+            document.getElementById('eventTitleDisplay').innerText = eventConfig.title;
+            document.getElementById('eventDateDisplay').innerText = eventConfig.dateStr;
+            
+            updateUIState();
+            toggleAdminPanel();
+        }
+
+        function addSimulatedSignup() {
+            // Force a signup for admin testing to watch UI change
+            if(eventConfig.currentSignups < eventConfig.maxCapacity) {
+                eventConfig.currentSignups++;
+                document.getElementById('adminCurrentSignups').innerText = eventConfig.currentSignups;
+            } else {
+                eventConfig.waitlistCount++;
+                document.getElementById('adminWaitlistCount').innerText = eventConfig.waitlistCount;
+            }
+            updateUIState();
+        }
+
+        // Setup Instructions Logic
+        function toggleInstructions() {
+            instructionsModal.classList.toggle('active');
+        }
+
+        // Helper to copy code blocks to clipboard
+        function copyCode(buttonElement) {
+            const preElement = buttonElement.parentElement.nextElementSibling;
+            const codeToCopy = preElement.innerText;
+
+            // Use the older execCommand for better compatibility across environments
+            const textarea = document.createElement("textarea");
+            textarea.value = codeToCopy;
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                const originalText = buttonElement.innerText;
+                buttonElement.innerText = "Copied!";
+                buttonElement.classList.add("bg-green-600");
+                buttonElement.classList.remove("bg-white/10");
+                
+                setTimeout(() => {
+                    buttonElement.innerText = originalText;
+                    buttonElement.classList.remove("bg-green-600");
+                    buttonElement.classList.add("bg-white/10");
+                }, 2000);
+            } catch (err) {
+                console.error('Failed to copy text', err);
+            }
+            document.body.removeChild(textarea);
+        }
+    </script>
+</body>
+</html>
