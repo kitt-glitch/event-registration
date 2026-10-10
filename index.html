@@ -26,7 +26,6 @@
             background-color: theme('colors.background');
         }
 
-        /* Loading Spinner */
         .loader {
             border: 3px solid #f3f3f3;
             border-top: 3px solid white;
@@ -44,7 +43,6 @@
             100% { transform: rotate(360deg); }
         }
         
-        /* Custom Ticket styling */
         .ticket-image-container {
             mask-image: radial-gradient(circle at 10px 50%, transparent 10px, black 11px);
             -webkit-mask-image: radial-gradient(circle at 10px 50%, transparent 10px, black 11px);
@@ -53,12 +51,10 @@
 </head>
 <body class="min-h-screen text-gray-800 flex flex-col items-center justify-center p-4 sm:p-8">
 
-    <!-- Main Form Container -->
     <div class="bg-white rounded-2xl shadow-xl w-full max-w-3xl overflow-hidden border border-gray-100">
         
         <!-- Header -->
         <div class="bg-primary px-6 py-10 sm:px-10 text-center relative overflow-hidden">
-             <!-- Decorative background shapes -->
             <div class="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
                 <svg class="absolute -top-10 -left-10 w-40 h-40 text-white fill-current" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50"/></svg>
                 <svg class="absolute top-20 right-[-20px] w-32 h-32 text-white fill-current" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50"/></svg>
@@ -67,14 +63,14 @@
             <h1 class="text-3xl md:text-4xl font-bold text-white mb-2 relative z-10" id="eventTitleDisplay">Welcome Party 2026</h1>
             <p class="text-indigo-100 text-lg relative z-10 mb-4" id="eventDateDisplay">October 24, 2026 • Main Hall</p>
             
-            <!-- Applicant Counter Badge -->
+            <!-- ป้ายแสดงยอดคนสมัครเรียลไทม์ -->
             <div class="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-full font-medium text-sm relative z-10 shadow-sm border border-white/30">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                <span id="applicantCountText">กำลังโหลดจำนวนผู้สมัคร...</span>
+                <span id="applicantCountText">กำลังเชื่อมต่อฐานข้อมูล...</span>
             </div>
         </div>
 
-        <!-- Event Status Banner (Deadline countdown) -->
+        <!-- แถบแสดงสถานะเวลา -->
         <div id="eventStatusBanner" class="hidden bg-gray-100 text-gray-800 p-4 text-center border-b border-gray-200">
             <p id="eventStatusText" class="font-semibold text-lg"></p>
             <p id="eventCountdown" class="text-sm font-mono mt-1 text-gray-600"></p>
@@ -84,20 +80,17 @@
         <div class="p-6 sm:px-10 sm:pb-10 pt-8">
             <form id="registrationForm" onsubmit="submitForm(event)" class="space-y-6">
 
-                <!-- Alert Banner for errors -->
                 <div id="alertContainer" class="hidden p-4 rounded-md text-sm font-medium">
                     <p id="alertMessage"></p>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- First Name -->
                     <div>
                         <label for="firstName" class="block text-sm font-medium text-gray-700 mb-1">ชื่อจริง (First Name) *</label>
                         <input type="text" id="firstName" name="firstName" required
                             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all">
                     </div>
                     
-                    <!-- Last Name -->
                     <div>
                         <label for="lastName" class="block text-sm font-medium text-gray-700 mb-1">นามสกุล (Last Name) *</label>
                         <input type="text" id="lastName" name="lastName" required
@@ -106,14 +99,12 @@
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Student ID -->
                     <div>
-                        <label for="studentId" class="block text-sm font-medium text-gray-700 mb-1">รหัสนักศึกษา (studentID) *</label>
+                        <label for="studentId" class="block text-sm font-medium text-gray-700 mb-1">รหัสนิสิต/นักศึกษา *</label>
                         <input type="text" id="studentId" name="studentId" required placeholder="เช่น 66123456"
                             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all">
                     </div>
 
-                    <!-- Year Level -->
                     <div>
                         <label for="yearLevel" class="block text-sm font-medium text-gray-700 mb-1">ชั้นปี *</label>
                         <select id="yearLevel" name="yearLevel" required
@@ -129,14 +120,12 @@
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Email -->
                     <div>
                         <label for="email" class="block text-sm font-medium text-gray-700 mb-1">อีเมล (Email) *</label>
                         <input type="email" id="email" name="email" required
                             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all">
                     </div>
 
-                    <!-- Phone -->
                     <div>
                         <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">เบอร์ติดต่อ (Phone)</label>
                         <input type="tel" id="phone" name="phone"
@@ -144,21 +133,18 @@
                     </div>
                 </div>
 
-                <!-- Dietary Requirements -->
                 <div>
                     <label for="dietary" class="block text-sm font-medium text-gray-700 mb-1">ข้อจำกัดเรื่องอาหาร (ถ้ามี)</label>
                     <input type="text" id="dietary" name="dietary" placeholder="เช่น มังสวิรัติ, แพ้อาหารทะเล, อิสลาม"
                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all">
                 </div>
 
-                <!-- Special Requests -->
                 <div>
                     <label for="comments" class="block text-sm font-medium text-gray-700 mb-1">คำถามเพิ่มเติมหรือข้อเสนอแนะ</label>
                     <textarea id="comments" name="comments" rows="2"
                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all resize-none"></textarea>
                 </div>
 
-                <!-- Submit Button -->
                 <button type="submit" id="submitBtn" 
                     class="w-full bg-primary hover:bg-primaryHover text-white font-bold py-4 px-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center text-lg mt-4">
                     <div id="btnSpinner" class="loader hidden"></div>
@@ -174,13 +160,13 @@
                     </svg>
                 </div>
                 <h2 class="text-3xl font-bold text-gray-800 mb-3">Registration Complete!</h2>
-                <p class="text-gray-600 mb-8 max-w-md mx-auto text-lg">Thank you for registering. Your details have been successfully saved. Please save your E-ticket below.</p>
+                <p class="text-gray-600 mb-8 max-w-md mx-auto text-lg">Thank you for registering. Your details have been successfully saved. Please save your E-Ticket below.</p>
                 
-                <!-- Custom Ticket Container -->
+                <!-- ตั๋วดีไซน์กำหนดเอง -->
                 <div class="inline-block mx-auto mb-8">
-                    <div class="ticket-image-container relative rounded-xl overflow-hidden shadow-2xl border-4 border-gray-800 flex flex-col bg-gray-900 text-white w-64 sm:w-80">
+                    <div class="ticket-image-container relative rounded-xl overflow-hidden shadow-2xl border-4 border-gray-800 flex flex-col bg-gray-900 text-white w-64 sm:w-80 text-left">
                         
-                        <!-- คุณสามารถเปลี่ยนลิงก์รูปภาพตรง src="..." ได้เลย -->
+                        <!-- ⚠️ เปลี่ยนลิงก์รูปตั๋วของคุณเองตรงนี้ได้เลย ⚠️ -->
                         <img id="customTicketImage" src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=600&auto=format&fit=crop" alt="Event Ticket" class="w-full h-48 object-cover opacity-80">
                         
                         <div class="p-6 border-t-2 border-dashed border-gray-600">
@@ -213,17 +199,13 @@
         </div>
     </div>
 
-    <!-- Hidden iframe to handle form submission without CORS issues -->
-    <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;" onload="if(submitted){handleFormSuccess();}"></iframe>
-
     <script>
         /**
          * ==========================================
-         * ⚠️ 1. ใส่ลิงก์ GOOGLE APPS SCRIPT ของคุณที่นี่ (อันใหม่ที่เพิ่ง Deploy) ⚠️
+         * ⚠️ 1. นำ Web App URL อันใหม่ของคุณมาใส่ที่นี่ ⚠️
          * ==========================================
          */
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx3WnV1pH8DTtslZvkDgfovRUXRSvzLXk3QIVBxMggbOz-bFYD5PQUQk2EameAxDs0l/exec"; 
-
 
         /**
          * ==========================================
@@ -234,14 +216,13 @@
             title: "Welcome Party 2026",
             dateStr: "October 24, 2026 • Main Hall",
             
-            // เวลาเปิดรับสมัคร (ปี-เดือน-วันTเวลา)
+            // ตั้งเวลาเปิดรับสมัคร 
             openTime: new Date("2024-10-01T00:00:00").getTime(), 
             
-            // เวลาปิดรับสมัคร
+            // ตั้งเวลาปิดรับสมัคร 
             closeTime: new Date("2026-10-31T23:59:00").getTime(), 
         };
 
-        // DOM Elements
         const form = document.getElementById('registrationForm');
         const submitBtn = document.getElementById('submitBtn');
         const btnText = document.getElementById('btnText');
@@ -252,11 +233,9 @@
         const countDisplay = document.getElementById('applicantCountText');
         
         let statusInterval;
-        let submitted = false;
         let submittedData = {};
 
         window.onload = function() {
-            // Set Titles
             document.getElementById('eventTitleDisplay').innerText = eventConfig.title;
             document.getElementById('eventDateDisplay').innerText = eventConfig.dateStr;
             document.getElementById('ticketEventName').innerText = eventConfig.title;
@@ -266,9 +245,12 @@
             statusInterval = setInterval(updateUIState, 1000); 
         };
 
-        // ดึงยอดผู้สมัครปัจจุบันจาก Google Sheet
+        // ดึงยอดผู้สมัครจาก Apps Script แบบเรียลไทม์
         function fetchApplicantCount() {
-            if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.trim() === "") return;
+            if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.trim() === "") {
+                countDisplay.innerText = "ยังไม่ได้ใส่ลิงก์ฐานข้อมูล";
+                return;
+            }
             
             fetch(GOOGLE_SCRIPT_URL)
                 .then(response => response.json())
@@ -276,16 +258,15 @@
                     if (data && data.count !== undefined) {
                         countDisplay.innerText = `มีผู้ลงทะเบียนแล้ว ${data.count} คน`;
                     } else {
-                        countDisplay.innerText = "Registration Open";
+                        countDisplay.innerText = "เปิดรับลงทะเบียนแล้ว";
                     }
                 })
                 .catch(error => {
                     console.error("Error fetching count:", error);
-                    countDisplay.innerText = "กำลังรับสมัคร";
+                    countDisplay.innerText = "กำลังเปิดรับสมัคร";
                 });
         }
 
-        // เช็คเวลาปิดเปิดฟอร์ม
         function updateUIState() {
             const now = new Date().getTime();
             const banner = document.getElementById('eventStatusBanner');
@@ -298,13 +279,13 @@
                 isFormActive = false;
                 banner.classList.remove('hidden');
                 banner.className = 'bg-blue-50 text-blue-800 p-4 text-center border-b border-blue-200';
-                statusText.innerText = "Registration Opens Soon";
+                statusText.innerText = "Registration Opens Soon)";
                 countdown.innerText = `เปิดในอีก: ${formatTimeDiff(now, eventConfig.openTime)}`;
             } else if (now > eventConfig.closeTime) {
                 isFormActive = false;
                 banner.classList.remove('hidden');
                 banner.className = 'bg-gray-100 text-gray-800 p-4 text-center border-b border-gray-200';
-                statusText.innerText = "Registration is Closed";
+                statusText.innerText = "Registation is Closed)";
                 countdown.innerText = "";
             } else {
                 banner.classList.add('hidden');
@@ -321,7 +302,7 @@
                 btnText.innerText = 'ฟอร์มปิดรับสมัคร';
             } else {
                 submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-                btnText.innerText = 'Register';
+                btnText.innerText = 'ลงทะเบียน (Register)';
             }
         }
 
@@ -334,44 +315,48 @@
             return `${days} วัน ${hours} ชม. ${minutes} นาที`;
         }
 
-        // Form Submission Logic 
+        // ระบบส่งฟอร์มฉบับแก้ไข: แปลงเป็น URLSearchParams เพื่อให้ Google Sheet อ่านง่าย
         function submitForm(event) {
             event.preventDefault();
 
             if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.trim() === "") {
-                showAlert('Error: ยังไม่ได้ใส่ Google Script URL ในโค้ดบรรทัดล่างๆ', 'error');
+                showAlert('Error: กรุณาใส่ Google Script URL ในโค้ดบรรทัดล่างสุด', 'error');
                 return;
             }
 
             setLoadingState(true);
             hideAlert();
 
-            // เก็บค่าไว้แสดงในตั๋ว
             const formData = new FormData(form);
+            const data = new URLSearchParams();
+            
+            // นำข้อมูลทั้งหมดมาจัดเรียงใหม่ให้ Google Sheet ย่อยง่าย
+            for (const pair of formData) {
+                data.append(pair[0], pair[1]);
+            }
+            
+            // เก็บข้อมูลไว้แสดงบนตั๋ว
             submittedData = {
                 firstName: formData.get('firstName') || '',
                 lastName: formData.get('lastName') || '',
                 yearLevel: formData.get('yearLevel') || ''
             };
 
-            // ใช้การยิงข้อมูลวิธีดั้งเดิมเพื่อป้องกันปัญหา URLSearchParams ข้อมูลหาย
-            const searchParams = new URLSearchParams(formData);
             fetch(GOOGLE_SCRIPT_URL, {
                 method: 'POST',
-                body: searchParams
+                mode: 'no-cors',
+                body: data
             })
-            .then(response => {
-                // ถ้า fetch ทำงานจบ (ถึงแม้จะเจอ no-cors หรือ redirect ก็ตาม) ถือว่าสำเร็จ
+            .then(() => {
                 handleFormSuccess();
             })
             .catch(error => {
                 console.error('Submission Error:', error);
                 setLoadingState(false);
-                showAlert('Failed to send Information', 'Please try again');
+                showAlert('การส่งข้อมูลล้มเหลว กรุณาลองใหม่อีกครั้ง', 'error');
             });
         }
 
-        // ทำงานเมื่อฟอร์มส่งเสร็จ
         function handleFormSuccess() {
             setLoadingState(false);
             
@@ -383,13 +368,13 @@
             document.getElementById('eventStatusBanner').classList.add('hidden');
             successState.classList.remove('hidden');
 
-            // อัปเดตตัวเลขคนสมัคร
-            fetchApplicantCount();
+            // อัปเดตตัวเลขแบบเรียลไทม์หลังจากส่งฟอร์มสำเร็จ
+            setTimeout(fetchApplicantCount, 2000); 
         }
 
         function setLoadingState(isLoading) {
             if (isLoading) {
-                btnText.innerText = 'Sending...';
+                btnText.innerText = 'sending...';
                 btnSpinner.classList.remove('hidden');
                 submitBtn.classList.add('opacity-75', 'cursor-not-allowed');
                 submitBtn.disabled = true;
