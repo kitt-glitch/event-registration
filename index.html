@@ -43,14 +43,6 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-
-        /* Setup Instructions Modal Visibility */
-        #setup-instructions {
-            display: none;
-        }
-        #setup-instructions.active {
-            display: flex;
-        }
         
         /* Custom Ticket styling */
         .ticket-image-container {
@@ -60,12 +52,6 @@
     </style>
 </head>
 <body class="min-h-screen text-gray-800 flex flex-col items-center justify-center p-4 sm:p-8">
-
-    <div class="w-full max-w-3xl flex justify-end mb-4">
-         <button onclick="toggleInstructions()" class="text-sm font-medium text-primary hover:text-primaryHover bg-white px-4 py-2 rounded-lg shadow-sm border border-gray-200 transition-colors flex items-center gap-2">
-            ⚙️ Setup Guide
-        </button>
-    </div>
 
     <!-- Main Form Container -->
     <div class="bg-white rounded-2xl shadow-xl w-full max-w-3xl overflow-hidden border border-gray-100">
@@ -79,7 +65,13 @@
             </div>
             
             <h1 class="text-3xl md:text-4xl font-bold text-white mb-2 relative z-10" id="eventTitleDisplay">Welcome Party 2026</h1>
-            <p class="text-indigo-100 text-lg relative z-10" id="eventDateDisplay">October 24, 2026 • Main Hall</p>
+            <p class="text-indigo-100 text-lg relative z-10 mb-4" id="eventDateDisplay">October 24, 2026 • Main Hall</p>
+            
+            <!-- Applicant Counter Badge -->
+            <div class="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-full font-medium text-sm relative z-10 shadow-sm border border-white/30">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                <span id="applicantCountText">กำลังโหลดจำนวนผู้สมัคร...</span>
+            </div>
         </div>
 
         <!-- Event Status Banner (Deadline countdown) -->
@@ -91,22 +83,6 @@
         <!-- Form Section -->
         <div class="p-6 sm:px-10 sm:pb-10 pt-8">
             <form id="registrationForm" onsubmit="submitForm(event)" class="space-y-6">
-                
-                <!-- URL Warning Alert -->
-                <div id="urlWarning" class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-md">
-                    <div class="flex items-start">
-                        <div class="flex-shrink-0">
-                            <svg class="h-5 w-5 text-amber-400" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-                            </svg>
-                        </div>
-                        <div class="ml-3">
-                            <p class="text-sm text-amber-700 font-medium">
-                                Setup Required: Add your Google Apps Script URL in the Javascript code. <button type="button" onclick="toggleInstructions()" class="underline font-bold hover:text-amber-900 transition-colors">See setup instructions.</button>
-                            </p>
-                        </div>
-                    </div>
-                </div>
 
                 <!-- Alert Banner for errors -->
                 <div id="alertContainer" class="hidden p-4 rounded-md text-sm font-medium">
@@ -130,24 +106,24 @@
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- NEW QUESTION: Student ID -->
+                    <!-- Student ID -->
                     <div>
-                        <label for="studentId" class="block text-sm font-medium text-gray-700 mb-1">Student ID *</label>
+                        <label for="studentId" class="block text-sm font-medium text-gray-700 mb-1">รหัสนักศึกษา (studentID) *</label>
                         <input type="text" id="studentId" name="studentId" required placeholder="เช่น 66123456"
                             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all">
                     </div>
 
-                    <!-- Year Level (Changed from Ticket Type) -->
+                    <!-- Year Level -->
                     <div>
-                        <label for="yearLevel" class="block text-sm font-medium text-gray-700 mb-1">Year *</label>
+                        <label for="yearLevel" class="block text-sm font-medium text-gray-700 mb-1">ชั้นปี *</label>
                         <select id="yearLevel" name="yearLevel" required
                             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all bg-white appearance-none">
-                            <option value="" disabled selected>Choose year...</option>
-                            <option value="ปี 1">1</option>
-                            <option value="ปี 2">2</option>
-                            <option value="ปี 3">3</option>
-                            <option value="ปี 4">4</option>
-                            <option value="อื่นๆ">Other</option>
+                            <option value="" disabled selected>เลือกชั้นปี...</option>
+                            <option value="ปี 1">ปี 1</option>
+                            <option value="ปี 2">ปี 2</option>
+                            <option value="ปี 3">ปี 3</option>
+                            <option value="ปี 4">ปี 4</option>
+                            <option value="อื่นๆ">อื่นๆ</option>
                         </select>
                     </div>
                 </div>
@@ -155,14 +131,14 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Email -->
                     <div>
-                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">อีเมล (Email) *</label>
                         <input type="email" id="email" name="email" required
                             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all">
                     </div>
 
                     <!-- Phone -->
                     <div>
-                        <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                        <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">เบอร์ติดต่อ (Phone)</label>
                         <input type="tel" id="phone" name="phone"
                             class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all">
                     </div>
@@ -190,15 +166,15 @@
                 </button>
             </form>
             
-            <!-- Success State (Hidden by default) -->
+            <!-- Success State -->
             <div id="successState" class="hidden text-center py-10">
                 <div class="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
                     <svg class="w-12 h-12 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
                     </svg>
                 </div>
-                <h2 class="text-3xl font-bold text-gray-800 mb-3">Successfully Registered!</h2>
-                <p class="text-gray-600 mb-8 max-w-md mx-auto text-lg">ข้อมูลของคุณถูกบันทึกเรียบร้อยแล้ว โปรดเซฟรูปตั๋วด้านล่างนี้ไว้เพื่อใช้เข้างาน</p>
+                <h2 class="text-3xl font-bold text-gray-800 mb-3">Successfully Registration!</h2>
+                <p class="text-gray-600 mb-8 max-w-md mx-auto text-lg">Thank you for registering. Your details have been successfully saved. Please save your E-ticket below.</p>
                 
                 <!-- Custom Ticket Container -->
                 <div class="inline-block mx-auto mb-8">
@@ -237,57 +213,13 @@
         </div>
     </div>
 
-    <!-- Setup Instructions Modal (For you only) -->
-    <div id="setup-instructions" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col">
-            
-            <div class="p-6 border-b border-gray-200 flex justify-between items-center bg-gray-50 rounded-t-2xl">
-                <h2 class="text-2xl font-bold text-gray-800">Google Sheets Connection Guide</h2>
-                <button onclick="toggleInstructions()" class="text-gray-400 hover:text-gray-700 transition-colors bg-gray-200 hover:bg-gray-300 rounded-full p-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </button>
-            </div>
-            
-            <div class="p-6 sm:p-8 overflow-y-auto flex-grow space-y-8">
-                <!-- Step 1 -->
-                <div>
-                    <h3 class="text-xl font-bold text-gray-800 mb-2">1. แก้ไขหัวคอลัมน์ใน Google Sheet (สำคัญมาก!)</h3>
-                    <p class="text-gray-600 mb-3">เนื่องจากเราเพิ่มคำถามใหม่ คุณต้องลบหัวคอลัมน์เดิมทิ้ง และก๊อปปี้อันใหม่นี้ไปวางในแถวที่ 1 ให้ตรงเป๊ะๆ:</p>
-                    <div class="flex flex-wrap gap-2 mb-2 p-4 bg-gray-100 rounded-lg border border-gray-200">
-                        <span class="px-2.5 py-1 bg-white border border-gray-300 rounded text-sm font-mono text-gray-800 shadow-sm">Timestamp</span>
-                        <span class="px-2.5 py-1 bg-white border border-gray-300 rounded text-sm font-mono text-gray-800 shadow-sm">firstName</span>
-                        <span class="px-2.5 py-1 bg-white border border-gray-300 rounded text-sm font-mono text-gray-800 shadow-sm">lastName</span>
-                        <span class="px-2.5 py-1 bg-amber-100 border border-amber-300 rounded text-sm font-mono text-amber-900 font-bold shadow-sm">studentId</span>
-                        <span class="px-2.5 py-1 bg-white border border-gray-300 rounded text-sm font-mono text-gray-800 shadow-sm">email</span>
-                        <span class="px-2.5 py-1 bg-white border border-gray-300 rounded text-sm font-mono text-gray-800 shadow-sm">phone</span>
-                        <span class="px-2.5 py-1 bg-amber-100 border border-amber-300 rounded text-sm font-mono text-amber-900 font-bold shadow-sm">yearLevel</span>
-                        <span class="px-2.5 py-1 bg-white border border-gray-300 rounded text-sm font-mono text-gray-800 shadow-sm">dietary</span>
-                        <span class="px-2.5 py-1 bg-white border border-gray-300 rounded text-sm font-mono text-gray-800 shadow-sm">comments</span>
-                    </div>
-                    <p class="text-sm text-red-600 font-medium mt-2">*วิธีเพิ่มคำถามในอนาคต: <span class="text-gray-600 font-normal">แค่เพิ่มแท็ก input ใน HTML และตั้งชื่อ <code>name="ชื่อคอลัมน์"</code> ให้ตรงกับหัวตารางใน Sheet</span></p>
-                </div>
-
-                <hr class="border-gray-100">
-
-                <!-- Step 2 -->
-                <div class="pb-4">
-                    <h3 class="text-xl font-bold text-gray-800 mb-2">2. วางลิงก์ Google Script</h3>
-                    <p class="text-gray-600 mb-3">เลื่อนลงไปในโค้ดบรรทัดล่างๆ หาคำว่า <code>GOOGLE_SCRIPT_URL</code> แล้วเอาลิงก์ของคุณมาวางในเครื่องหมายคำพูด (เหมือนที่เคยทำครับ)</p>
-                </div>
-            </div>
-            
-            <div class="p-6 border-t border-gray-200 flex justify-end bg-gray-50 rounded-b-2xl">
-                <button onclick="toggleInstructions()" class="bg-gray-800 hover:bg-gray-900 text-white font-medium py-3 px-8 rounded-lg transition-colors shadow-md">
-                    ปิดคำแนะนำ
-                </button>
-            </div>
-        </div>
-    </div>
+    <!-- Hidden iframe to handle form submission without CORS issues -->
+    <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;" onload="if(submitted){handleFormSuccess();}"></iframe>
 
     <script>
         /**
          * ==========================================
-         * ⚠️ 1. ใส่ลิงก์ GOOGLE APPS SCRIPT ของคุณที่นี่ ⚠️
+         * ⚠️ 1. ใส่ลิงก์ GOOGLE APPS SCRIPT ของคุณที่นี่ (อันใหม่ที่เพิ่ง Deploy) ⚠️
          * ==========================================
          */
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx3WnV1pH8DTtslZvkDgfovRUXRSvzLXk3QIVBxMggbOz-bFYD5PQUQk2EameAxDs0l/exec"; 
@@ -302,7 +234,7 @@
             title: "Welcome Party 2026",
             dateStr: "October 24, 2026 • Main Hall",
             
-            // เวลาเปิดรับสมัคร (ปี-เดือน-วันTเวลา) เช่น "2024-10-09T08:00:00"
+            // เวลาเปิดรับสมัคร (ปี-เดือน-วันTเวลา)
             openTime: new Date("2024-10-01T00:00:00").getTime(), 
             
             // เวลาปิดรับสมัคร
@@ -317,10 +249,11 @@
         const alertContainer = document.getElementById('alertContainer');
         const alertMessage = document.getElementById('alertMessage');
         const successState = document.getElementById('successState');
-        const urlWarning = document.getElementById('urlWarning');
-        const instructionsModal = document.getElementById('setup-instructions');
+        const countDisplay = document.getElementById('applicantCountText');
         
         let statusInterval;
+        let submitted = false;
+        let submittedData = {};
 
         window.onload = function() {
             // Set Titles
@@ -328,14 +261,31 @@
             document.getElementById('eventDateDisplay').innerText = eventConfig.dateStr;
             document.getElementById('ticketEventName').innerText = eventConfig.title;
 
-            if (GOOGLE_SCRIPT_URL && GOOGLE_SCRIPT_URL.trim() !== "") {
-                urlWarning.classList.add('hidden'); // Hide warning if configured
-            }
             updateUIState();
-            statusInterval = setInterval(updateUIState, 1000); // Check time every second
+            fetchApplicantCount();
+            statusInterval = setInterval(updateUIState, 1000); 
         };
 
-        // Core logic to determine if form is open or closed based on time
+        // ดึงยอดผู้สมัครปัจจุบันจาก Google Sheet
+        function fetchApplicantCount() {
+            if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.trim() === "") return;
+            
+            fetch(GOOGLE_SCRIPT_URL)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.count !== undefined) {
+                        countDisplay.innerText = `มีผู้ลงทะเบียนแล้ว ${data.count} คน`;
+                    } else {
+                        countDisplay.innerText = "Registration Open";
+                    }
+                })
+                .catch(error => {
+                    console.error("Error fetching count:", error);
+                    countDisplay.innerText = "กำลังรับสมัคร";
+                });
+        }
+
+        // เช็คเวลาปิดเปิดฟอร์ม
         function updateUIState() {
             const now = new Date().getTime();
             const banner = document.getElementById('eventStatusBanner');
@@ -344,44 +294,37 @@
             
             let isFormActive = true;
 
-            // Time checks
             if (now < eventConfig.openTime) {
-                // Not open yet
                 isFormActive = false;
                 banner.classList.remove('hidden');
                 banner.className = 'bg-blue-50 text-blue-800 p-4 text-center border-b border-blue-200';
                 statusText.innerText = "Registration Opens Soon";
-                countdown.innerText = `Open in: ${formatTimeDiff(now, eventConfig.openTime)}`;
+                countdown.innerText = `เปิดในอีก: ${formatTimeDiff(now, eventConfig.openTime)}`;
             } else if (now > eventConfig.closeTime) {
-                // Deadline passed
                 isFormActive = false;
                 banner.classList.remove('hidden');
                 banner.className = 'bg-gray-100 text-gray-800 p-4 text-center border-b border-gray-200';
                 statusText.innerText = "Registration is Closed";
                 countdown.innerText = "";
             } else {
-                // Registration is Open
                 banner.classList.add('hidden');
             }
 
-            // Lock/Unlock form inputs based on time
             Array.from(form.elements).forEach(element => {
                 if(element.tagName !== 'FIELDSET') {
                     element.disabled = !isFormActive;
                 }
             });
             
-            // Adjust submit button
             if (!isFormActive) {
                 submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
-                btnText.innerText = 'Registration is closed';
+                btnText.innerText = 'ฟอร์มปิดรับสมัคร';
             } else {
                 submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
                 btnText.innerText = 'Register';
             }
         }
 
-        // Format countdown timer
         function formatTimeDiff(start, end) {
             const diff = end - start;
             const days = Math.floor(diff / (1000 * 60 * 60 * 24));
@@ -391,47 +334,62 @@
             return `${days} วัน ${hours} ชม. ${minutes} นาที`;
         }
 
-        // Form Submission Logic
+        // Form Submission Logic 
         function submitForm(event) {
             event.preventDefault();
 
             if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.trim() === "") {
-                showAlert('Error: ยังไม่ได้ตั้งค่า Google Script URL โปรดกดปุ่ม Setup Guide ด้านบน', 'error');
+                showAlert('Error: ยังไม่ได้ใส่ Google Script URL ในโค้ดบรรทัดล่างๆ', 'error');
                 return;
             }
 
             setLoadingState(true);
             hideAlert();
 
+            // เก็บค่าไว้แสดงในตั๋ว
             const formData = new FormData(form);
-            const searchParams = new URLSearchParams();
-            for (const pair of formData) {
-                searchParams.append(pair[0], pair[1]);
-            }
+            submittedData = {
+                firstName: formData.get('firstName') || '',
+                lastName: formData.get('lastName') || '',
+                yearLevel: formData.get('yearLevel') || ''
+            };
 
+            // ใช้การยิงข้อมูลวิธีดั้งเดิมเพื่อป้องกันปัญหา URLSearchParams ข้อมูลหาย
+            const searchParams = new URLSearchParams(formData);
             fetch(GOOGLE_SCRIPT_URL, {
                 method: 'POST',
-                mode: 'no-cors', 
                 body: searchParams
             })
-            .then(() => {
-                setLoadingState(false);
-                // ดึงค่ามาแสดงบนตั๋ว
-                const fName = formData.get('firstName') || '';
-                const lName = formData.get('lastName') || '';
-                const yLevel = formData.get('yearLevel') || '';
-                showSuccessState(fName, lName, yLevel);
+            .then(response => {
+                // ถ้า fetch ทำงานจบ (ถึงแม้จะเจอ no-cors หรือ redirect ก็ตาม) ถือว่าสำเร็จ
+                handleFormSuccess();
             })
             .catch(error => {
-                console.error('Submission Error:', error.message);
+                console.error('Submission Error:', error);
                 setLoadingState(false);
-                showAlert('เกิดข้อผิดพลาดในการส่งข้อมูล โปรดตรวจสอบอินเทอร์เน็ตและลองอีกครั้ง', 'error');
+                showAlert('Failed to send Information', 'Please try again');
             });
+        }
+
+        // ทำงานเมื่อฟอร์มส่งเสร็จ
+        function handleFormSuccess() {
+            setLoadingState(false);
+            
+            // อัปเดตข้อมูลบนตั๋ว
+            document.getElementById('ticketNameDisplay').innerText = `${submittedData.firstName} ${submittedData.lastName}`;
+            document.getElementById('ticketYearDisplay').innerText = submittedData.yearLevel;
+            
+            form.classList.add('hidden');
+            document.getElementById('eventStatusBanner').classList.add('hidden');
+            successState.classList.remove('hidden');
+
+            // อัปเดตตัวเลขคนสมัคร
+            fetchApplicantCount();
         }
 
         function setLoadingState(isLoading) {
             if (isLoading) {
-                btnText.innerText = 'Sending data...';
+                btnText.innerText = 'Sending...';
                 btnSpinner.classList.remove('hidden');
                 submitBtn.classList.add('opacity-75', 'cursor-not-allowed');
                 submitBtn.disabled = true;
@@ -457,30 +415,12 @@
             alertContainer.classList.add('hidden');
         }
 
-        function showSuccessState(firstName, lastName, yearLevel) {
-            form.classList.add('hidden');
-            document.getElementById('eventStatusBanner').classList.add('hidden');
-            document.getElementById('urlWarning').classList.add('hidden');
-            successState.classList.remove('hidden');
-
-            // อัปเดตข้อมูลบนตั๋ว (แก้บัค null null เรียบร้อยแล้ว)
-            document.getElementById('ticketNameDisplay').innerText = `${firstName} ${lastName}`;
-            document.getElementById('ticketYearDisplay').innerText = yearLevel;
-        }
-
         function resetForm() {
             form.reset();
             form.classList.remove('hidden');
             successState.classList.add('hidden');
-            if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.trim() === "") {
-                document.getElementById('urlWarning').classList.remove('hidden');
-            }
             hideAlert();
             updateUIState();
-        }
-
-        function toggleInstructions() {
-            instructionsModal.classList.toggle('active');
         }
     </script>
 </body>
