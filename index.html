@@ -4,17 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Event Registration</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Canvas Confetti for Celebration Animation -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
     <script>
         tailwind.config = {
-            darkMode: 'class',
+            darkMode: 'class', // เปิดระบบ Dark Mode
             theme: {
                 extend: {
                     colors: {
                         primary: '#4F46E5', // Indigo-600
                         primaryHover: '#4338CA', // Indigo-700
-                        background: '#F9FAFB', // Gray-50
                     }
                 }
             }
@@ -25,11 +27,12 @@
         
         body {
             font-family: 'Inter', sans-serif;
-            background-color: theme('colors.background');
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
+        /* เอฟเฟกต์โหลด */
         .loader {
-            border: 3px solid #f3f3f3;
+            border: 3px solid rgba(255,255,255,0.3);
             border-top: 3px solid white;
             border-radius: 50%;
             width: 20px;
@@ -45,11 +48,13 @@
             100% { transform: rotate(360deg); }
         }
         
+        /* รอยปะและรอยแหว่งของตั๋ว */
         .ticket-image-container {
             mask-image: radial-gradient(circle at 10px 50%, transparent 10px, black 11px);
             -webkit-mask-image: radial-gradient(circle at 10px 50%, transparent 10px, black 11px);
         }
-                /* อนิเมชันเด้งตั๋ว */
+
+        /* อนิเมชันเด้งตั๋ว */
         @keyframes popIn {
             0% { transform: scale(0.5) translateY(50px); opacity: 0; }
             70% { transform: scale(1.05) translateY(-10px); opacity: 1; }
@@ -67,14 +72,23 @@
         .ticket-shine::after {
             content: '';
             position: absolute;
-            top: 0; left: -150%; width: 50%; height: 100%;
+            top: 0;
+            left: -150%;
+            width: 50%;
+            height: 100%;
             background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
             transform: skewX(-25deg);
             animation: shine 4s infinite;
         }
+        @keyframes shine {
+            0% { left: -150%; }
+            20% { left: 200%; }
+            100% { left: 200%; }
+        }
     </style>
 </head>
-<body class="min-h-screen bg-gray-50 text-gray-800 dark:bg-gray-900 dark:text-gray-100 flex flex-col items-center justify-center p-4 transition-colors duration-300">
+<body class="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 flex flex-col items-center justify-center p-4 sm:p-8">
+
     <!-- ปุ่มสลับธีม -->
     <button onclick="toggleTheme()" class="fixed top-4 right-4 z-50 p-3 rounded-full bg-white dark:bg-gray-800 shadow-lg text-gray-600 dark:text-gray-300 hover:scale-110 transition-transform border border-gray-200 dark:border-gray-700">
         <svg id="sun-icon" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
@@ -86,24 +100,24 @@
         <!-- Header -->
         <div class="bg-primary px-6 py-10 sm:px-10 text-center relative overflow-hidden">
             <div class="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
-                <svg class="absolute -top-10 -left-10 w-40 h-40 text-white fill-current" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50"/></svg>
+                <svg class="absolute -top-10 -left-10 w-40 h-40 text-white fill-current animate-pulse" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50"/></svg>
                 <svg class="absolute top-20 right-[-20px] w-32 h-32 text-white fill-current" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50"/></svg>
             </div>
             
-            <h1 class="text-3xl md:text-4xl font-bold text-white mb-2 relative z-10" id="eventTitleDisplay">Welcome Party 2026</h1>
-            <p class="text-indigo-100 text-lg relative z-10 mb-4" id="eventDateDisplay">October 24, 2026 • Main Hall</p>
+            <h1 class="text-3xl md:text-4xl font-bold text-white mb-2 relative z-10" id="eventTitleDisplay">Welcome SAN Party 2026</h1>
+            <p class="text-indigo-100 text-lg relative z-10 mb-4" id="eventDateDisplay">December 20, 2026 • Main Hall</p>
             
-            <!-- ป้ายแสดงยอดคนสมัครเรียลไทม์ -->
-            <div class="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-full font-medium text-sm relative z-10 shadow-sm border border-white/30">
+            <!-- ป้ายแสดงยอดคนสมัคร -->
+            <div class="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-full font-medium text-sm relative z-10 shadow-sm border border-white/30 hover:bg-white/30 transition-colors">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                <span id="applicantCountText">กำลังเชื่อมต่อฐานข้อมูล...</span>
+                <span id="applicantCountText">Connecting database...</span>
             </div>
         </div>
 
         <!-- แถบแสดงสถานะเวลา -->
-        <div id="eventStatusBanner" class="hidden bg-gray-100 text-gray-800 p-4 text-center border-b border-gray-200">
+        <div id="eventStatusBanner" class="hidden bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100 p-4 text-center border-b border-gray-200 dark:border-gray-600 transition-colors">
             <p id="eventStatusText" class="font-semibold text-lg"></p>
-            <p id="eventCountdown" class="text-sm font-mono mt-1 text-gray-600"></p>
+            <p id="eventCountdown" class="text-sm font-mono mt-1 text-gray-600 dark:text-gray-400"></p>
         </div>
         
         <!-- Form Section -->
@@ -116,29 +130,29 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label for="firstName" class="block text-sm font-medium text-gray-700 mb-1">ชื่อจริง (First Name) *</label>
+                        <label for="firstName" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">ชื่อจริง (First Name) *</label>
                         <input type="text" id="firstName" name="firstName" required
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all">
+                            class="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all">
                     </div>
                     
                     <div>
-                        <label for="lastName" class="block text-sm font-medium text-gray-700 mb-1">นามสกุล (Last Name) *</label>
+                        <label for="lastName" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">นามสกุล (Last Name) *</label>
                         <input type="text" id="lastName" name="lastName" required
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all">
+                            class="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all">
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label for="studentId" class="block text-sm font-medium text-gray-700 mb-1">รหัสนักศึกษา (studentID) *</label>
+                        <label for="studentId" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">รหัสนักศึกษา (StudentID)*</label>
                         <input type="text" id="studentId" name="studentId" required placeholder="เช่น 66123456"
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all">
+                            class="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all">
                     </div>
 
                     <div>
-                        <label for="yearLevel" class="block text-sm font-medium text-gray-700 mb-1">ชั้นปี *</label>
+                        <label for="yearLevel" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">ชั้นปี *</label>
                         <select id="yearLevel" name="yearLevel" required
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all bg-white appearance-none">
+                            class="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all appearance-none">
                             <option value="" disabled selected>เลือกชั้นปี...</option>
                             <option value="ปี 1">ปี 1</option>
                             <option value="ปี 2">ปี 2</option>
@@ -151,32 +165,32 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label for="nickname" class="block text-sm font-medium text-gray-700 mb-1">ชื่อเล่น (Nickname) *</label>
+                        <label for="nickname" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">ชื่อเล่น (Nickname) *</label>
                         <input type="text" id="nickname" name="nickname" required
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all">
+                            class="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all">
                     </div>
-                    
+
                     <div>
-                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">อีเมล (Email) *</label>
+                        <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">อีเมล (Email) *</label>
                         <input type="email" id="email" name="email" required
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all">
+                            class="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all">
                     </div>
                 </div>
 
                 <div>
-                    <label for="dietary" class="block text-sm font-medium text-gray-700 mb-1">ข้อจำกัดเรื่องอาหาร (ถ้ามี)</label>
-                    <input type="text" id="dietary" name="dietary" placeholder="เช่น มังสวิรัติ, แพ้อาหารทะเล, ฮาลาล"
-                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all">
+                    <label for="dietary" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">ข้อจำกัดเรื่องอาหาร (ถ้ามี)</label>
+                    <input type="text" id="dietary" name="dietary" placeholder="เช่น มังสวิรัติ, แพ้อาหารทะเล, อิสลาม"
+                        class="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all">
                 </div>
 
                 <div>
-                    <label for="comments" class="block text-sm font-medium text-gray-700 mb-1">คำถามเพิ่มเติมหรือข้อเสนอแนะ</label>
+                    <label for="comments" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">คำถามเพิ่มเติมหรือข้อเสนอแนะ</label>
                     <textarea id="comments" name="comments" rows="2"
-                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all resize-none"></textarea>
+                        class="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all resize-none"></textarea>
                 </div>
 
                 <button type="submit" id="submitBtn" 
-                    class="w-full bg-primary hover:bg-primaryHover text-white font-bold py-4 px-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center text-lg mt-4">
+                    class="w-full bg-primary hover:bg-primaryHover text-white font-bold py-4 px-6 rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center text-lg mt-4">
                     <div id="btnSpinner" class="loader hidden"></div>
                     <span id="btnText">Register</span>
                 </button>
@@ -184,35 +198,36 @@
             
             <!-- Success State -->
             <div id="successState" class="hidden text-center py-10">
-                <div class="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <svg class="w-12 h-12 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="w-24 h-24 bg-green-100 dark:bg-green-900/50 rounded-full flex items-center justify-center mx-auto mb-6 transform scale-0" id="successIcon">
+                    <svg class="w-12 h-12 text-green-500 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
                     </svg>
                 </div>
-                <h2 class="text-3xl font-bold text-gray-800 mb-3">Registration Complete!</h2>
-                <p class="text-gray-600 mb-8 max-w-md mx-auto text-lg">Thank you for registering. Your details have been successfully saved. Please save your E-Ticket below.</p>
+                <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-3">Registration Complete!</h2>
+                <p class="text-gray-600 dark:text-gray-300 mb-8 max-w-md mx-auto text-lg">Thank you for registering. Your details have been successfully saved. Please save your E-Ticket below</p>
                 
-                <!-- ตั๋วดีไซน์กำหนดเอง -->
-                <div class="inline-block mx-auto mb-8">
-                    <div class="ticket-image-container relative rounded-xl overflow-hidden shadow-2xl border-4 border-gray-800 flex flex-col bg-gray-900 text-white w-64 sm:w-80 text-left">
+                <!-- ตั๋วดีไซน์กำหนดเอง (มีเอฟเฟกต์ 3D และแสงเงา) -->
+                <div class="inline-block mx-auto mb-8 perspective-1000" id="ticketBlock">
+                    <div class="ticket-image-container ticket-shine relative rounded-xl overflow-hidden shadow-2xl border-4 border-gray-800 dark:border-gray-600 flex flex-col bg-gray-900 text-white w-64 sm:w-80 text-left transform transition-transform duration-500 hover:rotate-1 hover:scale-105">
                         
                         <!-- ⚠️ เปลี่ยนลิงก์รูปตั๋วของคุณเองตรงนี้ได้เลย ⚠️ -->
-                        <img id="customTicketImage" src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=600&auto=format&fit=crop" alt="Event Ticket" class="w-full h-48 object-cover opacity-80">
+                        <img id="customTicketImage" src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=600&auto=format&fit=crop" alt="Event Ticket" class="w-full h-48 object-cover opacity-80 mix-blend-overlay">
+                        <div class="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent opacity-80"></div>
                         
-                        <div class="p-6 border-t-2 border-dashed border-gray-600">
+                        <div class="p-6 border-t-2 border-dashed border-gray-600 relative z-10">
                             <h3 class="font-bold text-xl uppercase tracking-widest mb-1 text-primary">OFFICIAL TICKET</h3>
-                            <p class="text-sm text-gray-400 mb-4" id="ticketEventName">Welcome Party 2026</p>
+                            <p class="text-sm text-gray-400 mb-4" id="ticketEventName">Welcome SAN Party 2026</p>
                             
-                            <div class="bg-gray-800 p-3 rounded-lg mb-2">
+                            <div class="bg-gray-800/80 backdrop-blur-sm p-3 rounded-lg mb-2 border border-gray-700">
                                 <p class="text-xs text-gray-400 uppercase">Name</p>
                                 <p id="ticketNameDisplay" class="font-bold text-lg truncate"></p>
                             </div>
                             <div class="flex gap-2">
-                                <div class="bg-gray-800 p-3 rounded-lg flex-1">
+                                <div class="bg-gray-800/80 backdrop-blur-sm p-3 rounded-lg flex-1 border border-gray-700">
                                     <p class="text-xs text-gray-400 uppercase">Year</p>
                                     <p id="ticketYearDisplay" class="font-bold text-md truncate"></p>
                                 </div>
-                                <div class="bg-gray-800 p-3 rounded-lg flex-1">
+                                <div class="bg-gray-800/80 backdrop-blur-sm p-3 rounded-lg flex-1 border border-gray-700">
                                     <p class="text-xs text-gray-400 uppercase">Status</p>
                                     <p class="font-bold text-green-400 text-md">CONFIRMED</p>
                                 </div>
@@ -222,8 +237,8 @@
                 </div>
                 <br>
 
-                <button onclick="resetForm()" class="bg-white border-2 border-gray-200 hover:bg-gray-50 text-gray-800 font-semibold py-3 px-8 rounded-lg transition-colors shadow-sm">
-                    Register More
+                <button onclick="resetForm()" class="bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-semibold py-3 px-8 rounded-lg transition-colors shadow-sm">
+                    Register Another Person
                 </button>
             </div>
         </div>
@@ -245,11 +260,7 @@
         const eventConfig = {
             title: "Welcome Party 2026",
             dateStr: "October 24, 2026 • Main Hall",
-            
-            // ตั้งเวลาเปิดรับสมัคร 
             openTime: new Date("2024-10-01T00:00:00").getTime(), 
-            
-            // ตั้งเวลาปิดรับสมัคร 
             closeTime: new Date("2026-10-31T23:59:00").getTime(), 
         };
 
@@ -265,20 +276,20 @@
         let statusInterval;
         let submittedData = {};
 
-                const html = document.documentElement;
+        // ระบบ Dark Mode
+        const html = document.documentElement;
         const sunIcon = document.getElementById('sun-icon');
         const moonIcon = document.getElementById('moon-icon');
 
         function initTheme() {
             if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                 html.classList.add('dark');
-                if(sunIcon) sunIcon.classList.remove('hidden');
+                sunIcon.classList.remove('hidden');
             } else {
                 html.classList.remove('dark');
-                if(moonIcon) moonIcon.classList.remove('hidden');
+                moonIcon.classList.remove('hidden');
             }
         }
-        initTheme(); // เรียกใช้งานตอนเปิดเว็บ
 
         function toggleTheme() {
             html.classList.toggle('dark');
@@ -295,6 +306,7 @@
         }
 
         window.onload = function() {
+            initTheme(); // โหลดธีมเมื่อเปิดเว็บ
             document.getElementById('eventTitleDisplay').innerText = eventConfig.title;
             document.getElementById('eventDateDisplay').innerText = eventConfig.dateStr;
             document.getElementById('ticketEventName').innerText = eventConfig.title;
@@ -304,26 +316,15 @@
             statusInterval = setInterval(updateUIState, 1000); 
         };
 
-        // ดึงยอดผู้สมัครจาก Apps Script แบบเรียลไทม์
         function fetchApplicantCount() {
-            if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.trim() === "") {
-                countDisplay.innerText = "ยังไม่ได้ใส่ลิงก์ฐานข้อมูล";
-                return;
-            }
-            
+            if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.trim() === "") return;
             fetch(GOOGLE_SCRIPT_URL)
                 .then(response => response.json())
                 .then(data => {
                     if (data && data.count !== undefined) {
                         countDisplay.innerText = `มีผู้ลงทะเบียนแล้ว ${data.count} คน`;
-                    } else {
-                        countDisplay.innerText = "Registration is Open";
                     }
-                })
-                .catch(error => {
-                    console.error("Error fetching count:", error);
-                    countDisplay.innerText = "กำลังเปิดรับสมัคร";
-                });
+                }).catch(() => {});
         }
 
         function updateUIState() {
@@ -337,13 +338,13 @@
             if (now < eventConfig.openTime) {
                 isFormActive = false;
                 banner.classList.remove('hidden');
-                banner.className = 'bg-blue-50 text-blue-800 p-4 text-center border-b border-blue-200';
-                statusText.innerText = "ยังไม่เปิดรับสมัคร (Opens Soon)";
+                banner.className = 'bg-blue-50 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 p-4 text-center border-b border-blue-200 dark:border-blue-800';
+                statusText.innerText = "OPEN SOON";
                 countdown.innerText = `เปิดในอีก: ${formatTimeDiff(now, eventConfig.openTime)}`;
             } else if (now > eventConfig.closeTime) {
                 isFormActive = false;
                 banner.classList.remove('hidden');
-                banner.className = 'bg-gray-100 text-gray-800 p-4 text-center border-b border-gray-200';
+                banner.className = 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-300 p-4 text-center border-b border-gray-200 dark:border-gray-700';
                 statusText.innerText = "Registration is Closed)";
                 countdown.innerText = "";
             } else {
@@ -351,9 +352,7 @@
             }
 
             Array.from(form.elements).forEach(element => {
-                if(element.tagName !== 'FIELDSET') {
-                    element.disabled = !isFormActive;
-                }
+                if(element.tagName !== 'FIELDSET') element.disabled = !isFormActive;
             });
             
             if (!isFormActive) {
@@ -371,14 +370,12 @@
             const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-            return `${days} DAY ${hours} HOURS ${minutes} MINUTES`;
+            return `${days} Day ${hours} Hours ${minutes} Minute`;
         }
 
-        // ระบบส่งฟอร์มฉบับแก้บัค: ส่งเป็นข้อความ JSON โดยตรง (เสถียรที่สุด)
         function submitForm(event) {
             event.preventDefault();
-
-            if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.trim() === "") {
+            if (!GOOGLE_SCRIPT_URL) {
                 showAlert('Error: กรุณาใส่ Google Script URL ในโค้ด', 'error');
                 return;
             }
@@ -386,7 +383,6 @@
             setLoadingState(true);
             hideAlert();
 
-            // ดึงข้อมูลจากฟอร์มมาเก็บเป็น Object ของ JavaScript โดยตรง
             const dataObj = {
                 firstName: document.getElementById('firstName').value,
                 lastName: document.getElementById('lastName').value,
@@ -398,54 +394,84 @@
                 comments: document.getElementById('comments').value
             };
             
-            // เก็บไว้แสดงบนตั๋ว
             submittedData = {
                 firstName: dataObj.firstName,
                 lastName: dataObj.lastName,
                 yearLevel: dataObj.yearLevel
             };
 
-            // ส่งข้อมูลไป Apps Script โดยแปลงเป็นข้อความ JSON
+            // ส่งข้อมูลด้วย JSON (แก้อาการข้อมูลหาย)
             fetch(GOOGLE_SCRIPT_URL, {
                 method: 'POST',
-                mode: 'no-cors', // บังคับให้เบราว์เซอร์ไม่บล็อก
-                body: JSON.stringify(dataObj) // ส่งข้อมูลไปทั้งก้อนแบบข้อความ
+                mode: 'no-cors',
+                body: JSON.stringify(dataObj)
             })
-            .then(() => {
-                // เนื่องจากใช้ no-cors โค้ดจะวิ่งมาตรงนี้เสมอถ้าไม่ติดปัญหาเน็ตหลุด
-                handleFormSuccess();
-            })
-            .catch(error => {
-                console.error('Submission Error:', error);
+            .then(() => handleFormSuccess())
+            .catch(() => {
                 setLoadingState(false);
                 showAlert('การส่งข้อมูลล้มเหลว กรุณาตรวจสอบอินเทอร์เน็ตแล้วลองอีกครั้ง', 'error');
             });
         }
 
+        // เอฟเฟกต์พลุกระดาษและเด้งตั๋ว
         function handleFormSuccess() {
             setLoadingState(false);
             
-            // อัปเดตข้อมูลบนตั๋ว
             document.getElementById('ticketNameDisplay').innerText = `${submittedData.firstName} ${submittedData.lastName}`;
             document.getElementById('ticketYearDisplay').innerText = submittedData.yearLevel;
             
+            // ซ่อนฟอร์มและโชว์หน้าตั๋ว
             form.classList.add('hidden');
             document.getElementById('eventStatusBanner').classList.add('hidden');
             successState.classList.remove('hidden');
 
+            // 1. อนิเมชันติ๊กถูก
+            document.getElementById('successIcon').classList.add('transition-transform', 'duration-500', 'scale-100');
+            
+            // 2. อนิเมชันตั๋วเด้ง (Pop In)
+            const ticket = document.getElementById('ticketBlock');
+            ticket.classList.remove('animate-pop-in'); // reset
+            void ticket.offsetWidth; // trigger reflow
+            ticket.classList.add('animate-pop-in');
+
+            // 3. ยิงพลุกระดาษฉลอง
+            triggerConfetti();
+
             setTimeout(fetchApplicantCount, 2000); 
+        }
+
+        function triggerConfetti() {
+            var duration = 3 * 1000;
+            var animationEnd = Date.now() + duration;
+            var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 100 };
+
+            function randomInRange(min, max) {
+              return Math.random() * (max - min) + min;
+            }
+
+            var interval = setInterval(function() {
+              var timeLeft = animationEnd - Date.now();
+
+              if (timeLeft <= 0) {
+                return clearInterval(interval);
+              }
+
+              var particleCount = 50 * (timeLeft / duration);
+              confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+              confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+            }, 250);
         }
 
         function setLoadingState(isLoading) {
             if (isLoading) {
                 btnText.innerText = 'sending...';
                 btnSpinner.classList.remove('hidden');
-                submitBtn.classList.add('opacity-75', 'cursor-not-allowed');
+                submitBtn.classList.add('opacity-75', 'cursor-not-allowed', 'scale-95');
                 submitBtn.disabled = true;
                 Array.from(form.elements).forEach(element => element.disabled = true);
             } else {
                 btnSpinner.classList.add('hidden');
-                submitBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+                submitBtn.classList.remove('opacity-75', 'cursor-not-allowed', 'scale-95');
                 submitBtn.disabled = false;
                 Array.from(form.elements).forEach(element => element.disabled = false);
                 updateUIState(); 
@@ -454,9 +480,9 @@
 
         function showAlert(message, type) {
             alertMessage.innerText = message;
-            alertContainer.classList.remove('hidden', 'bg-red-50', 'text-red-800', 'border', 'border-red-200');
+            alertContainer.classList.remove('hidden');
             if (type === 'error') {
-                alertContainer.classList.add('bg-red-50', 'text-red-800', 'border', 'border-red-200');
+                alertContainer.className = 'p-4 rounded-md text-sm font-medium bg-red-50 dark:bg-red-900/30 text-red-800 dark:text-red-300 border border-red-200 dark:border-red-800';
             }
         }
 
@@ -468,6 +494,7 @@
             form.reset();
             form.classList.remove('hidden');
             successState.classList.add('hidden');
+            document.getElementById('successIcon').classList.replace('scale-100', 'scale-0'); // reset icon
             hideAlert();
             updateUIState();
         }
