@@ -189,6 +189,14 @@
                         class="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all resize-none"></textarea>
                 </div>
 
+                <!-- กล่องติ๊กยินยอม PDPA -->
+                <div class="p-4 bg-gray-50 dark:bg-gray-700/40 rounded-xl border border-gray-200 dark:border-gray-600">
+                    <label class="flex items-start gap-3 cursor-pointer">
+                    <input type="checkbox" id="pdpaConsentCheckbox" required class="mt-1 w-4 h-4 text-primary rounded border-gray-300 dark:border-gray-600 focus:ring-primary focus:ring-offset-0 transition">
+                    <span class="text-xs sm:text-sm text-gray-600 dark:text-gray-300 leading-relaxed">ข้าพเจ้ายินยอมให้คณะผู้จัดงานเก็บรวบรวม ใช้ และประมวลผลข้อมูลส่วนบุคคลข้างต้น เพื่อใช้ในการประสานงาน ยืนยันสิทธิ์เข้าร่วมงาน และจัดเตรียมอาหารสำหรับกิจกรรม <strong class="text-gray-800 dark:text-white">Welcome SAN Party 2026</strong> ตามพระราชบัญญัติคุ้มครองข้อมูลส่วนบุคคล (PDPA)</span>
+                    </label>
+                </div>
+
                 <!-- ปุ่มลงทะเบียน -->
                 <button type="submit" id="submitBtn" 
                     class="w-full bg-primary hover:bg-primaryHover text-white font-bold py-4 px-6 rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 flex items-center justify-center text-lg mt-4">
@@ -208,13 +216,12 @@
                     </div>
 
                     <!-- ปุ่มค้นหาตั๋ว E-Ticket -->
-                    <button type="button" onclick="openFindTicketModal()" class="text-xs sm:text-sm text-primary dark:text-indigo-400 hover:text-primaryHover dark:hover:text-indigo-300 underline underline-offset-4 font-semibold transition-colors inline-flex items-center gap-1.5 mt-1">
+                    <button type="button" id="btnOpenFindTicket" onclick="openFindTicketModal()" class="text-xs sm:text-sm text-primary dark:text-indigo-400 hover:text-primaryHover dark:hover:text-indigo-300 underline underline-offset-4 font-semibold transition-colors inline-flex items-center gap-1.5 mt-1 cursor-pointer">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                        <span>เคยลงทะเบียนแล้ว? ค้นหา E-Ticket ของคุณที่นี่</span>
-                    </button>
-                </div>
-
-            </form>
+                          <span>เคยลงทะเบียนแล้ว? ค้นหาตั๋ว E-Ticket ของคุณที่นี่</span>
+                        </button>
+                      </div>
+                    </form>
             
             <!-- Success State -->
             <div id="successState" class="hidden text-center py-10">
@@ -259,44 +266,47 @@
                 <button onclick="resetForm()" class="bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-semibold py-3 px-8 rounded-lg transition-colors shadow-sm">
                     ลงทะเบียนบุคคลอื่นเพิ่ม
                 </button>
+
+                <button onclick="openFindTicketModal()" class="text-primary dark:text-indigo-400 hover:underline font-semibold py-3 px-6 text-sm">
+                    ค้นหาตั๋วใบอื่น
+                </button>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Modal ค้นหาตั๋ว E-Ticket -->
+        <!-- 2.1 Modal ยืนยัน PDPA -->
+    <div id="pdpaModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl max-w-lg w-full p-6 sm:p-7 shadow-2xl border border-gray-100 dark:border-gray-700">
+            <h3 class="text-lg font-bold text-gray-800 dark:white mb-2">คำยินยอมข้อมูลส่วนบุคคล (PDPA)</h3>
+            <div class="text-sm text-gray-600 dark:text-gray-300 space-y-2 mb-6 bg-gray-50 dark:bg-gray-900/50 p-4 rounded-xl border border-gray-200 dark:border-gray-700 text-left">
+                <p>ข้อมูลส่วนบุคคลของท่านจะถูกนำไปใช้เพื่อยืนยันสิทธิ์, จัดเตรียมอาหาร และติดต่อสื่อสารในกิจกรรม Welcome SAN Party 2026 เท่านั้น</p>
+            </div>
+            <div class="flex gap-3">
+                <button type="button" onclick="closePdpaModal()" class="flex-1 py-2.5 px-4 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700">กลับไปแก้ไข</button>
+                <button type="button" onclick="confirmAndExecuteSubmit()" class="flex-1 py-2.5 px-4 rounded-lg bg-primary hover:bg-primaryHover text-white text-sm font-bold shadow">ยินยอมและยืนยันลงทะเบียน</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2.2 Modal ค้นหาตั๋ว E-Ticket -->
     <div id="findTicketModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-gray-800 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-gray-100 dark:border-gray-700 transform transition-all">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-gray-100 dark:border-gray-700">
             <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-bold text-gray-800 dark:text-white">ค้นหา E-Ticket ของคุณ</h3>
+                <h3 class="text-lg font-bold text-gray-800 dark:text-white">ค้นหาตั๋ว E-Ticket ของคุณ</h3>
                 <button onclick="closeFindTicketModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-2xl font-bold">&times;</button>
             </div>
-            
-            <p class="text-sm text-gray-600 dark:text-gray-300 mb-4">กรอกรหัสนักศึกษาที่คุณใช้ลงทะเบียนเพื่อแสดงตั๋วของคุณอีกครั้ง</p>
-            
-            <!-- Quick Load กรณีมีตั๋วจำอยู่ในเครื่องนี้ -->
             <div id="localSavedTicketBanner" class="hidden mb-4 p-3 bg-indigo-50 dark:bg-indigo-950/40 rounded-lg border border-indigo-200 dark:border-indigo-800">
                 <p class="text-xs text-indigo-800 dark:text-indigo-300 font-semibold mb-1">พบตั๋วที่เคยลงทะเบียนบนอุปกรณ์นี้:</p>
-                <button onclick="loadSavedLocalTicket()" class="text-xs font-bold text-primary dark:text-indigo-400 hover:underline inline-flex items-center gap-1">
-                    <span id="localTicketName"></span>
-                </button>
+                <button onclick="loadSavedLocalTicket()" class="text-xs font-bold text-primary dark:text-indigo-400 hover:underline">👉 <span id="localTicketName"></span></button>
             </div>
-
             <form onsubmit="lookupTicketByStudentId(event)" class="space-y-4">
-                <div>
-                    <label for="lookupStudentId" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">รหัสนักศึกษา (Student ID)</label>
-                    <input type="text" id="lookupStudentId" required placeholder="เช่น 6808xxx" pattern="[0-9]{7}" title="กรุณากรอกรหัสนักศึกษา 7 หลัก"
-                        class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-primary outline-none text-sm">
-                </div>
-
-                <div id="lookupAlert" class="hidden p-3 rounded-lg text-xs font-medium bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800"></div>
-
+                <input type="text" id="lookupStudentId" required placeholder="รหัสนักศึกษา 7 หลัก เช่น 6808xxx" pattern="[0-9]{7}"
+                    class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-800 dark:text-gray-100 text-sm">
+                <div id="lookupAlert" class="hidden p-3 rounded-lg text-xs font-medium bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300"></div>
                 <div class="flex gap-2">
-                    <button type="button" onclick="closeFindTicketModal()" class="flex-1 py-2.5 px-4 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700">
-                        ยกเลิก
-                    </button>
-                    <button type="submit" id="btnLookupSubmit" class="flex-1 py-2.5 px-4 rounded-lg bg-primary hover:bg-primaryHover text-white text-sm font-bold shadow transition-all flex items-center justify-center">
-                        <span id="lookupBtnText">ค้นหาตั๋ว</span>
-                    </button>
+                    <button type="button" onclick="closeFindTicketModal()" class="flex-1 py-2.5 px-4 rounded-lg border text-sm">ยกเลิก</button>
+                    <button type="submit" id="btnLookupSubmit" class="flex-1 py-2.5 px-4 rounded-lg bg-primary text-white text-sm font-bold"><span id="lookupBtnText">ค้นหาตั๋ว</span></button>
                 </div>
             </form>
         </div>
@@ -419,18 +429,16 @@
                 badge.className = 'inline-flex items-center gap-2 text-xs sm:text-sm text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-700/60 px-3.5 py-1.5 rounded-full border border-gray-200 dark:border-gray-600 font-mono';
             }
 
-            Array.from(form.elements).forEach(element => {
-                if(element.tagName !== 'FIELDSET') element.disabled = !isFormActive;
-            });
-            
+            // สั่งปิดเฉพาะ fieldset ช่องกรอก (ไม่แตะต้องปุ่มค้นหาตั๋ว)
+            formFields.disabled = !isFormActive;
             if (!isFormActive) {
                 submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
-                btnText.innerText = 'ยังไม่เปิดลงทะเบียน (Cooming Soon)';
+                btnText.innerText = 'ปิดลงทะเบียนแล้ว (closed)';
             } else {
                 submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
                 btnText.innerText = 'ลงทะเบียนเข้าร่วมงาน';
+                }
             }
-        }
 
         function formatTimeDiff(start, end) {
             const diff = Math.max(0, end - start);
@@ -444,17 +452,35 @@
         /**
          * ส่งข้อมูลและรอรับผลยืนยันจริงจาก Apps Script
          */
-        async function submitForm(event) {
+                function submitForm(event) {
             event.preventDefault();
-            
             if (isSubmitting) return;
+
+            const consentCheckbox = document.getElementById('pdpaConsentCheckbox');
+            if (!consentCheckbox.checked) {
+                showAlert('กรุณาทำเครื่องหมายยินยอมข้อตกลงข้อมูลส่วนบุคคล (PDPA) ก่อนลงทะเบียน', 'error');
+                consentCheckbox.focus();
+                return;
+            }
+
+            openPdpaModal();
+        }
+
+        function openPdpaModal() {
+            document.getElementById('pdpaModal').classList.remove('hidden');
+        }
+
+        function closePdpaModal() {
+            document.getElementById('pdpaModal').classList.add('hidden');
+        }
+
+        async function confirmAndExecuteSubmit() {
+            closePdpaModal();
 
             if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.trim() === "") {
                 showAlert('กรุณาตั้งค่า GOOGLE_SCRIPT_URL ในโค้ดก่อนเริ่มใช้งาน', 'error');
                 return;
             }
-
-            const sid = document.getElementById('studentId').value.trim();
 
             setLoadingState(true);
             hideAlert();
@@ -462,7 +488,7 @@
             const dataObj = {
                 firstName: document.getElementById('firstName').value.trim(),
                 lastName: document.getElementById('lastName').value.trim(),
-                studentId: sid,
+                studentId: document.getElementById('studentId').value.trim(),
                 yearLevel: document.getElementById('yearLevel').value,
                 nickname: document.getElementById('nickname').value.trim(),
                 email: document.getElementById('email').value.trim(),
@@ -479,23 +505,20 @@
             try {
                 const response = await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                     body: JSON.stringify(dataObj)
                 });
 
                 const result = await response.json();
 
                 if (result.result === 'success') {
-                    // จำตั๋วไว้บนเครื่องนี้ทันที
+                    // เซฟตั๋วลงเครื่องให้อัตโนมัติ
                     try {
-                        const ticketData = {
+                        localStorage.setItem('my_san_ticket', JSON.stringify({
                             firstName: submittedData.firstName,
                             lastName: submittedData.lastName,
                             yearLevel: submittedData.yearLevel,
-                            studentId: sid
-                        };
-                        localStorage.setItem('my_san_ticket', JSON.stringify(ticketData));
-                        checkSavedLocalTicket();
+                            studentId: dataObj.studentId
+                        }));
                     } catch(e) {}
 
                     handleFormSuccess();
@@ -679,6 +702,76 @@
             hideAlert();
             updateUIState();
         }
+
+                function openFindTicketModal() {
+            document.getElementById('findTicketModal').classList.remove('hidden');
+            document.getElementById('lookupAlert').classList.add('hidden');
+            checkSavedLocalTicket();
+        }
+
+        function closeFindTicketModal() {
+            document.getElementById('findTicketModal').classList.add('hidden');
+        }
+
+        function checkSavedLocalTicket() {
+            try {
+                const saved = localStorage.getItem('my_san_ticket');
+                const banner = document.getElementById('localSavedTicketBanner');
+                if (saved) {
+                    const data = JSON.parse(saved);
+                    banner.classList.remove('hidden');
+                    document.getElementById('localTicketName').innerText = `${data.firstName} ${data.lastName} (${data.studentId})`;
+                } else if (banner) {
+                    banner.classList.add('hidden');
+                }
+            } catch(e) {}
+        }
+
+        function loadSavedLocalTicket() {
+            try {
+                const saved = localStorage.getItem('my_san_ticket');
+                if (saved) {
+                    const data = JSON.parse(saved);
+                    closeFindTicketModal();
+                    renderTicket(data.firstName, data.lastName, data.yearLevel);
+                }
+            } catch(e) {}
+        }
+
+        async function lookupTicketByStudentId(event) {
+            event.preventDefault();
+            const sid = document.getElementById('lookupStudentId').value.trim();
+            const alertBox = document.getElementById('lookupAlert');
+            const submitBtn = document.getElementById('btnLookupSubmit');
+            const btnText = document.getElementById('lookupBtnText');
+
+            submitBtn.disabled = true;
+            btnText.innerText = 'กำลังค้นหา...';
+            alertBox.classList.add('hidden');
+
+            try {
+                const resp = await fetch(`${GOOGLE_SCRIPT_URL}?action=lookup&studentId=${encodeURIComponent(sid)}`);
+                const res = await resp.json();
+                submitBtn.disabled = false;
+                btnText.innerText = 'ค้นหาตั๋ว';
+
+                if (res.result === 'success' && res.data) {
+                    closeFindTicketModal();
+                    renderTicket(res.data.firstName, res.data.lastName, res.data.yearLevel);
+                } else {
+                    alertBox.innerText = res.message || 'ไม่พบข้อมูลการลงทะเบียนของรหัสนักศึกษานี้';
+                    alertBox.classList.remove('hidden');
+                }
+            } catch (err) {
+                submitBtn.disabled = false;
+                btnText.innerText = 'ค้นหาตั๋ว';
+                alertBox.innerText = 'ไม่สามารถติดต่อเซิร์ฟเวอร์ได้';
+                alertBox.classList.remove('hidden');
+            }
+        }
+
     </script>
+
+    
 </body>
 </html>
