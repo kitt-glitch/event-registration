@@ -210,7 +210,7 @@
                     <!-- ปุ่มค้นหาตั๋ว E-Ticket -->
                     <button type="button" onclick="openFindTicketModal()" class="text-xs sm:text-sm text-primary dark:text-indigo-400 hover:text-primaryHover dark:hover:text-indigo-300 underline underline-offset-4 font-semibold transition-colors inline-flex items-center gap-1.5 mt-1">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                        <span>เคยลงทะเบียนแล้ว? ค้นหาตั๋ว E-Ticket ของคุณที่นี่</span>
+                        <span>เคยลงทะเบียนแล้ว? ค้นหา E-Ticket ของคุณที่นี่</span>
                     </button>
                 </div>
 
@@ -267,7 +267,7 @@
     <div id="findTicketModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-white dark:bg-gray-800 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-gray-100 dark:border-gray-700 transform transition-all">
             <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-bold text-gray-800 dark:text-white">ค้นหาตั๋ว E-Ticket ของคุณ</h3>
+                <h3 class="text-lg font-bold text-gray-800 dark:text-white">ค้นหา E-Ticket ของคุณ</h3>
                 <button onclick="closeFindTicketModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-2xl font-bold">&times;</button>
             </div>
             
@@ -318,7 +318,7 @@
         const eventConfig = {
             title: "Welcome SAN Party 2026",
             dateStr: "20 ธันวาคม 2026 • ชั้น 2 อาคาร 6",
-            openTime: new Date("2026-11-01T09:00:00+07:00").getTime(), 
+            openTime: new Date("2026-10-13T12:30:00+07:00").getTime(), 
             closeTime: new Date("2026-12-19T23:59:00+07:00").getTime(), 
         };
 
@@ -406,7 +406,7 @@
             if (now < eventConfig.openTime) {
                 isFormActive = false;
                 dot.className = 'w-2 h-2 rounded-full bg-blue-500 animate-pulse';
-                countdownText.innerText = `เปิดรับสมัครในอีก: ${formatTimeDiff(now, eventConfig.openTime)}`;
+                countdownText.innerText = `เปิดลงทะเบียนในอีก: ${formatTimeDiff(now, eventConfig.openTime)}`;
                 badge.className = 'inline-flex items-center gap-2 text-xs sm:text-sm text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/40 px-3.5 py-1.5 rounded-full border border-blue-200 dark:border-blue-800 font-mono';
             } else if (now > eventConfig.closeTime) {
                 isFormActive = false;
