@@ -392,13 +392,12 @@
 
         function fetchApplicantCount() {
             if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.trim() === "") return;
-            fetch('${GOOGLE_SCRIPT_URL}?t=${Date.now()}')
+            fetch(GOOGLE_SCRIPT_URL + '?t=' + Date.now())
                 .then(response => response.json())
                 .then(data => {
                     if (data && data.count !== undefined) {
                         countDisplay.innerText = `มีผู้ลงทะเบียนแล้ว ${data.count} คน`;
                     }
-                    // ถ้าเซิร์ฟเวอร์ส่งเวลามา ให้คำนวณชดเชยเวลาของเครื่องทันที
                     if (data && data.serverTime) {
                         serverTimeOffset = data.serverTime - Date.now();
                     }
@@ -416,6 +415,8 @@
         function updateUIState() {
             if (isSubmitting) return;
 
+            if (!countdownText) return;
+
             if (!eventConfig.openTime || !eventConfig.closeTime) {
                 countdownText.innerText = 'กำลังเชื่อมต่อเวลามาตรฐาน...';
                 return;
@@ -426,7 +427,6 @@
             const dot = document.getElementById('statusIndicatorDot');
             const badge = document.getElementById('footerCountdownBadge');
 
-            if (!countdownText) return;
             let isFormActive = true;
 
             if (now < eventConfig.openTime) {
