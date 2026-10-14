@@ -402,6 +402,19 @@
                     if (data && data.serverTime) {
                         serverTimeOffset = data.serverTime - Date.now();
                     }
+                    
+                    // รับชื่องานและสถานที่จัดงานจาก Google Sheets อัตโนมัติ
+                    if (data && data.eventTitle) {
+                        eventConfig.title = data.eventTitle;
+                        document.getElementById('eventTitleDisplay').innerText = data.eventTitle;
+                        document.getElementById('ticketEventName').innerText = data.eventTitle;
+                    }
+                    if (data && data.eventDate) {
+                        eventConfig.dateStr = data.eventDate;
+                        document.getElementById('eventDateDisplay').innerText = data.eventDate;
+                    }
+
+                    // รับเวลาเปิด-ปิดจาก Google Sheets อัตโนมัติ
                     if (data && data.openTime && data.closeTime) {
                         eventConfig.openTime = data.openTime;
                         eventConfig.closeTime = data.closeTime;
