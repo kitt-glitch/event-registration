@@ -344,6 +344,7 @@
         let statusInterval;
         let submittedData = {};
         let isSubmitting = false;
+        let serverTimeOffset = 0;
 
         // ระบบ Dark Mode
         const html = document.documentElement;
@@ -389,13 +390,14 @@
         function fetchApplicantCount() {
             if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.trim() === "") return;
             fetch(GOOGLE_SCRIPT_URL)
-                .then(response => {
-                    if (!response.ok) throw new Error('ไม่สามารถเชื่อมต่อได้');
-                    return response.json();
-                })
+                .then(response => response.json())
                 .then(data => {
                     if (data && data.count !== undefined) {
                         countDisplay.innerText = `มีผู้ลงทะเบียนแล้ว ${data.count} คน`;
+                    }
+                    // ถ้าเซิร์ฟเวอร์ส่งเวลามา ให้คำนวณชดเชยเวลาของเครื่องทันที
+                    if (data && data.serverTime) {
+                        serverTimeOffset = data.serverTime - Date.now();
                     }
                 })
                 .catch(() => {
@@ -406,7 +408,7 @@
         function updateUIState() {
             if (isSubmitting) return;
             
-            const now = new Date().getTime();
+            const now = Date.now() + serverTimeOffset;
             const countdownText = document.getElementById('eventCountdownText');
             const dot = document.getElementById('statusIndicatorDot');
             const badge = document.getElementById('footerCountdownBadge');
