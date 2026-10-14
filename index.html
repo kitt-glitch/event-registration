@@ -392,7 +392,7 @@
 
         function fetchApplicantCount() {
             if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.trim() === "") return;
-            fetch(GOOGLE_SCRIPT_URL)
+            fetch('${GOOGLE_SCRIPT_URL}?t=${Date.now()}')
                 .then(response => response.json())
                 .then(data => {
                     if (data && data.count !== undefined) {
@@ -425,7 +425,8 @@
             const countdownText = document.getElementById('eventCountdownText');
             const dot = document.getElementById('statusIndicatorDot');
             const badge = document.getElementById('footerCountdownBadge');
-            
+
+            if (!countdownText) return;
             let isFormActive = true;
 
             if (now < eventConfig.openTime) {
