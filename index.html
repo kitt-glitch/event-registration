@@ -415,6 +415,10 @@
         function updateUIState() {
             if (isSubmitting) return;
 
+            const countdownText = document.getElementById('eventCountdownText');
+            const dot = document.getElementById('statusIndicatorDot');
+            const badge = document.getElementById('footerCountdownBadge');
+
             if (!countdownText) return;
 
             if (!eventConfig.openTime || !eventConfig.closeTime) {
@@ -423,10 +427,6 @@
             }
             
             const now = Date.now() + serverTimeOffset;
-            const countdownText = document.getElementById('eventCountdownText');
-            const dot = document.getElementById('statusIndicatorDot');
-            const badge = document.getElementById('footerCountdownBadge');
-
             let isFormActive = true;
 
             if (now < eventConfig.openTime) {
@@ -447,6 +447,7 @@
 
             // สั่งปิดเฉพาะ fieldset ช่องกรอก (ไม่แตะต้องปุ่มค้นหาตั๋ว)
             formFields.disabled = !isFormActive;
+            if (formFieldsEl = document.getElementById('formFields');
             if (!isFormActive) {
                 submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
                 btnText.innerText = 'ปิดลงทะเบียนแล้ว (closed)';
