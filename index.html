@@ -331,8 +331,8 @@
         const eventConfig = {
             title: "Welcome SAN Party 2026",
             dateStr: "20 ธันวาคม 2026 • ชั้น 2 อาคาร 6",
-            openTime: new Date("2026-10-13T12:30:00+07:00").getTime(), 
-            closeTime: new Date("2026-12-19T23:59:00+07:00").getTime(), 
+            openTime: null, 
+            closeTime: null, 
         };
 
         const form = document.getElementById('registrationForm');
@@ -402,6 +402,11 @@
                     if (data && data.serverTime) {
                         serverTimeOffset = data.serverTime - Date.now();
                     }
+                    if (data && data.openTime && data.closeTime) {
+                        eventConfig.openTime = data.openTime;
+                        eventConfig.closeTime = data.closeTime;
+                        updateUIState();
+                    }
                 })
                 .catch(() => {
                     countDisplay.innerText = 'ยินดีต้อนรับผู้เข้าร่วมงานทุกคน';
@@ -410,6 +415,11 @@
 
         function updateUIState() {
             if (isSubmitting) return;
+
+            if (!eventConfig.openTime || !eventConfig.closeTime) {
+                countdownText.innerText = 'กำลังเชื่อมต่อเวลามาตรฐาน...';
+                return;
+            }
             
             const now = Date.now() + serverTimeOffset;
             const countdownText = document.getElementById('eventCountdownText');
