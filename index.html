@@ -485,7 +485,7 @@
         /**
          * ส่งข้อมูลและรอรับผลยืนยันจริงจาก Apps Script
          */
-                function submitForm(event) {
+        function submitForm(event) {
             event.preventDefault();
             if (isSubmitting) return;
 
@@ -647,19 +647,22 @@
             } catch(e) {}
         }
 
-        async function lookupTicketByStudentId(event) {
+                async function lookupTicketByStudentId(event) {
             event.preventDefault();
-            const sid = document.getElementById('lookupStudentId').value.trim();
+            const sidInput = document.getElementById('lookupStudentId');
+            const sid = sidInput ? sidInput.value.trim() : '';
             const alertBox = document.getElementById('lookupAlert');
             const submitBtn = document.getElementById('btnLookupSubmit');
             const btnText = document.getElementById('lookupBtnText');
 
-            // ลองเช็คจากเครื่องก่อน
+            if (!sid) return;
+
+            // 1. ตรวจสอบจากเครื่องปัจจุบันก่อน (ถ้าตรง ให้เปิดทันทีไม่ต้องต่อเน็ต)
             try {
                 const saved = localStorage.getItem('my_san_ticket');
                 if (saved) {
                     const data = JSON.parse(saved);
-                    if (data.studentId === sid) {
+                    if (String(data.studentId).trim() === sid) {
                         closeFindTicketModal();
                         renderTicket(data.firstName, data.lastName, data.yearLevel);
                         return;
@@ -667,34 +670,65 @@
                 }
             } catch(e) {}
 
-            if (!GOOGLE_SCRIPT_URL) {
-                alertBox.innerText = 'URL เซิร์ฟเวอร์ไม่ถูกต้อง';
+            if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.trim() === "") {
+                alertBox.innerText = 'ยังไม่ได้ตั้งค่า GOOGLE_SCRIPT_URL';
                 alertBox.classList.remove('hidden');
                 return;
             }
 
+            // 2. ปรับสถานะปุ่มเป็นกำลังค้นหา
             submitBtn.disabled = true;
             btnText.innerText = 'กำลังค้นหา...';
             alertBox.classList.add('hidden');
 
+            // 3. ตั้งระบบตัดเวลา 12 วินาที ป้องกันปุ่มค้างเด็ดขาด
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 12000);
+
             try {
-                const resp = await fetch(`${GOOGLE_SCRIPT_URL}?action=lookup&studentId=${encodeURIComponent(sid)}`);
+                // ใช้การต่อข้อความแบบมาตรฐาน + ใส่ตัวกันแคช (&t=...)
+                const requestUrl = GOOGLE_SCRIPT_URL + 
+                    '?action=lookup&studentId=' + encodeURIComponent(sid) + 
+                    '&t=' + Date.now();
+
+                const resp = await fetch(requestUrl, { signal: controller.signal });
+                clearTimeout(timeoutId);
+
                 const res = await resp.json();
 
+                // ปลดล็อกปุ่มคืนค่าปกติ
                 submitBtn.disabled = false;
                 btnText.innerText = 'ค้นหาตั๋ว';
 
                 if (res.result === 'success' && res.data) {
                     closeFindTicketModal();
+                    
+                    // เซฟตั๋วใบนี้ลงเครื่องปัจจุบันด้วย เพื่อให้เปิดครั้งต่อไปได้ทันที
+                    try {
+                        localStorage.setItem('my_san_ticket', JSON.stringify({
+                            firstName: res.data.firstName,
+                            lastName: res.data.lastName,
+                            yearLevel: res.data.yearLevel,
+                            studentId: sid
+                        }));
+                        checkSavedLocalTicket();
+                    } catch(e) {}
+
                     renderTicket(res.data.firstName, res.data.lastName, res.data.yearLevel);
                 } else {
                     alertBox.innerText = res.message || 'ไม่พบข้อมูลการลงทะเบียนของรหัสนักศึกษานี้';
                     alertBox.classList.remove('hidden');
                 }
             } catch (err) {
+                clearTimeout(timeoutId);
                 submitBtn.disabled = false;
                 btnText.innerText = 'ค้นหาตั๋ว';
-                alertBox.innerText = 'ไม่สามารถติดต่อเซิร์ฟเวอร์ได้ กรุณาลองใหม่อีกครั้ง';
+
+                if (err.name === 'AbortError') {
+                    alertBox.innerText = 'การค้นหาใช้เวลานานเกินไป กรุณาตรวจสอบอินเทอร์เน็ตแล้วลองใหม่อีกครั้ง';
+                } else {
+                    alertBox.innerText = 'ไม่สามารถติดต่อเซิร์ฟเวอร์ได้ (' + err.message + ')';
+                }
                 alertBox.classList.remove('hidden');
             }
         }
