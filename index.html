@@ -945,13 +945,13 @@
             const iconEl = document.getElementById('closedIcon');
 
             if (type === 'full') {
-                if (titleEl) titleEl.innerText = 'ขออภัย ที่นั่งเต็มตามจำนวนแล้ว';
-                if (subEl) subEl.innerText = `ระบบปิดรับสมัครเนื่องจากมีผู้ลงทะเบียนครบโควตา ${eventConfig.maxCapacity} คนเรียบร้อยแล้ว สำหรับผู้ที่ลงทะเบียนแล้วสามารถตรวจสอบตั๋วของคุณได้ด้านล่าง`;
+                if (titleEl) titleEl.innerText = 'ขออภัย ผู้ลงทะเบียนครบตามจำนวนแล้ว';
+                if (subEl) subEl.innerText = `ระบบปิดรับสมัครเนื่องจากมีผู้ลงทะเบียนครบโควตา ${eventConfig.maxCapacity} คนแล้ว ขอขอบคุณทุกท่านที่ให้ความสนใจ สำหรับผู้ที่ลงทะเบียนแล้วสามารถตรวจสอบตั๋วของคุณได้ด้านล่าง`;
                 if (iconContainer) iconContainer.className = 'w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-5 bg-amber-500/10 border border-amber-500/20 text-amber-500 shadow-inner';
                 if (iconEl) iconEl.setAttribute('data-lucide', 'flame');
             } else {
                 if (titleEl) titleEl.innerText = 'ปิดรับสมัครเข้าร่วมงานแล้ว';
-                if (subEl) subEl.innerText = 'กิจกรรมหมดเขตรับสมัครตามกำหนดเวลามาตรฐานเรียบร้อยแล้ว ขอขอบคุณทุกท่านที่ให้ความสนใจครับ';
+                if (subEl) subEl.innerText = 'กิจกรรมหมดเขตรับสมัครตามกำหนดเวลาแล้ว ขอขอบคุณทุกท่านที่ให้ความสนใจครับ';
                 if (iconContainer) iconContainer.className = 'w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-5 bg-rose-500/10 border border-rose-500/20 text-rose-500 shadow-inner';
                 if (iconEl) iconEl.setAttribute('data-lucide', 'clock-alert');
             }
@@ -1268,10 +1268,10 @@
                 if (!raw || raw === '-' || raw === 'ไม่มี' || raw === 'ปกติ') {
                     badges.push('<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold bg-slate-700/80 text-gray-300 border border-slate-600"><i data-lucide="utensils" class="w-3.5 h-3.5"></i> <span>ทั่วไป (Standard)</span></span>');
                     } 
-                else {
-                    badges.push(`<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/40"><i data-lucide="info" class="w-3.5 h-3.5"></i> <span>${raw}</span></span>`);
+                    else {
+                        badges.push(`<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/40"><i data-lucide="info" class="w-3.5 h-3.5"></i> <span>${raw}</span></span>`);
+                        }
                     }
-                  }
 
                     dietContainer.innerHTML = `<div class="flex flex-wrap gap-1.5">${badges.join('')}</div>`;
                 }
