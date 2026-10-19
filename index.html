@@ -493,7 +493,7 @@
 
             <!-- กล่องข้อมูลติดต่อ -->
             <p class="text-xs text-slate-400 dark:text-gray-500">
-                หากมีข้อสงสัยหรือต้องการสอบถามเพิ่มเติม กรุณาติดต่อสโมสรนักศึกษาคณะสาธารณสุขศาสตร์
+                หากมีข้อสงสัยหรือต้องการสอบถามเพิ่มเติม กรุณาติดต่อ...
             </p>
         </section>
 
@@ -537,9 +537,9 @@
                         <div id="ticketDietaryBadgeContainer"></div>
                     </div>
 
-                    <!-- QR Code Canvas (ใช้ QRCode.toCanvas รับประกันการเรนเดอร์ 100%) -->
+                    <!-- QR Code -->
                     <div class="bg-white p-3.5 rounded-2xl flex flex-col items-center justify-center mb-4 shadow-inner">
-                        <canvas id="ticketQrCanvas" class="w-32 h-32 rounded"></canvas>
+                        <img id="ticketQrImg" class="w-36 h-36 rounded mx-auto object-contain" alt="Ticket QR Code" />
                         <span class="text-xs tabular-nums text-slate-800 mt-1 font-bold" id="ticketTokenText">SAN-CONFIRMED</span>
                     </div>
 
@@ -673,7 +673,7 @@
 
     <!-- MODAL 2: ระบบสแกนเช็กชื่อหน้างานสำหรับแอดมิน/สตาฟ (STAFF SCANNER & CHECK-IN) -->
     <div id="staffScannerModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5">
-        <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-md w-full p-5 sm:p-6 shadow-2xl border border-slate-200 dark:border-slate-700 text-left animate-pop-in flex flex-col max-h-[90vh] overflow-y-auto custom-scrollbar">
+        <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-xl sm:max-w-2xl w-full p-5 sm:p-7 shadow-2xl border border-slate-200 dark:border-slate-700 text-left animate-pop-in flex flex-col max-h-[92vh] overflow-y-auto custom-scrollbar">
             
             <div class="flex justify-between items-center mb-3 pb-3 border-b border-slate-200 dark:border-slate-700">
                 <div class="flex items-center gap-2">
@@ -985,14 +985,12 @@
             refreshLucide();
         }
 
-        /**
-         * 4. COUNTDOWN CLOCK LOGIC (แก้ไขบั๊กเวลานิ่ง/ไม่เดิน)
-         */
+        /** 4. COUNTDOWN CLOCK LOGIC (แก้ไขบั๊กเวลานิ่ง/ไม่เดิน) **/
         function updateCountdownClock(now, targetTime) {
             const diff = Math.max(0, targetTime - now);
             const days = Math.floor(diff / (1000 * 60 * 60 * 24));
             const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((diff % (1000 * 60)) / (1000 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)); // 👈 แก้จุดนี้
             const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
             const elDays = document.getElementById('cdDays');
@@ -1283,21 +1281,11 @@
                 dietContainer.innerHTML = badgeHtml;
             }
 
-            // QR Code (ใช้ QRCode.toCanvas ซึ่งทำงานตรงกับแคนวาส ไม่ติดปัญหาซ่อนหน้าจอ)
-            const qrCanvas = document.getElementById('ticketQrCanvas');
-            if (qrCanvas && window.QRCode) {
-                // เข้ารหัสข้อมูลสั้นกระชับ เพื่อให้กล้องสแกนได้เร็วที่สุด
-                const qrText = `SAN2026:${attendee.studentId}:${attendee.firstName}:${attendee.yearLevel || ''}`;
-                QRCode.toCanvas(qrCanvas, qrText, {
-                    width: 140,
-                    margin: 1,
-                    color: {
-                        dark: "#0f172a",
-                        light: "#ffffff"
-                    }
-                }, function (error) {
-                    if (error) console.error('QR Render Error:', error);
-                });
+            // สร้าง QR Code ด้วยภาพ SVG คมชัด โหลดติดทันที 100%
+            const qrImg = document.getElementById('ticketQrImg');
+            const qrData = encodeURIComponent(`SAN2026:${attendee.studentId}:${attendee.firstName}:${attendee.yearLevel || ''}`);
+            if (qrImg) {
+                qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&format=svg&data=${qrData}`;
             }
 
             const tokenEl = document.getElementById('ticketTokenText');
@@ -1529,13 +1517,13 @@
             }
         }
 
-        function startCameraScanner() {
+                function startCameraScanner() {
             if (!window.Html5Qrcode) {
                 showStaffAlert('ไม่พบโมดูลกล้องสแกนเนอร์ในอุปกรณ์นี้', 'error');
                 return;
             }
 
-            const qrConfig = { fps: 10, qrbox: { width: 220, height: 220 } };
+            const qrConfig = { fps: 15, qrbox: { width: 280, height: 280 } };
 
             try {
                 qrScannerInstance = new Html5Qrcode("qrReader");
@@ -1676,17 +1664,50 @@
             refreshLucide();
         }
 
-        function executeAttendeeCheckin() {
+        async function executeAttendeeCheckin() {
             if (!currentScannedAttendee) return;
 
-            const checkins = getCheckedInList();
-            checkins[currentScannedAttendee.studentId] = Date.now();
-            localStorage.setItem('san_checkins', JSON.stringify(checkins));
+            const btn = document.getElementById('btnConfirmCheckin');
+            if (btn) {
+                btn.disabled = true;
+                btn.innerText = 'กำลังบันทึกลงชีต...';
+            }
 
-            updateStaffCheckinDisplay();
-            displayStaffResultCard(currentScannedAttendee);
-            triggerConfetti();
-            showStaffAlert(`✅ เช็กอิน ${currentScannedAttendee.firstName} ${currentScannedAttendee.lastName} เรียบร้อยแล้ว!`, 'success');
+            try {
+                // ส่งคำสั่ง checkin ไปยัง Google Sheet
+                const resp = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({
+                        action: 'checkin',
+                        studentId: currentScannedAttendee.studentId
+                    })
+                });
+                const res = await resp.json();
+
+                if (res.result === 'success') {
+                    const checkins = getCheckedInList();
+                    checkins[currentScannedAttendee.studentId] = Date.now();
+                    localStorage.setItem('san_checkins', JSON.stringify(checkins));
+
+                    updateStaffCheckinDisplay();
+                    displayStaffResultCard(currentScannedAttendee);
+                    triggerConfetti();
+                    showStaffAlert(`✅ บันทึกลงชีตและเช็กอิน ${currentScannedAttendee.firstName} เรียบร้อย!`, 'success');
+                } else {
+                    showStaffAlert(res.message || 'บันทึกลงชีตไม่สำเร็จ', 'error');
+                }
+            } catch (err) {
+                // หากอินเทอร์เน็ตหลุด ให้บันทึกออฟไลน์ในเครื่องไว้ก่อน
+                const checkins = getCheckedInList();
+                checkins[currentScannedAttendee.studentId] = Date.now();
+                localStorage.setItem('san_checkins', JSON.stringify(checkins));
+                updateStaffCheckinDisplay();
+                displayStaffResultCard(currentScannedAttendee);
+                showStaffAlert('⚠️ ออฟไลน์: บันทึกในเครื่องแล้ว (รอต่อเน็ตเพื่อซิงก์ชีต)', 'info');
+            } finally {
+                if (btn) btn.disabled = false;
+            }
         }
 
         function showStaffAlert(msg, type) {
