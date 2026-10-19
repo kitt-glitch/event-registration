@@ -1237,22 +1237,44 @@
             // สวัสดิการอาหาร & สุขภาพ
             const dietContainer = document.getElementById('ticketDietaryBadgeContainer');
             if (dietContainer) {
-                const d = (attendee.dietary || '').trim().toLowerCase();
-                let badgeHtml = '';
+            const raw = (attendee.dietary || '').trim();
+            const lower = raw.toLowerCase();
+            let badges = [];
 
-                if (d.includes('อิสลาม') || d.includes('ฮาลาล') || d.includes('halal')) {
-                    badgeHtml = '<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">☪️ ฮาลาล (Halal Food)</span>';
-                } else if (d.includes('มังสวิรัติ') || d.includes('vegan') || d.includes('เจ')) || d.includes('ไม่กิน') {
-                    badgeHtml = '<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold bg-teal-500/20 text-teal-300 border border-teal-500/40">🥗 มังสวิรัติ (Vegetarian)</span>';
-                } else if (d.includes('แพ้') || d.includes('allergy')) || d.includes('โรค') {
-                    badgeHtml = `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40">⚠️ ข้อจำกัด: ${attendee.dietary}</span>`;
-                } else if (d) {
-                    badgeHtml = `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/40">🍽️ ${attendee.dietary}</span>`;
-                } else {
-                    badgeHtml = '<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold bg-slate-700 text-gray-300 border border-slate-600">🍗 ทั่วไป (Standard)</span>';
+    // 1. หมวดโรคประจำตัว / สุขภาพ
+            const medicalKeywords = ['หอบหืด', 'ลมชัก', 'ชัก', 'หัวใจ', 'ความดัน', 'เบาหวาน', 'g6pd', 'G6PD', 'ซึมเศร้า', 'แพ้ยา', 'โรค'];
+            const hasMedical = medicalKeywords.some(kw => lower.includes(kw));
+                if (hasMedical) {
+                    badges.push(`<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold bg-rose-500/20 text-rose-300 border border-rose-500/40"><i data-lucide="stethoscope" class="w-3.5 h-3.5"></i> <span>สุขภาพ: ${raw}</span></span>`);
+                    }
+    // 2. หมวดแพ้อาหาร
+                if (lower.includes('แพ้') && !hasMedical) {
+                    badges.push(`<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40"><i data-lucide="alert-triangle" class="w-3.5 h-3.5"></i> <span>แพ้อาหาร: ${raw}</span></span>`);
+                    }
+    // 3. หมวดฮาลาล / มุสลิม
+                if (lower.includes('ฮาลาล') || lower.includes('อิสลาม') || lower.includes('halal') || lower.includes('มุสลิม')) {
+                    badges.push('<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40"><i data-lucide="moon" class="w-3.5 h-3.5"></i> <span>ฮาลาล (Halal Food)</span></span>');
+                    }
+    // 4. หมวดมังสวิรัติ / เจ
+                if (lower.includes('มังสวิรัติ') || lower.includes('เจ') || lower.includes('vegan') || lower.includes('มัง')) {
+                    badges.push('<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold bg-teal-500/20 text-teal-300 border border-teal-500/40"><i data-lucide="leaf" class="w-3.5 h-3.5"></i> <span>มังสวิรัติ/เจ</span></span>');
+                    }
+    // 5. หมวดไม่กิน / งด
+                if ((lower.includes('ไม่กิน') || lower.includes('ไม่ทาน') || lower.includes('ไม่ใส่') || lower.includes('งด')) && !hasMedical) {
+                    badges.push(`<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold bg-sky-500/20 text-sky-300 border border-sky-500/40"><i data-lucide="ban" class="w-3.5 h-3.5"></i> <span>งด/ไม่กิน: ${raw}</span></span>`);
+                    }
+    // 6. กรณีทั่วไป / ไม่ได้ระบุ
+                if (badges.length === 0) {
+                if (!raw || raw === '-' || raw === 'ไม่มี' || raw === 'ปกติ') {
+                    badges.push('<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold bg-slate-700/80 text-gray-300 border border-slate-600"><i data-lucide="utensils" class="w-3.5 h-3.5"></i> <span>ทั่วไป (Standard)</span></span>');
+                    } 
+                else {
+                    badges.push(`<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/40"><i data-lucide="info" class="w-3.5 h-3.5"></i> <span>${raw}</span></span>`);
+                    }
+                  }
+
+                    dietContainer.innerHTML = `<div class="flex flex-wrap gap-1.5">${badges.join('')}</div>`;
                 }
-                dietContainer.innerHTML = badgeHtml;
-            }
 
             // สร้าง QR Code ด้วยภาพ SVG คมชัด โหลดติดทันที 100%
             const qrImg = document.getElementById('ticketQrImg');
@@ -1490,7 +1512,7 @@
             }
         }
 
-                function startCameraScanner() {
+        function startCameraScanner() {
             if (!window.Html5Qrcode) {
                 showStaffAlert('ไม่พบโมดูลกล้องสแกนเนอร์ในอุปกรณ์นี้', 'error');
                 return;
