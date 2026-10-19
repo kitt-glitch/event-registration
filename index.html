@@ -1204,7 +1204,10 @@
             switchActiveScreen('ticket');
 
             const nameEl = document.getElementById('ticketAttendeeName');
-            if (nameEl) nameEl.innerText = `${attendee.firstName} ${attendee.lastName} (${attendee.nickname || 'Guest'})`;
+            if (nameEl) {
+                const nick = attendee.nickname ? ` (${attendee.nickname})` : '';
+                nameEl.innerText = `${attendee.firstName} ${attendee.lastName}${nick}`;
+            }
 
             const sidEl = document.getElementById('ticketStudentIdDisplay');
             if (sidEl) sidEl.innerText = `Student ID: ${attendee.studentId}`;
