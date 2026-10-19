@@ -14,9 +14,6 @@
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
 
-    <!-- QR Code Library (QRCode.toCanvas - เสถียรและทำงานได้ 100% บนทุกเบราว์เซอร์) -->
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
-
     <!-- html2canvas สำหรับบันทึกตั๋วเป็นรูปภาพลงเครื่อง -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
@@ -155,10 +152,8 @@
         <div class="absolute -bottom-36 -right-36 w-80 sm:w-96 h-80 sm:h-96 bg-purple-500/15 dark:bg-purple-600/25 rounded-full blur-3xl"></div>
     </div>
 
-    <!-- แถบปุ่มควบคุมมุมบน (โหมดสตาฟ & สลับธีม) -->
+    <!-- แถบปุ่มควบคุมมุมบน (สลับธีม สว่าง / มืด) -->
     <div class="fixed top-3 right-3 sm:top-5 sm:right-5 z-50 flex items-center gap-2">
-
-        <!-- ปุ่มสลับธีม สว่าง / มืด -->
         <button 
             type="button" 
             onclick="toggleTheme()" 
@@ -173,7 +168,7 @@
     <div class="relative z-10 w-full max-w-xl lg:max-w-2xl bg-white dark:bg-slate-800/95 backdrop-blur-xl rounded-2xl sm:rounded-3xl shadow-xl dark:shadow-2xl overflow-hidden border border-slate-200/80 dark:border-slate-700/80 transition-all duration-300">
         
         <!-- HEADER งานกิจกรรม -->
-        <header class="bg-gradient-to-br from-indigo-600 via-indigo-700 to-purple-800 px-6 py-8 sm:px-10 sm:py-10 text-center relative overflow-hidden">
+        <header class="bg-gradient-to-br from-indigo-600 via-indigo-700 to-purple-800 px-6 py-8 sm:px-10 sm:py-10 text-center relative overflow-hidden select-none">
             <div class="absolute inset-0 opacity-10 pointer-events-none">
                 <svg class="absolute -top-12 -left-12 w-48 h-48 text-white fill-current" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50"/></svg>
                 <svg class="absolute top-12 -right-12 w-44 h-44 text-white fill-current" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50"/></svg>
@@ -184,7 +179,7 @@
                     <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-300"></i>
                     <span>Official Event Pass</span>
                 </span>
-                <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white tracking-tight mb-2 drop-shadow-sm leading-snug" id="eventTitleDisplay">
+                <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white tracking-tight mb-2 drop-shadow-sm leading-snug cursor-pointer" id="eventTitleDisplay" title="แตะ 3 ครั้งสำหรับเจ้าหน้าที่">
                     Welcome SAN Party 2026
                 </h1>
                 <p class="text-indigo-100 text-sm sm:text-base font-medium mb-1 flex items-center justify-center gap-1.5" id="eventDateDisplay">
@@ -225,7 +220,7 @@
                 ระบบเปิดรับสมัครเร็วๆ นี้
             </h2>
             <p class="text-slate-600 dark:text-gray-300 text-sm sm:text-base max-w-md mx-auto mb-6 leading-relaxed">
-                เตรียมนับถอยหลังสู่งานเลี้ยงต้อนรับที่สนุกที่สุดแห่งปี ระบบจะเปิดให้ลงทะเบียนพร้อมกันเร็วๆนี้
+                เตรียมนับถอยหลังสู่งานเลี้ยงต้อนรับที่สนุกที่สุดแห่งปี ระบบจะเปิดให้ลงทะเบียนพร้อมกันเร็วๆ นี้
             </p>
 
             <!-- กล่องนาฬิกาดิจิทัล -->
@@ -247,7 +242,6 @@
                     <span class="text-xs text-slate-500 dark:text-gray-400 font-medium">วินาที</span>
                 </div>
             </div>
-
         </section>
 
         <!-- SCREEN 2: แบบฟอร์มลงทะเบียน (ACTIVE REGISTRATION FORM) -->
@@ -467,7 +461,7 @@
 
             <!-- กล่องข้อมูลติดต่อ -->
             <p class="text-xs text-slate-400 dark:text-gray-500">
-                หากมีข้อสงสัยหรือต้องการสอบถามเพิ่มเติม กรุณาติดต่อ...
+                หากมีข้อสงสัยหรือต้องการสอบถามเพิ่มเติม กรุณาติดต่อสโมสรนักศึกษา
             </p>
         </section>
 
@@ -741,7 +735,7 @@
                     <p id="staffResultDietary" class="font-bold text-slate-800 dark:text-white"></p>
                 </div>
 
-                <!-- ปุ่มกดยืนยันเช็กอินเข้างาน -->
+                <!-- ปุ่มกดยืนยันเช็กอินเข้างาน / สแกนคนถัดไป -->
                 <button 
                     type="button" 
                     id="btnConfirmCheckin" 
@@ -784,13 +778,52 @@
                 </button>
             </div>
 
-            <div class="text-xs sm:text-sm text-slate-600 dark:text-gray-300 space-y-3.5 overflow-y-auto pr-1 custom-scrollbar leading-relaxed">
+                        <!-- ส่วนเนื้อหาประกาศ PDPA ตรงตามแบบฉบับย่อ 4 ข้อ อ่านสบายตา -->
+            <div class="text-xs sm:text-sm text-slate-600 dark:text-gray-300 space-y-4 overflow-y-auto pr-1.5 custom-scrollbar leading-relaxed">
+                
+                <!-- 1. ข้อมูลที่เก็บรวบรวมและวัตถุประสงค์ -->
                 <div>
-                    <p>กิจกรรม Welcome SAN Party 2026 จะเก็บรวบรวมข้อมูลส่วนบุคคลของผู้สมัคร ได้แก่ ชื่อ–นามสกุล รหัสนักศึกษา ชั้นปี ชื่อเล่น อีเมล ข้อมูลการแพ้อาหารหรือข้อจำกัดด้านอาหาร และข้อมูลอื่น ๆ ที่ผู้สมัครระบุ เพื่อใช้ในการลงทะเบียน ตรวจสอบสิทธิ์ จัดเตรียมอาหาร ติดต่อประสานงาน และบริหารจัดการกิจกรรม 
-                        ข้อมูลของผู้สมัครจะเข้าถึงได้เฉพาะผู้จัดงานและผู้ที่เกี่ยวข้องตามความจำเป็น โดยจะไม่เปิดเผยแก่บุคคลภายนอก เว้นแต่จำเป็นต่อการดำเนินงานหรือเป็นไปตามกฎหมาย และจะเก็บรักษาข้อมูลไว้เท่าที่จำเป็นต่อวัตถุประสงค์ดังกล่าว ก่อนลบหรือทำให้ไม่สามารถระบุตัวบุคคลได้ตามความเหมาะสม 
-                        ผู้สมัครมีสิทธิตามกฎหมายคุ้มครองข้อมูลส่วนบุคคล เช่น ขอเข้าถึง แก้ไข หรือลบข้อมูล คัดค้านหรือจำกัดการใช้ข้อมูล และถอนความยินยอมในกรณีที่ใช้ความยินยอมเป็นฐานในการประมวลผล โดยสามารถติดต่อผู้รับผิดชอบข้อมูลส่วนบุคคลได้ที่ [อีเมลผู้จัดงาน] 
-                        ผู้สมัครสามารถสอบถามรายละเอียดเพิ่มเติมเกี่ยวกับการใช้ข้อมูลส่วนบุคคลได้ผ่านช่องทางติดต่อข้างต้น</p>
+                    <h4 class="font-bold text-slate-900 dark:text-white mb-1.5 text-sm sm:text-base">
+                        1. ข้อมูลที่เก็บรวบรวมและวัตถุประสงค์
+                    </h4>
+                    <p class="text-slate-600 dark:text-gray-300 leading-relaxed">
+                        กิจกรรม Welcome SAN Party 2026 จะเก็บรวบรวมข้อมูล ได้แก่ ชื่อ–นามสกุล รหัสนักศึกษา ชั้นปี ชื่อเล่น อีเมล ข้อมูลการแพ้อาหารหรือข้อจำกัดด้านอาหาร และข้อมูลอื่น ๆ ที่ผู้สมัครระบุ เพื่อใช้ในการลงทะเบียน ตรวจสอบสิทธิ์ จัดเตรียมอาหาร ติดต่อประสานงาน ออกบัตรเข้างาน (E-Ticket) และบริหารจัดการกิจกรรม
+                    </p>
                 </div>
+
+                <!-- 2. การใช้และเปิดเผยข้อมูล -->
+                <div>
+                    <h4 class="font-bold text-slate-900 dark:text-white mb-1.5 text-sm sm:text-base">
+                        2. การใช้และเปิดเผยข้อมูล
+                    </h4>
+                    <p class="text-slate-600 dark:text-gray-300 leading-relaxed">
+                        ข้อมูลจะถูกใช้เฉพาะตามวัตถุประสงค์ที่เกี่ยวข้องกับกิจกรรม และเข้าถึงได้โดยผู้จัดงานหรือผู้ที่เกี่ยวข้องเท่าที่จำเป็น รวมถึงผู้ให้บริการระบบที่ใช้จัดเก็บหรือประมวลผลข้อมูล โดยจะไม่เปิดเผยข้อมูลเกินความจำเป็น เว้นแต่ได้รับอนุญาตหรือมีเหตุทางกฎหมายรองรับ
+                    </p>
+                </div>
+
+                <!-- 3. ระยะเวลาการเก็บรักษา -->
+                <div>
+                    <h4 class="font-bold text-slate-900 dark:text-white mb-1.5 text-sm sm:text-base">
+                        3. ระยะเวลาการเก็บรักษา
+                    </h4>
+                    <p class="text-slate-600 dark:text-gray-300 leading-relaxed">
+                        ข้อมูลจะถูกเก็บไว้เท่าที่จำเป็นต่อการดำเนินงานและวัตถุประสงค์ของกิจกรรม หลังจากนั้นจะลบหรือทำให้ไม่สามารถระบุตัวบุคคลได้ตามความเหมาะสม ทั้งนี้ ระยะเวลาอาจแตกต่างกันตามความจำเป็นและข้อกำหนดทางกฎหมาย
+                    </p>
+                </div>
+
+                <!-- 4. สิทธิของผู้สมัคร -->
+                <div>
+                    <h4 class="font-bold text-slate-900 dark:text-white mb-1.5 text-sm sm:text-base">
+                        4. สิทธิของผู้สมัคร
+                    </h4>
+                    <p class="text-slate-600 dark:text-gray-300 leading-relaxed mb-2">
+                        ผู้สมัครมีสิทธิตามกฎหมายคุ้มครองข้อมูลส่วนบุคคล เช่น ขอเข้าถึงและรับสำเนาข้อมูล ขอแก้ไขหรือลบข้อมูล คัดค้านหรือจำกัดการใช้ข้อมูล รวมถึงถอนความยินยอมในกรณีที่การประมวลผลอาศัยความยินยอม ทั้งนี้ เป็นไปตามเงื่อนไขของกฎหมาย
+                    </p>
+                    <p class="text-xs text-slate-500 dark:text-gray-400 bg-slate-50 dark:bg-slate-700/50 p-2.5 rounded-xl border border-slate-200 dark:border-slate-600/60">
+                        หากมีข้อสงสัยหรือต้องการใช้สิทธิเกี่ยวกับข้อมูลส่วนบุคคล สามารถติดต่อผู้รับผิดชอบได้ที่ <span class="text-indigo-600 dark:text-indigo-400 font-medium underline">sanparty2026@gmail.com</span> (หรืออีเมลผู้จัดงาน)
+                    </p>
+                </div>
+
             </div>
 
             <div class="pt-4 mt-3 border-t border-slate-200 dark:border-slate-700 text-right">
@@ -832,13 +865,23 @@
         </div>
     </div>
 
+    <!-- 🔒 ปุ่มลับสำหรับสตาฟ: โปร่งแสงกลืนกับพื้นหลัง อยู่มุมขวาล่างสุด แตะ 1 ครั้งเปิดหน้าสแกนทันที -->
+    <button 
+        type="button" 
+        onclick="openStaffScannerModal()" 
+        title="Staff Only"
+        aria-label="Staff Scanner"
+        class="fixed bottom-2.5 right-2.5 z-40 p-2 rounded-lg text-slate-400 dark:text-slate-600 opacity-20 hover:opacity-90 active:opacity-100 transition-opacity cursor-pointer">
+        <i data-lucide="lock" class="w-3.5 h-3.5"></i>
+    </button>
+
     <script>
         /**
          * 1. CONFIGURATION & STATE
          */
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx3WnV1pH8DTtslZvkDgfovRUXRSvzLXk3QIVBxMggbOz-bFYD5PQUQk2EameAxDs0l/exec"; 
 
-        // ตั้งค่าเวลาเริ่มต้น (Fallback เผื่อเซิร์ฟเวอร์ยังตอบไม่ทัน เพื่อไม่ให้เวลากะพริบ)
+        // ตั้งค่าเวลาเริ่มต้น
         const eventConfig = {
             title: "Welcome SAN Party 2026",
             dateStr: "20 ธันวาคม 2026 • อาคาร 6 ชั้น 2",
@@ -854,6 +897,7 @@
         let stateInterval = null;
         let qrScannerInstance = null;
         let currentScannedAttendee = null;
+        let canScanQr = true; // ตัวแปรคุมสแกน QR อัจฉริยะ (ไม่ให้แฮงก์)
 
         /**
          * 2. INITIALIZATION ON LOAD
@@ -949,12 +993,14 @@
             refreshLucide();
         }
 
-        /** 4. COUNTDOWN CLOCK LOGIC (แก้ไขบั๊กเวลานิ่ง/ไม่เดิน) **/
+        /**
+         * 4. COUNTDOWN CLOCK LOGIC
+         */
         function updateCountdownClock(now, targetTime) {
             const diff = Math.max(0, targetTime - now);
             const days = Math.floor(diff / (1000 * 60 * 60 * 24));
             const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)); // 👈 แก้จุดนี้
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
             const elDays = document.getElementById('cdDays');
@@ -980,7 +1026,7 @@
             const diff = Math.max(0, targetTime - now);
             const days = Math.floor(diff / (1000 * 60 * 60 * 24));
             const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((diff % (1000 * 60)) / (1000 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
             el.innerText = `ปิดรับสมัครในอีก: ${days} วัน ${hours} ชม ${minutes} น ${seconds} วิ`;
@@ -1188,7 +1234,7 @@
         }
 
         /**
-         * 8. DYNAMIC TICKET GENERATOR & QR CODE FIX
+         * 8. DYNAMIC TICKET GENERATOR
          */
         function renderDynamicTicket(attendee) {
             currentActiveTicket = attendee;
@@ -1231,44 +1277,48 @@
             // สวัสดิการอาหาร & สุขภาพ
             const dietContainer = document.getElementById('ticketDietaryBadgeContainer');
             if (dietContainer) {
-            const raw = (attendee.dietary || '').trim();
-            const lower = raw.toLowerCase();
-            let badges = [];
+                const raw = (attendee.dietary || '').trim();
+                const lower = raw.toLowerCase();
+                let badges = [];
 
-    // 1. หมวดโรคประจำตัว / สุขภาพ
-            const medicalKeywords = ['หอบหืด', 'ลมชัก', 'ชัก', 'หัวใจ', 'ความดัน', 'เบาหวาน', 'g6pd', 'G6PD', 'ซึมเศร้า', 'แพ้ยา', 'โรค'];
-            const hasMedical = medicalKeywords.some(kw => lower.includes(kw));
+                // 1. หมวดโรคประจำตัว / สุขภาพ
+                const medicalKeywords = ['หอบหืด', 'ลมชัก', 'ชัก', 'หัวใจ', 'ความดัน', 'เบาหวาน', 'g6pd', 'ซึมเศร้า', 'แพ้ยา', 'โรค'];
+                const hasMedical = medicalKeywords.some(kw => lower.includes(kw));
                 if (hasMedical) {
                     badges.push(`<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold bg-rose-500/20 text-rose-300 border border-rose-500/40"><i data-lucide="stethoscope" class="w-3.5 h-3.5"></i> <span>สุขภาพ: ${raw}</span></span>`);
-                    }
-    // 2. หมวดแพ้อาหาร
+                }
+
+                // 2. หมวดแพ้อาหาร
                 if (lower.includes('แพ้') && !hasMedical) {
                     badges.push(`<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40"><i data-lucide="alert-triangle" class="w-3.5 h-3.5"></i> <span>แพ้อาหาร: ${raw}</span></span>`);
-                    }
-    // 3. หมวดฮาลาล / มุสลิม
+                }
+
+                // 3. หมวดฮาลาล / มุสลิม
                 if (lower.includes('ฮาลาล') || lower.includes('อิสลาม') || lower.includes('halal') || lower.includes('มุสลิม')) {
                     badges.push('<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40"><i data-lucide="moon" class="w-3.5 h-3.5"></i> <span>ฮาลาล (Halal Food)</span></span>');
-                    }
-    // 4. หมวดมังสวิรัติ / เจ
+                }
+
+                // 4. หมวดมังสวิรัติ / เจ
                 if (lower.includes('มังสวิรัติ') || lower.includes('เจ') || lower.includes('vegan') || lower.includes('มัง')) {
                     badges.push('<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold bg-teal-500/20 text-teal-300 border border-teal-500/40"><i data-lucide="leaf" class="w-3.5 h-3.5"></i> <span>มังสวิรัติ/เจ</span></span>');
-                    }
-    // 5. หมวดไม่กิน / งด
+                }
+
+                // 5. หมวดไม่กิน / งด
                 if ((lower.includes('ไม่กิน') || lower.includes('ไม่ทาน') || lower.includes('ไม่ใส่') || lower.includes('งด')) && !hasMedical) {
                     badges.push(`<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold bg-sky-500/20 text-sky-300 border border-sky-500/40"><i data-lucide="ban" class="w-3.5 h-3.5"></i> <span>งด/ไม่กิน: ${raw}</span></span>`);
-                    }
-    // 6. กรณีทั่วไป / ไม่ได้ระบุ
-                if (badges.length === 0) {
-                if (!raw || raw === '-' || raw === 'ไม่มี' || raw === 'ปกติ') {
-                    badges.push('<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold bg-slate-700/80 text-gray-300 border border-slate-600"><i data-lucide="utensils" class="w-3.5 h-3.5"></i> <span>ทั่วไป (Standard)</span></span>');
-                    } 
-                    else {
-                        badges.push(`<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/40"><i data-lucide="info" class="w-3.5 h-3.5"></i> <span>${raw}</span></span>`);
-                        }
-                    }
-
-                    dietContainer.innerHTML = `<div class="flex flex-wrap gap-1.5">${badges.join('')}</div>`;
                 }
+
+                // 6. กรณีทั่วไป / ไม่ได้ระบุ
+                if (badges.length === 0) {
+                    if (!raw || raw === '-' || raw === 'ไม่มี' || raw === 'ปกติ') {
+                        badges.push('<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold bg-slate-700/80 text-gray-300 border border-slate-600"><i data-lucide="utensils" class="w-3.5 h-3.5"></i> <span>ทั่วไป (Standard)</span></span>');
+                    } else {
+                        badges.push(`<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/40"><i data-lucide="info" class="w-3.5 h-3.5"></i> <span>${raw}</span></span>`);
+                    }
+                }
+
+                dietContainer.innerHTML = `<div class="flex flex-wrap gap-1.5">${badges.join('')}</div>`;
+            }
 
             // สร้าง QR Code ด้วยภาพ SVG คมชัด โหลดติดทันที 100%
             const qrImg = document.getElementById('ticketQrImg');
@@ -1350,7 +1400,7 @@
         }
 
         /**
-         * 10. TICKET LOOKUP MODAL (สไตล์เดิมที่คุ้นเคย)
+         * 10. TICKET LOOKUP MODAL
          */
         function openFindTicketModal() {
             const m = document.getElementById('findTicketModal');
@@ -1464,6 +1514,7 @@
         }
 
         function closeStaffScannerModal() {
+            prepareNextScan();
             stopCameraScanner();
             document.getElementById('staffScannerModal')?.classList.add('hidden');
         }
@@ -1546,39 +1597,29 @@
             }
         }
 
-        let isScannerPaused = false;
-
         function onQrCodeScanned(decodedText) {
-            if (isScannerPaused) return; // ป้องกันการสแกนรัวซ้ำซ้อน
-
-            playBeepSound();
-            isScannerPaused = true;
-            if (qrScannerInstance) {
-                qrScannerInstance.pause(true); // พักกล้องชั่วคราว ไม่ทำให้จอค้าง
-            }
+            // ถ้าอยู่ในระหว่างตรวจคนก่อนหน้า หรือยังไม่ได้กดสแกนคนถัดไป ให้ข้ามการสแกนซ้ำ
+            if (!canScanQr) return;
 
             let targetSid = '';
             if (decodedText.startsWith('SAN2026:')) {
                 const parts = decodedText.split(':');
                 targetSid = parts[1];
             } else {
-                targetSid = decodedText.replace(/[^0-9]/g, '');
+                try {
+                    const parsed = JSON.parse(decodedText);
+                    targetSid = parsed.id || parsed.studentId;
+                } catch(e) {
+                    targetSid = decodedText.replace(/[^0-9]/g, '');
+                }
             }
 
             if (targetSid && targetSid.length === 7) {
+                canScanQr = false; // พักการอ่านชั่วคราว เพื่อแสดงผลคนนี้
+                playBeepSound();
                 loadAndDisplayStaffAttendee(targetSid);
             } else {
                 showStaffAlert('รูปแบบ QR Code ไม่ถูกต้อง: ' + decodedText, 'error');
-                resumeCameraScanner();
-            }
-        }
-
-        function resumeCameraScanner() {
-            isScannerPaused = false;
-            if (qrScannerInstance) {
-                try {
-                    qrScannerInstance.resume();
-                } catch(e) {}
             }
         }
 
@@ -1589,6 +1630,7 @@
                 showStaffAlert('กรุณากรอกรหัสนักศึกษา 7 หลัก', 'error');
                 return;
             }
+            canScanQr = false;
             loadAndDisplayStaffAttendee(sid);
         }
 
@@ -1610,9 +1652,11 @@
                     });
                 } else {
                     showStaffAlert(res.message || 'ไม่พบข้อมูลรหัสนักศึกษานี้ในระบบ', 'error');
+                    canScanQr = true;
                 }
             } catch (err) {
                 showStaffAlert('ไม่สามารถเชื่อมต่อฐานข้อมูลได้: ' + err.message, 'error');
+                canScanQr = true;
             }
         }
 
@@ -1640,6 +1684,11 @@
             const checkinList = getCheckedInList();
             const checkedTime = checkinList[attendee.studentId];
 
+            if (checkinBtn) {
+                checkinBtn.disabled = false;
+                checkinBtn.onclick = executeAttendeeCheckin;
+            }
+
             if (checkedTime) {
                 card.className = 'p-4 rounded-2xl border border-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 mb-3';
                 if (statusBadge) {
@@ -1657,7 +1706,7 @@
                     statusBadge.className = 'inline-block px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-gray-300 mb-1';
                 }
                 if (checkinBtn) {
-                    checkinBtn.innerHTML = '<span>✓ ยืนยันเช็กอินเข้างาน</span>';
+                    checkinBtn.innerHTML = '<i data-lucide="user-check" class="w-4 h-4"></i> <span>ยืนยันเช็กอินเข้างาน</span>';
                     checkinBtn.className = 'w-full min-h-[46px] bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 px-4 rounded-xl shadow transition text-sm flex items-center justify-center gap-2 cursor-pointer active:scale-95';
                 }
             }
@@ -1670,7 +1719,8 @@
             if (!currentScannedAttendee) return;
 
             const btn = document.getElementById('btnConfirmCheckin');
-            const originalText = btn.innerHTML;
+            if (!btn) return;
+
             btn.disabled = true;
             btn.innerHTML = '<div class="loader"></div> กำลังบันทึกลง Google Sheet...';
 
@@ -1686,7 +1736,6 @@
                 const res = await resp.json();
 
                 if (res.result === 'success') {
-                    // 1. บันทึกในเครื่อง
                     const checkins = getCheckedInList();
                     checkins[currentScannedAttendee.studentId] = Date.now();
                     localStorage.setItem('san_checkins', JSON.stringify(checkins));
@@ -1694,33 +1743,56 @@
                     updateStaffCheckinDisplay();
                     displayStaffResultCard(currentScannedAttendee);
                     triggerConfetti();
-                    showStaffAlert(`บันทึกลง Google Sheet สำเร็จ: ${currentScannedAttendee.firstName} เข้างานแล้ว!`, 'success');
+                    showStaffAlert(`✅ เช็กอิน ${currentScannedAttendee.firstName} ลงชีตเรียบร้อย!`, 'success');
 
-                    // 2. ปรับปุ่มเป็น "สแกนคนถัดไป" เพื่อคืนค่ากล้องทันที
-                    btn.innerHTML = '<span>สแกนคนถัดไป</span>';
-                    btn.className = 'w-full min-h-[46px] bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 px-4 rounded-xl shadow transition text-sm flex items-center justify-center gap-2 cursor-pointer';
-                    btn.onclick = function() {
-                        document.getElementById('staffScanResultCard').classList.add('hidden');
-                        hideStaffAlert();
-                        btn.onclick = executeAttendeeCheckin;
-                        resumeCameraScanner(); // เปิดกล้องต่อทันที จอไม่ค้าง
-                    };
+                    // ปลดล็อกปุ่มและเปลี่ยนเป็น "สแกนคนถัดไป" ทันที
+                    btn.disabled = false;
+                    btn.className = 'w-full min-h-[46px] bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 px-4 rounded-xl shadow transition text-sm flex items-center justify-center gap-2 cursor-pointer active:scale-95';
+                    btn.innerHTML = '<i data-lucide="scan-line" class="w-4 h-4"></i> <span>สแกนคนถัดไป</span>';
+                    btn.onclick = prepareNextScan;
+                    refreshLucide();
                 } else {
                     showStaffAlert(res.message || 'บันทึกไม่สำเร็จ', 'error');
                     btn.disabled = false;
-                    btn.innerHTML = originalText;
+                    btn.innerHTML = '<span>✓ ยืนยันเช็กอินเข้างาน</span>';
                 }
             } catch (err) {
-                // บันทึกออฟไลน์สำรองเผื่อเน็ตหลุด
+                // บันทึกสำรองในเครื่องเผื่อเน็ตหลุด
                 const checkins = getCheckedInList();
                 checkins[currentScannedAttendee.studentId] = Date.now();
                 localStorage.setItem('san_checkins', JSON.stringify(checkins));
                 updateStaffCheckinDisplay();
                 displayStaffResultCard(currentScannedAttendee);
-                showStaffAlert('⚠️ อินเทอร์เน็ตมีปัญหา: บันทึกในเครื่องแล้ว (ยังไม่ลงชีต)', 'info');
+                showStaffAlert('⚠️ บันทึกในเครื่องแล้ว (รอต่อเน็ตเพื่อซิงก์ชีต)', 'info');
+
                 btn.disabled = false;
-                btn.innerHTML = originalText;
+                btn.className = 'w-full min-h-[46px] bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 px-4 rounded-xl shadow transition text-sm flex items-center justify-center gap-2 cursor-pointer active:scale-95';
+                btn.innerHTML = '<i data-lucide="scan-line" class="w-4 h-4"></i> <span>สแกนคนถัดไป</span>';
+                btn.onclick = prepareNextScan;
+                refreshLucide();
             }
+        }
+
+        // ฟังก์ชันล้างหน้าจอเพื่อเตรียมสแกนคนต่อไป
+        function prepareNextScan() {
+            const card = document.getElementById('staffScanResultCard');
+            if (card) card.classList.add('hidden');
+            hideStaffAlert();
+
+            const btn = document.getElementById('btnConfirmCheckin');
+            if (btn) {
+                btn.disabled = false;
+                btn.className = 'w-full min-h-[46px] bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 px-4 rounded-xl shadow transition text-sm flex items-center justify-center gap-2 cursor-pointer active:scale-95';
+                btn.innerHTML = '<i data-lucide="user-check" class="w-4 h-4"></i> <span>ยืนยันเช็กอินเข้างาน</span>';
+                btn.onclick = executeAttendeeCheckin;
+            }
+
+            const input = document.getElementById('staffManualInput');
+            if (input) input.value = '';
+
+            currentScannedAttendee = null;
+            canScanQr = true; // ปลดล็อกให้กล้องจับ QR คนใหม่ได้ทันที
+            refreshLucide();
         }
 
         function showStaffAlert(msg, type) {
@@ -1834,26 +1906,14 @@
             titleEl.addEventListener('click', () => {
                 titleTapCount++;
                 clearTimeout(titleTapTimer);
-        if (titleTapCount >= 3) {
-            titleTapCount = 0;
-            openStaffScannerModal();
-        } else {
-            titleTapTimer = setTimeout(() => { titleTapCount = 0; }, 600);
+                if (titleTapCount >= 3) {
+                    titleTapCount = 0;
+                    openStaffScannerModal();
+                } else {
+                    titleTapTimer = setTimeout(() => { titleTapCount = 0; }, 600);
+                }
+            });
         }
-             });
-    }
-
     </script>
-
-        <!-- 🔒 ปุ่มลับสำหรับสตาฟ: โปร่งแสงกลืนกับพื้นหลัง อยู่มุมขวาล่างสุด แตะ 1 ครั้งเปิดหน้าสแกนทันที -->
-    <button 
-        type="button" 
-        onclick="openStaffScannerModal()" 
-        title="Staff Only"
-        aria-label="Staff Scanner"
-        class="fixed bottom-2.5 right-2.5 z-40 p-2 rounded-lg text-slate-400 dark:text-slate-600 opacity-20 hover:opacity-90 active:opacity-100 transition-opacity cursor-pointer">
-        <i data-lucide="lock" class="w-3.5 h-3.5"></i>
-    </button>
-
 </body>
 </html>
