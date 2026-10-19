@@ -11,13 +11,19 @@
     <!-- Canvas Confetti สำหรับพลุฉลอง -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
-    <!-- QRCode.js สำหรับสร้าง QR Code บนตั๋วไดนามิก -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- QR Code Library (QRCode.toCanvas - เสถียรและทำงานได้ 100% บนทุกเบราว์เซอร์) -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 
     <!-- html2canvas สำหรับบันทึกตั๋วเป็นรูปภาพลงเครื่อง -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
-    <!-- Tailwind Configuration: รวมฟอนต์ทั้งหมดให้เป็น Sarabun เดียวกัน 100% -->
+    <!-- HTML5 QR Code Scanner สำหรับระบบเช็กอินสตาฟหน้างาน -->
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
+    <!-- Tailwind Configuration -->
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -30,7 +36,7 @@
                     },
                     fontFamily: {
                         sans: ['Sarabun', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
-                        mono: ['Sarabun', 'sans-serif'] // ให้ตัวเลขและโค้ดใช้ Sarabun เช่นกันเพื่อความกลมกลืน
+                        mono: ['Sarabun', 'sans-serif']
                     }
                 }
             }
@@ -39,7 +45,6 @@
 
     <!-- Custom CSS Styles -->
     <style>
-        /* ดึงเฉพาะ Google Font Sarabun ทุกน้ำหนัก */
         @import url('https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
 
         * {
@@ -47,33 +52,17 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* เปิดใช้ Tabular Nums สำหรับตัวเลข เพื่อให้นับถอยหลังไม่สั่นไหวแต่ยังเป็นฟอนต์ Sarabun สวยงาม */
         .tabular-nums {
             font-variant-numeric: tabular-nums;
             font-feature-settings: 'tnum';
         }
 
-        /* ปรับแต่งตัวอักษรตัวอย่าง (Placeholder) ในช่องคำถามบนมือถือให้เล็กลง กระชับ และสบายตา */
+        /* ขนาดฟอนต์มาตรฐาน สบายตา อ่านง่ายตามสัดส่วนเดิม */
         input::placeholder, 
         textarea::placeholder {
-            font-size: 12.5px !important;
-            font-weight: 300 !important;
-            opacity: 0.65;
-            letter-spacing: normal;
-        }
-
-        @media (min-width: 641px) {
-            input::placeholder, 
-            textarea::placeholder {
-                font-size: 13.5px !important;
-            }
-        }
-
-        /* ขนาดฟอนต์ในช่องกรอกบนมือถือให้พอดีนิ้วและสายตา */
-        @media (max-width: 640px) {
-            input, select, textarea {
-                font-size: 14.5px !important;
-            }
+            font-size: 0.925rem !important;
+            font-weight: 400 !important;
+            opacity: 0.55;
         }
 
         /* Loading Spinner */
@@ -94,7 +83,7 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* รอยเว้าขอบตั๋ว E-Ticket ปรับสีตามโหมดสว่าง/มืดอัตโนมัติ */
+        /* รอยเว้าตั๋ว E-Ticket */
         .ticket-notches {
             position: relative;
         }
@@ -104,25 +93,21 @@
             width: 26px;
             height: 26px;
             border-radius: 50%;
-            top: 54%;
+            top: 52%;
             transform: translateY(-50%);
             z-index: 20;
             transition: background-color 0.3s ease;
         }
         .dark .ticket-notches::before, .dark .ticket-notches::after {
-            background-color: #1e293b; /* Slate 800 */
+            background-color: #0f172a;
         }
         .ticket-notches::before, .ticket-notches::after {
             background-color: #ffffff;
         }
-        .ticket-notches::before {
-            left: -14px;
-        }
-        .ticket-notches::after {
-            right: -14px;
-        }
+        .ticket-notches::before { left: -14px; }
+        .ticket-notches::after { right: -14px; }
 
-        /* ลำแสงวิบวับพาดผ่านตั๋ว */
+        /* แสงวิบวับพาดผ่านตั๋ว */
         .ticket-shine {
             position: relative;
             overflow: hidden;
@@ -137,7 +122,7 @@
             background: linear-gradient(
                 to right,
                 rgba(255, 255, 255, 0) 0%,
-                rgba(255, 255, 255, 0.22) 50%,
+                rgba(255, 255, 255, 0.25) 50%,
                 rgba(255, 255, 255, 0) 100%
             );
             transform: skewX(-25deg);
@@ -149,155 +134,164 @@
             100% { left: 200%; }
         }
 
-        /* อนิเมชัน Fade & Pop-in */
         @keyframes popIn {
-            0% { transform: scale(0.94) translateY(14px); opacity: 0; }
+            0% { transform: scale(0.95) translateY(12px); opacity: 0; }
             100% { transform: scale(1) translateY(0); opacity: 1; }
         }
         .animate-pop-in {
             animation: popIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
-        /* Scrollbar ในกล่องเงื่อนไข PDPA */
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: rgba(0, 0, 0, 0.05);
-            border-radius: 8px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: rgba(100, 116, 139, 0.4);
-            border-radius: 8px;
-        }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.05); border-radius: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(100, 116, 139, 0.4); border-radius: 8px; }
     </style>
 </head>
 <body class="min-h-screen bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-gray-100 flex flex-col items-center justify-center p-3 sm:p-6 md:p-8 relative overflow-x-hidden transition-colors duration-300">
 
-    <!-- Ambient Lights -->
+    <!-- Ambient Lights Background -->
     <div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
         <div class="absolute -top-36 -left-36 w-80 sm:w-96 h-80 sm:h-96 bg-indigo-500/15 dark:bg-indigo-600/25 rounded-full blur-3xl"></div>
         <div class="absolute -bottom-36 -right-36 w-80 sm:w-96 h-80 sm:h-96 bg-purple-500/15 dark:bg-purple-600/25 rounded-full blur-3xl"></div>
     </div>
 
-    <!-- ปุ่มสลับธีม สว่าง / มืด -->
-    <button 
-        type="button" 
-        onclick="toggleTheme()" 
-        aria-label="สลับธีม สว่าง/มืด"
-        class="fixed top-3 right-3 sm:top-5 sm:right-5 z-50 p-2.5 sm:p-3 rounded-full bg-white/90 dark:bg-slate-800/90 backdrop-blur-md shadow-lg text-slate-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-white hover:scale-105 active:scale-95 transition border border-slate-200 dark:border-slate-700 cursor-pointer">
-        <svg id="sun-icon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
-        </svg>
-        <svg id="moon-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
-        </svg>
-    </button>
+    <!-- แถบปุ่มควบคุมมุมบน (โหมดสตาฟ & สลับธีม) -->
+    <div class="fixed top-3 right-3 sm:top-5 sm:right-5 z-50 flex items-center gap-2">
+        <!-- ปุ่มเปิดโหมดสตาฟสแกนเช็กชื่อหน้างาน -->
+        <button 
+            type="button" 
+            onclick="openStaffScannerModal()" 
+            title="ระบบสแกนเช็กชื่อหน้างาน (สำหรับทีมงาน)"
+            class="px-3 py-2 sm:px-3.5 sm:py-2.5 rounded-full bg-white/90 dark:bg-slate-800/90 backdrop-blur-md shadow-lg text-slate-700 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400 hover:scale-105 active:scale-95 transition border border-slate-200 dark:border-slate-700 cursor-pointer flex items-center gap-1.5 text-xs font-bold">
+            <i data-lucide="scan-line" class="w-4 h-4 text-indigo-500"></i>
+            <span class="hidden sm:inline">สแกนหน้างาน</span>
+        </button>
 
-    <!-- กล่องหลัก (MAIN CONTAINER) -->
+        <!-- ปุ่มสลับธีม สว่าง / มืด -->
+        <button 
+            type="button" 
+            onclick="toggleTheme()" 
+            aria-label="สลับธีม สว่าง/มืด"
+            class="p-2.5 sm:p-3 rounded-full bg-white/90 dark:bg-slate-800/90 backdrop-blur-md shadow-lg text-slate-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-white hover:scale-105 active:scale-95 transition border border-slate-200 dark:border-slate-700 cursor-pointer">
+            <i id="sun-icon" data-lucide="sun" class="w-5 h-5 hidden"></i>
+            <i id="moon-icon" data-lucide="moon" class="w-5 h-5"></i>
+        </button>
+    </div>
+
+    <!-- MAIN APP CONTAINER -->
     <div class="relative z-10 w-full max-w-xl lg:max-w-2xl bg-white dark:bg-slate-800/95 backdrop-blur-xl rounded-2xl sm:rounded-3xl shadow-xl dark:shadow-2xl overflow-hidden border border-slate-200/80 dark:border-slate-700/80 transition-all duration-300">
         
         <!-- HEADER งานกิจกรรม -->
-        <header class="bg-gradient-to-br from-indigo-600 via-indigo-700 to-purple-800 px-5 py-7 sm:px-8 sm:py-9 text-center relative overflow-hidden">
+        <header class="bg-gradient-to-br from-indigo-600 via-indigo-700 to-purple-800 px-6 py-8 sm:px-10 sm:py-10 text-center relative overflow-hidden">
             <div class="absolute inset-0 opacity-10 pointer-events-none">
                 <svg class="absolute -top-12 -left-12 w-48 h-48 text-white fill-current" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50"/></svg>
                 <svg class="absolute top-12 -right-12 w-44 h-44 text-white fill-current" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50"/></svg>
             </div>
 
             <div class="relative z-10">
-                <span class="inline-block px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-[11px] sm:text-xs font-semibold tracking-wider text-indigo-100 uppercase mb-2 border border-white/20">
-                    Official Event Pass
+                <span class="inline-flex items-center gap-1.5 px-3.5 py-1 bg-white/20 backdrop-blur-md rounded-full text-xs font-semibold tracking-wider text-indigo-100 uppercase mb-3 border border-white/20">
+                    <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-300"></i>
+                    <span>Official Event Pass</span>
                 </span>
-                <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white tracking-tight mb-2 drop-shadow-sm leading-tight" id="eventTitleDisplay">
+                <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white tracking-tight mb-2 drop-shadow-sm leading-snug" id="eventTitleDisplay">
                     Welcome SAN Party 2026
                 </h1>
-                <p class="text-indigo-100 text-xs sm:text-sm md:text-base font-medium mb-1" id="eventDateDisplay">
-                    20 ธันวาคม 2026 • อาคาร 6 ชั้น 2
+                <p class="text-indigo-100 text-sm sm:text-base font-medium mb-1 flex items-center justify-center gap-1.5" id="eventDateDisplay">
+                    <i data-lucide="calendar" class="w-4 h-4"></i>
+                    <span>20 ธันวาคม 2026 • อาคาร 6 ชั้น 2</span>
                 </p>
-                <p class="text-indigo-200/90 text-[11px] sm:text-xs">
-                    คณะสาธารณสุขศาสตร์ มหาวิทยาลัยมหิดล
+                <p class="text-indigo-200/90 text-xs sm:text-sm flex items-center justify-center gap-1 mt-1">
+                    <i data-lucide="map-pin" class="w-3.5 h-3.5 text-indigo-300"></i>
+                    <span>คณะสาธารณสุขศาสตร์ มหาวิทยาลัยมหิดล</span>
                 </p>
             </div>
         </header>
 
-        <!-- ฟีเจอร์: แถบวัดความจุที่นั่ง (LIVE SEATING BAR) -->
-        <section id="capacitySection" class="hidden px-5 sm:px-8 pt-4 pb-2.5 bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700/80">
-            <div class="flex justify-between items-center text-xs font-semibold mb-1.5">
-                <span class="flex items-center gap-1.5 text-slate-600 dark:text-gray-300">
-                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <!-- LIVE SEATING CAPACITY BAR -->
+        <section id="capacitySection" class="hidden px-6 sm:px-8 py-3 bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700/80">
+            <div class="flex justify-between items-center text-xs sm:text-sm font-semibold mb-1.5">
+                <span class="flex items-center gap-2 text-slate-700 dark:text-gray-300">
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
                     <span>สถานะความจุที่นั่ง</span>
                 </span>
-                <span id="capacityStatusText" class="text-indigo-600 dark:text-indigo-300 tabular-nums text-[11px] sm:text-xs">0 / 0 คน</span>
+                <span id="capacityStatusText" class="text-indigo-600 dark:text-indigo-400 tabular-nums text-xs sm:text-sm font-bold">0 / 0 คน</span>
             </div>
-            <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2 overflow-hidden p-0.5">
-                <div id="capacityBarFill" class="bg-gradient-to-r from-emerald-500 via-indigo-500 to-purple-600 h-full rounded-full transition-all duration-700" style="width: 0%"></div>
+            <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2.5 overflow-hidden p-0.5">
+                <div id="capacityBarFill" class="bg-gradient-to-r from-emerald-500 via-indigo-500 to-purple-600 h-2 rounded-full transition-all duration-700" style="width: 0%"></div>
             </div>
-            <p id="capacityWarningNotice" class="hidden text-[11px] text-amber-600 dark:text-amber-400 font-medium mt-1 text-right">
-               ที่นั่งใกล้เต็มแล้ว รีบยืนยันสิทธิ์เข้าร่วมงาน!
+            <p id="capacityWarningNotice" class="hidden text-xs text-amber-600 dark:text-amber-400 font-semibold mt-1.5 flex items-center justify-end gap-1">
+                <i data-lucide="flame" class="w-3.5 h-3.5"></i>
+                <span>ที่นั่งใกล้เต็มแล้ว รีบยืนยันสิทธิ์เข้าร่วมงาน!</span>
             </p>
         </section>
 
-        <!-- หน้าจอที่ 1: สถานะ "ยังไม่เปิดรับสมัคร" (COUNTDOWN) -->
-        <section id="screenCountdown" class="hidden p-6 sm:p-10 md:p-12 text-center animate-pop-in">
-            <div class="w-16 h-16 sm:w-20 sm:h-20 bg-indigo-500/10 border border-indigo-500/20 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-inner">
-                <span class="text-3xl sm:text-4xl">⏳</span>
+        <!-- SCREEN 1: หน้านับถอยหลังก่อนเปิดรับสมัคร (TEASER / COUNTDOWN) -->
+        <section id="screenCountdown" class="hidden p-6 sm:p-10 text-center animate-pop-in">
+            <div class="inline-flex p-4 bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800/80 rounded-3xl mb-4 shadow-sm text-indigo-600 dark:text-indigo-400">
+                <i data-lucide="clock" class="w-10 h-10 animate-pulse"></i>
             </div>
-            <h2 class="text-xl sm:text-2xl md:text-3xl font-bold text-slate-800 dark:text-white mb-2">
-                ระบบยังไม่เปิดรับสมัคร
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mb-2">
+                ระบบเปิดรับสมัครเร็วๆ นี้
             </h2>
-            <p class="text-slate-600 dark:text-gray-300 text-xs sm:text-sm max-w-md mx-auto mb-7 leading-relaxed">
-                เตรียมตัวให้พร้อม ระบบจะเปิดรับลงทะเบียนตามเวลามาตรฐานโดยอัตโนมัติ
+            <p class="text-slate-600 dark:text-gray-300 text-sm sm:text-base max-w-md mx-auto mb-6 leading-relaxed">
+                เตรียมนับถอยหลังสู่งานเลี้ยงต้อนรับที่สนุกที่สุดแห่งปี ระบบจะเปิดให้ลงทะเบียนพร้อมกันตามเวลามาตรฐาน
             </p>
 
-            <!-- กล่องนาฬิกานับถอยหลัง (ใช้ Sarabun + Tabular Nums) -->
-            <div class="grid grid-cols-4 gap-2 sm:gap-3 max-w-sm sm:max-w-md mx-auto mb-7">
-                <div class="bg-slate-50 dark:bg-slate-700/60 border border-slate-200 dark:border-slate-600 rounded-xl sm:rounded-2xl p-2.5 sm:p-3 text-center">
-                    <span id="cdDays" class="block text-xl sm:text-3xl font-extrabold text-slate-800 dark:text-white tabular-nums">00</span>
-                    <span class="text-[10px] sm:text-xs text-slate-500 dark:text-gray-400">วัน</span>
+            <!-- กล่องนาฬิกาดิจิทัล -->
+            <div class="grid grid-cols-4 gap-2.5 sm:gap-4 max-w-sm sm:max-w-md mx-auto mb-7">
+                <div class="bg-slate-50 dark:bg-slate-700/70 border border-slate-200 dark:border-slate-600 rounded-2xl p-3 sm:p-4 text-center shadow-sm">
+                    <span id="cdDays" class="block text-2xl sm:text-4xl font-extrabold text-slate-800 dark:text-white tabular-nums">00</span>
+                    <span class="text-xs text-slate-500 dark:text-gray-400 font-medium">วัน</span>
                 </div>
-                <div class="bg-slate-50 dark:bg-slate-700/60 border border-slate-200 dark:border-slate-600 rounded-xl sm:rounded-2xl p-2.5 sm:p-3 text-center">
-                    <span id="cdHours" class="block text-xl sm:text-3xl font-extrabold text-slate-800 dark:text-white tabular-nums">00</span>
-                    <span class="text-[10px] sm:text-xs text-slate-500 dark:text-gray-400">ชั่วโมง</span>
+                <div class="bg-slate-50 dark:bg-slate-700/70 border border-slate-200 dark:border-slate-600 rounded-2xl p-3 sm:p-4 text-center shadow-sm">
+                    <span id="cdHours" class="block text-2xl sm:text-4xl font-extrabold text-slate-800 dark:text-white tabular-nums">00</span>
+                    <span class="text-xs text-slate-500 dark:text-gray-400 font-medium">ชั่วโมง</span>
                 </div>
-                <div class="bg-slate-50 dark:bg-slate-700/60 border border-slate-200 dark:border-slate-600 rounded-xl sm:rounded-2xl p-2.5 sm:p-3 text-center">
-                    <span id="cdMinutes" class="block text-xl sm:text-3xl font-extrabold text-slate-800 dark:text-white tabular-nums">00</span>
-                    <span class="text-[10px] sm:text-xs text-slate-500 dark:text-gray-400">นาที</span>
+                <div class="bg-slate-50 dark:bg-slate-700/70 border border-slate-200 dark:border-slate-600 rounded-2xl p-3 sm:p-4 text-center shadow-sm">
+                    <span id="cdMinutes" class="block text-2xl sm:text-4xl font-extrabold text-slate-800 dark:text-white tabular-nums">00</span>
+                    <span class="text-xs text-slate-500 dark:text-gray-400 font-medium">นาที</span>
                 </div>
-                <div class="bg-slate-50 dark:bg-slate-700/60 border border-slate-200 dark:border-slate-600 rounded-xl sm:rounded-2xl p-2.5 sm:p-3 text-center">
-                    <span id="cdSeconds" class="block text-xl sm:text-3xl font-extrabold text-indigo-600 dark:text-indigo-400 tabular-nums">00</span>
-                    <span class="text-[10px] sm:text-xs text-slate-500 dark:text-gray-400">วินาที</span>
+                <div class="bg-slate-50 dark:bg-slate-700/70 border border-slate-200 dark:border-slate-600 rounded-2xl p-3 sm:p-4 text-center shadow-sm">
+                    <span id="cdSeconds" class="block text-2xl sm:text-4xl font-extrabold text-indigo-600 dark:text-indigo-400 tabular-nums">00</span>
+                    <span class="text-xs text-slate-500 dark:text-gray-400 font-medium">วินาที</span>
                 </div>
             </div>
 
-            <div class="pt-4 border-t border-slate-200 dark:border-slate-700">
+            <!-- ปุ่มบันทึกวันงานลงปฏิทินล่วงหน้า -->
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-3 mb-6">
+                <button 
+                    type="button" 
+                    onclick="addToGoogleCalendar()" 
+                    class="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-900/40 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-2 cursor-pointer">
+                    <i data-lucide="calendar-plus" class="w-4 h-4"></i>
+                    <span>บันทึกลง Google Calendar</span>
+                </button>
                 <button 
                     type="button" 
                     onclick="openFindTicketModal()" 
-                    class="text-xs sm:text-sm text-indigo-600 dark:text-indigo-400 hover:underline font-semibold cursor-pointer inline-flex items-center gap-1.5 py-1">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                    <span>ค้นหาตั๋วเดิมที่เคยลงทะเบียนไว้</span>
+                    class="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-gray-300 hover:bg-slate-50 dark:hover:bg-slate-700 text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-2 cursor-pointer">
+                    <i data-lucide="search" class="w-4 h-4 text-slate-400"></i>
+                    <span>ค้นหาตั๋วเดิมที่ลงไว้</span>
                 </button>
             </div>
         </section>
 
-        <!-- หน้าจอที่ 2: ฟอร์มลงทะเบียน (คลีน สบายตา ไม่มีคำแยกหมวด) -->
-        <section id="screenRegister" class="p-5 sm:p-8 animate-pop-in">
-            <form id="registrationForm" onsubmit="submitForm(event)" class="space-y-4 sm:space-y-5">
+        <!-- SCREEN 2: แบบฟอร์มลงทะเบียน (ACTIVE REGISTRATION FORM) -->
+        <section id="screenRegister" class="p-6 sm:p-8 animate-pop-in">
+            <form id="registrationForm" onsubmit="submitForm(event)" class="space-y-5">
 
                 <!-- Alert Box -->
-                <div id="alertContainer" class="hidden p-3.5 sm:p-4 rounded-xl text-xs sm:text-sm font-medium flex items-start gap-3 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-200">
-                    <svg class="w-5 h-5 flex-shrink-0 mt-0.5 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    <p id="alertMessage" class="flex-1 leading-snug"></p>
+                <div id="alertContainer" class="hidden p-4 rounded-xl text-sm font-medium flex items-start gap-3 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-200">
+                    <i data-lucide="alert-circle" class="w-5 h-5 flex-shrink-0 mt-0.5 text-rose-500"></i>
+                    <p id="alertMessage" class="flex-1 leading-relaxed"></p>
                 </div>
 
-                <fieldset id="formFields" class="space-y-4 sm:space-y-5 m-0 p-0 border-0">
+                <fieldset id="formFields" class="space-y-5 m-0 p-0 border-0">
                     
                     <!-- ชื่อจริง & นามสกุล -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                            <label for="firstName" class="block text-xs font-semibold text-slate-700 dark:text-gray-300 mb-1.5">
+                            <label for="firstName" class="block text-sm font-semibold text-slate-700 dark:text-gray-200 mb-1.5">
                                 ชื่อจริง (First Name) <span class="text-rose-500">*</span>
                             </label>
                             <input 
@@ -305,10 +299,10 @@
                                 id="firstName" 
                                 required
                                 placeholder="เช่น กานดา"
-                                class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-700/60 border border-slate-300 dark:border-slate-600 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-sm">
+                                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700/60 border border-slate-300 dark:border-slate-600 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-base">
                         </div>
                         <div>
-                            <label for="lastName" class="block text-xs font-semibold text-slate-700 dark:text-gray-300 mb-1.5">
+                            <label for="lastName" class="block text-sm font-semibold text-slate-700 dark:text-gray-200 mb-1.5">
                                 นามสกุล (Last Name) <span class="text-rose-500">*</span>
                             </label>
                             <input 
@@ -316,18 +310,18 @@
                                 id="lastName" 
                                 required
                                 placeholder="เช่น รักเรียน"
-                                class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-700/60 border border-slate-300 dark:border-slate-600 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-sm">
+                                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700/60 border border-slate-300 dark:border-slate-600 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-base">
                         </div>
                     </div>
 
                     <!-- รหัสนักศึกษา & ชั้นปี -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <div class="flex justify-between items-center mb-1.5">
-                                <label for="studentId" class="block text-xs font-semibold text-slate-700 dark:text-gray-300">
+                                <label for="studentId" class="block text-sm font-semibold text-slate-700 dark:text-gray-200">
                                     รหัสนักศึกษา 7 หลัก <span class="text-rose-500">*</span>
                                 </label>
-                                <span id="studentIdHint" class="text-[11px] text-slate-500 dark:text-gray-400">ยังไม่ครบ 7 หลัก</span>
+                                <span id="studentIdHint" class="text-xs text-slate-500 dark:text-gray-400">ต้องครบ 7 หลัก</span>
                             </div>
                             <div class="relative">
                                 <input 
@@ -338,21 +332,21 @@
                                     inputmode="numeric"
                                     placeholder="เช่น 6808012"
                                     oninput="validateStudentIdInput(this)"
-                                    class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-700/60 border border-slate-300 dark:border-slate-600 rounded-xl text-slate-900 dark:text-white tabular-nums tracking-wide placeholder-slate-400 dark:placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-sm">
-                                <div id="studentIdCheckIcon" class="hidden absolute right-3 top-2.5 text-emerald-500 font-bold">
-                                    ✓
+                                    class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700/60 border border-slate-300 dark:border-slate-600 rounded-xl text-slate-900 dark:text-white tabular-nums tracking-wide placeholder-slate-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-base">
+                                <div id="studentIdCheckIcon" class="hidden absolute right-3.5 top-3.5 text-emerald-500">
+                                    <i data-lucide="check-circle" class="w-5 h-5"></i>
                                 </div>
                             </div>
                         </div>
 
                         <div>
-                            <label for="yearLevel" class="block text-xs font-semibold text-slate-700 dark:text-gray-300 mb-1.5">
+                            <label for="yearLevel" class="block text-sm font-semibold text-slate-700 dark:text-gray-200 mb-1.5">
                                 ชั้นปี <span class="text-rose-500">*</span>
                             </label>
                             <select 
                                 id="yearLevel" 
                                 required
-                                class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-700/60 border border-slate-300 dark:border-slate-600 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-sm cursor-pointer">
+                                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700/60 border border-slate-300 dark:border-slate-600 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-base cursor-pointer">
                                 <option value="" disabled selected>เลือกชั้นปี...</option>
                                 <option value="ปี 1">ปี 1 (Freshman)</option>
                                 <option value="ปี 2">ปี 2 (Sophomore)</option>
@@ -363,10 +357,10 @@
                         </div>
                     </div>
 
-                    <!-- ชื่อเล่น & อีเมล พร้อม Email Quick-Fill Pill -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                    <!-- ชื่อเล่น & อีเมล + Email Pill -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                            <label for="nickname" class="block text-xs font-semibold text-slate-700 dark:text-gray-300 mb-1.5">
+                            <label for="nickname" class="block text-sm font-semibold text-slate-700 dark:text-gray-200 mb-1.5">
                                 ชื่อเล่น (สำหรับทำป้ายชื่อ) <span class="text-rose-500">*</span>
                             </label>
                             <input 
@@ -374,20 +368,19 @@
                                 id="nickname" 
                                 required
                                 placeholder="เช่น มุก"
-                                class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-700/60 border border-slate-300 dark:border-slate-600 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-sm">
+                                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700/60 border border-slate-300 dark:border-slate-600 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-base">
                         </div>
 
                         <div>
                             <div class="flex justify-between items-center mb-1.5">
-                                <label for="email" class="block text-xs font-semibold text-slate-700 dark:text-gray-300">
+                                <label for="email" class="block text-sm font-semibold text-slate-700 dark:text-gray-200">
                                     อีเมล (Email) <span class="text-rose-500">*</span>
                                 </label>
-                                <!-- ปุ่ม Quick-Fill Pill เติมโดเมนอัตโนมัติ -->
                                 <button 
                                     type="button" 
                                     onclick="applyEmailPill('@student.mahidol.ac.th')"
-                                    class="text-[10px] bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-500/20 dark:hover:bg-indigo-500/30 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/40 px-2 py-0.5 rounded-full transition cursor-pointer active:scale-95 font-medium">
-                                    + @student.mahidol.ac.th
+                                    class="text-xs bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-500/20 dark:hover:bg-indigo-500/30 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/40 px-2 py-0.5 rounded-full transition cursor-pointer active:scale-95 font-medium flex items-center gap-1">
+                                    <i data-lucide="plus" class="w-3 h-3"></i> @student.mahidol.ac.th
                                 </button>
                             </div>
                             <input 
@@ -396,175 +389,182 @@
                                 required 
                                 inputmode="email"
                                 placeholder="name@student.mahidol.ac.th"
-                                class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-700/60 border border-slate-300 dark:border-slate-600 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-sm">
+                                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700/60 border border-slate-300 dark:border-slate-600 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-base">
                         </div>
                     </div>
 
-                    <!-- ข้อจำกัดด้านอาหารและสุขภาพ -->
+                    <!-- ข้อมูลอาหารและสุขภาพ -->
                     <div>
-                        <label for="dietary" class="block text-xs font-semibold text-slate-700 dark:text-gray-300 mb-1.5">
+                        <label for="dietary" class="block text-sm font-semibold text-slate-700 dark:text-gray-200 mb-1.5">
                             ข้อจำกัดด้านอาหาร หรือข้อมูลสุขภาพสำคัญ (ถ้ามี)
                         </label>
                         <input 
                             type="text" 
                             id="dietary" 
                             placeholder="เช่น ฮาลาล (อิสลาม), มังสวิรัติ, แพ้อาหารทะเล, มีโรคหอบหืด"
-                            class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-700/60 border border-slate-300 dark:border-slate-600 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-sm">
+                            class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700/60 border border-slate-300 dark:border-slate-600 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-base">
                     </div>
 
-                    <!-- คำถามเพิ่มเติม -->
+                    <!-- ข้อเสนอแนะ -->
                     <div>
-                        <label for="comments" class="block text-xs font-semibold text-slate-700 dark:text-gray-300 mb-1.5">
+                        <label for="comments" class="block text-sm font-semibold text-slate-700 dark:text-gray-200 mb-1.5">
                             ข้อเสนอแนะหรือข้อความถึงผู้จัด (ไม่บังคับ)
                         </label>
                         <textarea 
                             id="comments" 
                             rows="2"
                             placeholder="สิ่งที่อยากให้จัดในงาน หรือข้อเสนอแนะเพิ่มเติม..."
-                            class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-700/60 border border-slate-300 dark:border-slate-600 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-sm resize-none"></textarea>
+                            class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700/60 border border-slate-300 dark:border-slate-600 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-base resize-none"></textarea>
                     </div>
 
-                    <!-- กล่องยินยอม PDPA พร้อมลิงก์เปิดอ่านประกาศฉบับเต็ม -->
-                    <div class="p-3.5 sm:p-4 bg-slate-50 dark:bg-slate-700/40 rounded-xl border border-slate-200 dark:border-slate-600/70">
-                        <label class="flex items-start gap-2.5 cursor-pointer">
+                    <!-- กล่องข้อตกลง PDPA -->
+                    <div class="p-4 bg-slate-50 dark:bg-slate-700/40 rounded-xl border border-slate-200 dark:border-slate-600/70">
+                        <label class="flex items-start gap-3 cursor-pointer">
                             <input 
                                 type="checkbox" 
                                 id="pdpaConsentCheckbox" 
                                 required
                                 class="mt-1 w-4 h-4 text-indigo-600 rounded border-slate-300 dark:border-slate-500 bg-white dark:bg-slate-800 focus:ring-indigo-500 cursor-pointer">
-                            <span class="text-xs text-slate-600 dark:text-gray-300 leading-relaxed">
-                                ข้าพเจ้ายินยอมให้คณะผู้จัดงานเก็บรวบรวม ใช้ และประมวลผลข้อมูลส่วนบุคคลข้างต้นเพื่อยืนยันสิทธิ์ เข้าร่วมกิจกรรม และจัดเตรียมอาหารสำหรับงาน <strong class="text-slate-800 dark:text-white font-semibold">Welcome SAN Party 2026</strong> ตาม พ.ร.บ. คุ้มครองข้อมูลส่วนบุคคล (PDPA)
+                            <span class="text-xs sm:text-sm text-slate-600 dark:text-gray-300 leading-relaxed">
+                                ข้าพเจ้ายินยอมให้คณะผู้จัดงานเก็บรวบรวม ใช้ และประมวลผลข้อมูลส่วนบุคคลข้างต้นเพื่อยืนยันสิทธิ์ เข้าร่วมกิจกรรม และจัดเตรียมอาหารสำหรับงาน <strong class="text-slate-900 dark:text-white font-semibold">Welcome SAN Party 2026</strong> ตาม พ.ร.บ. คุ้มครองข้อมูลส่วนบุคคล (PDPA)
                                 <button 
                                     type="button" 
                                     onclick="openPrivacyPolicyModal()" 
-                                    class="text-indigo-600 dark:text-indigo-400 underline hover:text-indigo-700 dark:hover:text-indigo-300 font-semibold inline-block ml-1">
-                                    [อ่านประกาศความเป็นส่วนตัวฉบับเต็ม]
+                                    class="text-indigo-600 dark:text-indigo-400 underline hover:text-indigo-700 font-semibold inline-block ml-1">
+                                    [อ่านประกาศฉบับเต็ม]
                                 </button>
                             </span>
                         </label>
                     </div>
 
-                    <!-- ปุ่มยืนยันลงทะเบียน -->
+                    <!-- ปุ่มส่งแบบฟอร์ม -->
                     <button 
                         type="submit" 
                         id="submitBtn" 
-                        class="w-full min-h-[48px] bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 active:scale-[0.99] text-white font-bold py-3.5 px-6 rounded-xl shadow-lg hover:shadow-indigo-500/25 transition duration-200 flex items-center justify-center text-sm sm:text-base cursor-pointer">
+                        class="w-full min-h-[50px] bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 active:scale-[0.99] text-white font-bold py-3.5 px-6 rounded-xl shadow-lg hover:shadow-indigo-500/25 transition duration-200 flex items-center justify-center text-base cursor-pointer">
                         <div id="btnSpinner" class="loader hidden"></div>
                         <span id="btnText">ลงทะเบียนเข้าร่วมงาน</span>
                     </button>
 
                 </fieldset>
 
-                <!-- Footer นับถอยหลังปิดรับ + ค้นหาตั๋ว -->
-                <div class="pt-4 border-t border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500 dark:text-gray-400">
-                    <div class="inline-flex items-center gap-2 tabular-nums text-[11px] sm:text-xs">
-                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <!-- Footer นับเวลาปิด & ปุ่มค้นหาตั๋ว -->
+                <div class="pt-4 border-t border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs sm:text-sm text-slate-500 dark:text-gray-400">
+                    <div class="inline-flex items-center gap-2 tabular-nums">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
                         <span id="eventCountdownText">กำลังซิงก์เวลามาตรฐาน...</span>
                     </div>
                     <button 
                         type="button" 
                         onclick="openFindTicketModal()" 
-                        class="text-indigo-600 dark:text-indigo-400 hover:underline font-semibold cursor-pointer py-1">
-                        ค้นหาตั๋วเดิมของคุณ
+                        class="text-indigo-600 dark:text-indigo-400 hover:underline font-semibold cursor-pointer inline-flex items-center gap-1.5 py-1">
+                        <i data-lucide="ticket" class="w-4 h-4"></i>
+                        <span>ค้นหาตั๋วเดิมของคุณ</span>
                     </button>
                 </div>
 
             </form>
         </section>
 
-        <!-- หน้าจอที่ 3: สถานะ "ปิดรับสมัคร / ที่นั่งเต็ม" (CLOSED) -->
-        <section id="screenClosed" class="hidden p-6 sm:p-10 md:p-12 text-center animate-pop-in">
-            <div class="w-16 h-16 sm:w-20 sm:h-20 bg-rose-500/10 border border-rose-500/20 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-inner">
-                <span class="text-3xl sm:text-4xl" id="closedIconEmoji">🚫</span>
+        <!-- SCREEN 3: สถานะ "ปิดรับสมัคร หรือ ที่นั่งเต็ม" (CLOSED / SOLD OUT) -->
+        <section id="screenClosed" class="hidden p-6 sm:p-10 text-center animate-pop-in">
+            <div id="closedIconContainer" class="w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-5 bg-rose-500/10 border border-rose-500/20 text-rose-500 shadow-inner">
+                <i id="closedIcon" data-lucide="ban" class="w-10 h-10"></i>
             </div>
-            <h2 class="text-xl sm:text-2xl md:text-3xl font-bold text-slate-800 dark:text-white mb-2" id="closedTitleText">
+            
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mb-2" id="closedTitleText">
                 ปิดรับสมัครเข้าร่วมงานแล้ว
             </h2>
-            <p class="text-slate-600 dark:text-gray-300 text-xs sm:text-sm max-w-md mx-auto mb-7 leading-relaxed" id="closedSubText">
-                ขอขอบคุณทุกท่านที่ให้ความสนใจ สำหรับผู้ที่ลงทะเบียนแล้วสามารถกดค้นหาตั๋วของคุณได้ตลอดเวลาครับ
+            <p class="text-slate-600 dark:text-gray-300 text-sm sm:text-base max-w-md mx-auto mb-7 leading-relaxed" id="closedSubText">
+                ขอขอบคุณทุกท่านที่ให้ความสนใจ สำหรับผู้ที่ลงทะเบียนแล้วสามารถกดค้นหาและเปิดตั๋ว E-Ticket ของคุณได้ตลอดเวลา
             </p>
 
-            <div class="p-5 sm:p-6 bg-slate-50 dark:bg-slate-700/40 border border-slate-200 dark:border-slate-600 rounded-2xl max-w-sm sm:max-w-md mx-auto mb-6">
-                <p class="text-xs text-slate-500 dark:text-gray-400 mb-3">ตรวจสอบสิทธิ์และเปิดตั๋วเข้าร่วมของคุณ:</p>
+            <!-- กล่องทางลัดค้นหาตั๋ว -->
+            <div class="p-6 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-2xl max-w-sm sm:max-w-md mx-auto mb-6 shadow-sm">
+                <p class="text-xs sm:text-sm text-slate-500 dark:text-gray-400 mb-3 font-medium">มีตั๋วอยู่แล้ว? เปิดบัตรเข้าร่วมของคุณ:</p>
                 <button 
                     type="button" 
                     onclick="openFindTicketModal()" 
-                    class="w-full min-h-[44px] bg-indigo-600 hover:bg-indigo-500 active:scale-[0.99] text-white font-semibold py-2.5 px-5 rounded-xl shadow transition cursor-pointer text-xs sm:text-sm flex items-center justify-center gap-2">
-                    <span>🔍 ค้นหา E-Ticket ด้วยรหัสนักศึกษา</span>
+                    class="w-full min-h-[46px] bg-indigo-600 hover:bg-indigo-500 active:scale-[0.99] text-white font-bold py-2.5 px-5 rounded-xl shadow transition cursor-pointer text-sm flex items-center justify-center gap-2">
+                    <i data-lucide="search" class="w-4 h-4"></i>
+                    <span>ค้นหา E-Ticket ด้วยรหัสนักศึกษา</span>
                 </button>
             </div>
+
+            <!-- กล่องข้อมูลติดต่อ -->
+            <p class="text-xs text-slate-400 dark:text-gray-500">
+                หากมีข้อสงสัยหรือต้องการสอบถามเพิ่มเติม กรุณาติดต่อสโมสรนักศึกษาคณะสาธารณสุขศาสตร์
+            </p>
         </section>
 
-        <!-- หน้าจอที่ 4: แสดงผล DYNAMIC E-TICKET -->
-        <section id="screenTicket" class="hidden p-5 sm:p-8 text-center animate-pop-in">
-            <div class="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 rounded-full text-[11px] sm:text-xs font-semibold mb-2">
-                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+        <!-- SCREEN 4: บัตรเข้าร่วมงานอย่างเป็นทางการ (DYNAMIC E-TICKET) -->
+        <section id="screenTicket" class="hidden p-6 sm:p-8 text-center animate-pop-in">
+            <div class="inline-flex items-center gap-1.5 px-3.5 py-1 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 rounded-full text-xs font-bold mb-3">
+                <i data-lucide="check-check" class="w-4 h-4 text-emerald-500"></i>
                 <span>ลงทะเบียนสำเร็จเรียบร้อย</span>
             </div>
             
-            <h2 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mb-1">บัตรเข้าร่วมงานอย่างเป็นทางการ</h2>
-            <p class="text-xs text-slate-500 dark:text-gray-400 mb-5 max-w-sm mx-auto leading-relaxed">
-                โปรดบันทึกภาพหน้าจอ หรือใช้ปุ่มดาวน์โหลดรูปภาพด้านล่างเพื่อแสดงหน้างาน
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mb-1">บัตรเข้าร่วมงานอย่างเป็นทางการ</h2>
+            <p class="text-xs sm:text-sm text-slate-500 dark:text-gray-400 mb-6 max-w-sm mx-auto leading-relaxed">
+                โปรดบันทึกภาพหน้าจอ หรือใช้ปุ่มดาวน์โหลดรูปภาพด้านล่างเพื่อแสดงต่อสตาฟหน้างาน
             </p>
 
             <!-- Dynamic Ticket Card Container -->
-            <div class="w-full max-w-xs sm:max-w-sm mx-auto mb-5">
-                <div id="dynamicTicketCard" class="ticket-notches ticket-shine bg-gradient-to-b from-slate-800 to-slate-900 border border-indigo-500/40 rounded-3xl p-5 text-left shadow-2xl relative overflow-hidden text-white">
+            <div class="w-full max-w-xs sm:max-w-sm mx-auto mb-6">
+                <div id="dynamicTicketCard" class="ticket-notches ticket-shine bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 border border-indigo-500/40 rounded-3xl p-5 sm:p-6 text-left shadow-2xl relative overflow-hidden text-white">
                     
-                    <!-- ส่วนหัวตั๋ว + Badge ชั้นปีตามสีเฉพาะ -->
-                    <div class="flex justify-between items-start border-b border-dashed border-slate-700 pb-3 mb-3.5">
+                    <!-- ส่วนหัวตั๋ว + Badge ชั้นปี -->
+                    <div class="flex justify-between items-start border-b border-dashed border-slate-700 pb-3 mb-4">
                         <div>
-                            <span class="text-[9px] sm:text-[10px] tracking-widest text-indigo-400 uppercase font-bold block">OFFICIAL E-TICKET</span>
-                            <span class="text-xs sm:text-sm font-bold text-white tracking-tight" id="ticketEventTitle">Welcome SAN Party 2026</span>
+                            <span class="text-[10px] tracking-widest text-indigo-400 uppercase font-bold block">OFFICIAL E-TICKET</span>
+                            <span class="text-sm font-bold text-white tracking-tight" id="ticketEventTitle">Welcome SAN Party 2026</span>
                         </div>
-                        <span id="ticketYearBadge" class="px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/40">
+                        <span id="ticketYearBadge" class="px-2.5 py-1 rounded-full text-xs font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/40">
                             ปี 1
                         </span>
                     </div>
 
                     <!-- ข้อมูลชื่อ และ รหัสนักศึกษา -->
-                    <div class="mb-3.5">
-                        <p class="text-[9px] text-gray-400 uppercase tracking-wider">ผู้ถือบัตร</p>
-                        <p id="ticketAttendeeName" class="text-base sm:text-lg font-bold text-white truncate">ชื่อ - นามสกุล</p>
-                        <p class="text-xs tabular-nums text-gray-300" id="ticketStudentIdDisplay">รหัส: 6808000</p>
+                    <div class="mb-4">
+                        <p class="text-[10px] text-gray-400 uppercase tracking-wider">ผู้ถือบัตร</p>
+                        <p id="ticketAttendeeName" class="text-lg font-bold text-white truncate">ชื่อ - นามสกุล</p>
+                        <p class="text-xs sm:text-sm tabular-nums text-gray-300 font-medium" id="ticketStudentIdDisplay">รหัส: 6808000</p>
                     </div>
 
-                    <!-- Badge สวัสดิการอาหาร / สุขภาพแบบไดนามิก -->
-                    <div class="mb-3.5">
-                        <p class="text-[9px] text-gray-400 uppercase tracking-wider mb-1">สวัสดิการอาหาร & การดูแล</p>
-                        <div id="ticketDietaryBadgeContainer">
-                            <!-- เรนเดอร์ผ่าน JavaScript -->
-                        </div>
+                    <!-- Badge อาหาร & สุขภาพ -->
+                    <div class="mb-4">
+                        <p class="text-[10px] text-gray-400 uppercase tracking-wider mb-1.5">สวัสดิการอาหาร & การดูแล</p>
+                        <div id="ticketDietaryBadgeContainer"></div>
                     </div>
 
-                    <!-- โซน QR Code เฉพาะบุคคลสำหรับสแกนเข้างาน -->
-                    <div class="bg-white p-3 rounded-2xl flex flex-col items-center justify-center mb-3 shadow-inner">
-                        <div id="ticketQrCodeWrapper" class="p-1 flex items-center justify-center"></div>
-                        <span class="text-[10px] tabular-nums text-slate-800 mt-1 font-semibold" id="ticketTokenText">SAN-CONFIRMED</span>
+                    <!-- QR Code Canvas (ใช้ QRCode.toCanvas รับประกันการเรนเดอร์ 100%) -->
+                    <div class="bg-white p-3.5 rounded-2xl flex flex-col items-center justify-center mb-4 shadow-inner">
+                        <canvas id="ticketQrCanvas" class="w-32 h-32 rounded"></canvas>
+                        <span class="text-xs tabular-nums text-slate-800 mt-1 font-bold" id="ticketTokenText">SAN-CONFIRMED</span>
                     </div>
 
                     <!-- ข้อมูลวันและสถานที่จัดงานท้ายตั๋ว -->
-                    <div class="text-[10px] sm:text-[11px] text-gray-400 flex justify-between items-center pt-2.5 border-t border-dashed border-slate-700">
+                    <div class="text-xs text-gray-400 flex justify-between items-center pt-3 border-t border-dashed border-slate-700">
                         <span id="ticketDateText">20 ธ.ค. 2026 • อาคาร 6</span>
-                        <span class="text-emerald-400 font-bold flex items-center gap-1">
-                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> ACTIVE
+                        <span class="text-emerald-400 font-bold flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> ACTIVE
                         </span>
                     </div>
 
                 </div>
             </div>
 
-            <!-- ชุดปุ่ม Smart Utilities (Save Image, Calendar, New) -->
-            <div class="flex flex-col gap-2 max-w-xs sm:max-w-sm mx-auto mb-4">
+            <!-- ชุดปุ่ม Smart Actions -->
+            <div class="flex flex-col gap-2.5 max-w-xs sm:max-w-sm mx-auto mb-4">
                 
-                <!-- ปุ่มบันทึกตั๋วเป็นภาพลงเครื่อง -->
+                <!-- ปุ่มบันทึกตั๋วเป็นรูปภาพ -->
                 <button 
                     type="button" 
                     id="btnDownloadTicket"
                     onclick="downloadTicketImage()" 
-                    class="w-full min-h-[44px] bg-slate-800 hover:bg-slate-700 active:scale-[0.99] text-white font-semibold py-2.5 px-4 rounded-xl text-xs transition flex items-center justify-center gap-2 cursor-pointer border border-slate-700 shadow-sm">
-                    <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                    <span id="downloadBtnText">บันทึกตั๋วเป็นรูปภาพลงเครื่อง (PNG)</span>
+                    class="w-full min-h-[46px] bg-slate-800 hover:bg-slate-700 active:scale-[0.99] text-white font-semibold py-2.5 px-4 rounded-xl text-xs sm:text-sm transition flex items-center justify-center gap-2 cursor-pointer border border-slate-700 shadow-sm">
+                    <i data-lucide="download" class="w-4 h-4 text-indigo-400"></i>
+                    <span id="downloadBtnText">บันทึกรูปภาพตั๋วลงเครื่อง (PNG)</span>
                 </button>
 
                 <!-- ปุ่มเพิ่มลงปฏิทิน Google / Apple Calendar -->
@@ -572,19 +572,21 @@
                     <button 
                         type="button" 
                         onclick="addToGoogleCalendar()" 
-                        class="min-h-[42px] bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-600/30 dark:hover:bg-indigo-600/50 text-indigo-700 dark:text-indigo-200 border border-indigo-200 dark:border-indigo-500/40 py-2 px-3 rounded-xl text-xs font-semibold transition flex items-center justify-center gap-1.5 cursor-pointer active:scale-95">
+                        class="min-h-[44px] bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-600/30 dark:hover:bg-indigo-600/50 text-indigo-700 dark:text-indigo-200 border border-indigo-200 dark:border-indigo-500/40 py-2 px-3 rounded-xl text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-1.5 cursor-pointer active:scale-95">
+                        <i data-lucide="calendar" class="w-4 h-4"></i>
                         <span>Google Cal</span>
                     </button>
                     <button 
                         type="button" 
                         onclick="downloadIcsCalendar()" 
-                        class="min-h-[42px] bg-purple-50 hover:bg-purple-100 dark:bg-purple-600/30 dark:hover:bg-purple-600/50 text-purple-700 dark:text-purple-200 border border-purple-200 dark:border-purple-500/40 py-2 px-3 rounded-xl text-xs font-semibold transition flex items-center justify-center gap-1.5 cursor-pointer active:scale-95">
+                        class="min-h-[44px] bg-purple-50 hover:bg-purple-100 dark:bg-purple-600/30 dark:hover:bg-purple-600/50 text-purple-700 dark:text-purple-200 border border-purple-200 dark:border-purple-500/40 py-2 px-3 rounded-xl text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-1.5 cursor-pointer active:scale-95">
+                        <i data-lucide="calendar-days" class="w-4 h-4"></i>
                         <span>Apple Cal</span>
                     </button>
                 </div>
 
-                <!-- ปุ่มลงทะเบียนคนอื่น + ค้นหาใบอื่น -->
-                <div class="flex justify-between items-center pt-3 border-t border-slate-200 dark:border-slate-700 text-xs">
+                <!-- ลิงก์ด้านล่าง -->
+                <div class="flex justify-between items-center pt-3 border-t border-slate-200 dark:border-slate-700 text-xs sm:text-sm">
                     <button 
                         type="button" 
                         onclick="resetToRegisterForm()" 
@@ -604,13 +606,14 @@
 
     </div>
 
-    <!-- ป๊อปอัปค้นหาตั๋ว E-Ticket (FIND TICKET MODAL) -->
+    <!-- MODAL 1: ค้นหาตั๋ว E-Ticket เดิม (สไตล์เดิม เรียบง่าย เสถียร 100%) -->
     <div id="findTicketModal" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-slate-800 rounded-2xl sm:rounded-3xl max-w-sm sm:max-w-md w-full p-5 sm:p-6 shadow-2xl border border-slate-200 dark:border-slate-700 text-left animate-pop-in">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl sm:rounded-3xl max-w-sm sm:max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700 text-left animate-pop-in">
             
-            <div class="flex justify-between items-center mb-3.5">
-                <h3 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                    <span>🎟️</span> <span>ค้นหาตั๋ว E-Ticket เดิม</span>
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    <i data-lucide="ticket" class="w-5 h-5 text-indigo-500"></i>
+                    <span>ค้นหาตั๋ว E-Ticket ของคุณ</span>
                 </h3>
                 <button 
                     type="button" 
@@ -621,19 +624,19 @@
             </div>
 
             <!-- กล่องแสดงตั๋วเดิมที่จำได้ในอุปกรณ์นี้ -->
-            <div id="localSavedTicketBanner" class="hidden mb-3.5 p-3 bg-indigo-50 dark:bg-indigo-500/10 rounded-xl border border-indigo-200 dark:border-indigo-500/30">
-                <p class="text-[11px] text-indigo-700 dark:text-indigo-300 font-semibold mb-1">พบตั๋วที่เคยบันทึกไว้ในอุปกรณ์นี้:</p>
+            <div id="localSavedTicketBanner" class="hidden mb-4 p-3.5 bg-indigo-50 dark:bg-indigo-950/40 rounded-xl border border-indigo-200 dark:border-indigo-800">
+                <p class="text-xs text-indigo-800 dark:text-indigo-300 font-semibold mb-1">พบตั๋วที่เคยลงทะเบียนบนอุปกรณ์นี้:</p>
                 <button 
                     type="button" 
                     onclick="loadSavedLocalTicket()" 
-                    class="text-xs font-bold text-indigo-900 dark:text-white hover:underline cursor-pointer flex items-center gap-1">
-                    👉 <span id="localTicketName"></span>
+                    class="text-xs sm:text-sm font-bold text-indigo-900 dark:text-indigo-200 hover:underline cursor-pointer flex items-center gap-1.5">
+                    <span>👉</span> <span id="localTicketName"></span>
                 </button>
             </div>
 
-            <form onsubmit="lookupTicketByStudentId(event)" class="space-y-3.5">
+            <form onsubmit="lookupTicketByStudentId(event)" class="space-y-4">
                 <div>
-                    <label for="lookupStudentId" class="block text-xs text-slate-600 dark:text-gray-400 mb-1">
+                    <label for="lookupStudentId" class="block text-xs sm:text-sm text-slate-600 dark:text-gray-300 font-medium mb-1.5">
                         กรอกรหัสนักศึกษา 7 หลักเพื่อค้นหา:
                     </label>
                     <input 
@@ -644,22 +647,22 @@
                         inputmode="numeric"
                         placeholder="เช่น 6808012" 
                         pattern="[0-9]{7}"
-                        class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-700/80 border border-slate-300 dark:border-slate-600 rounded-xl text-slate-900 dark:text-white tabular-nums text-sm outline-none focus:ring-2 focus:ring-indigo-500">
+                        class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-xl text-slate-900 dark:text-white tabular-nums text-base outline-none focus:ring-2 focus:ring-indigo-500">
                 </div>
 
-                <div id="lookupAlert" class="hidden p-2.5 rounded-xl text-xs font-medium bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800"></div>
+                <div id="lookupAlert" class="hidden p-3 rounded-xl text-xs sm:text-sm font-medium bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800"></div>
 
-                <div class="flex gap-2 pt-1">
+                <div class="flex gap-2.5 pt-1">
                     <button 
                         type="button" 
                         onclick="closeFindTicketModal()" 
-                        class="flex-1 min-h-[42px] py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-gray-300 text-xs font-medium hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer">
+                        class="flex-1 min-h-[44px] py-2.5 px-4 rounded-xl border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-gray-300 text-sm font-medium hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer">
                         ยกเลิก
                     </button>
                     <button 
                         type="submit" 
                         id="btnLookupSubmit" 
-                        class="flex-1 min-h-[42px] py-2 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow transition cursor-pointer flex items-center justify-center">
+                        class="flex-1 min-h-[44px] py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-bold shadow transition cursor-pointer flex items-center justify-center">
                         <span id="lookupBtnText">ค้นหาตั๋ว</span>
                     </button>
                 </div>
@@ -668,13 +671,136 @@
         </div>
     </div>
 
-    <!-- ป๊อปอัปประกาศความเป็นส่วนตัวฉบับเต็ม (PRIVACY POLICY MODAL) -->
+    <!-- MODAL 2: ระบบสแกนเช็กชื่อหน้างานสำหรับแอดมิน/สตาฟ (STAFF SCANNER & CHECK-IN) -->
+    <div id="staffScannerModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5">
+        <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-md w-full p-5 sm:p-6 shadow-2xl border border-slate-200 dark:border-slate-700 text-left animate-pop-in flex flex-col max-h-[90vh] overflow-y-auto custom-scrollbar">
+            
+            <div class="flex justify-between items-center mb-3 pb-3 border-b border-slate-200 dark:border-slate-700">
+                <div class="flex items-center gap-2">
+                    <div class="p-2 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 rounded-xl">
+                        <i data-lucide="scan-face" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white leading-tight">
+                            ระบบเช็กชื่อหน้างาน (Staff Gate)
+                        </h3>
+                        <p class="text-xs text-slate-500 dark:text-gray-400">
+                            สแกน QR Code หรือกรอกรหัสเพื่อเช็กอิน
+                        </p>
+                    </div>
+                </div>
+                <button 
+                    type="button" 
+                    onclick="closeStaffScannerModal()" 
+                    class="text-slate-400 hover:text-slate-700 dark:hover:text-white text-2xl font-bold leading-none cursor-pointer p-1">
+                    &times;
+                </button>
+            </div>
+
+            <!-- กล่องสถิติเช็กอินสะสม -->
+            <div class="bg-slate-50 dark:bg-slate-700/50 p-3 rounded-2xl mb-3 flex items-center justify-between border border-slate-200 dark:border-slate-600/70">
+                <div class="flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span class="text-xs sm:text-sm font-semibold text-slate-700 dark:text-gray-200">เข้างานแล้ว:</span>
+                </div>
+                <span id="staffCheckinCount" class="text-sm sm:text-base font-extrabold text-indigo-600 dark:text-indigo-400 tabular-nums">0 คน</span>
+            </div>
+
+            <!-- ปุ่มสลับกล้อง / กรอกมือ -->
+            <div class="flex gap-2 mb-3">
+                <button 
+                    type="button" 
+                    id="btnToggleCamera" 
+                    onclick="toggleCameraScanner()" 
+                    class="flex-1 py-2 px-3 rounded-xl bg-indigo-600 text-white text-xs sm:text-sm font-semibold flex items-center justify-center gap-1.5 shadow transition cursor-pointer">
+                    <i data-lucide="camera" class="w-4 h-4"></i>
+                    <span id="cameraBtnLabel">เปิดกล้องสแกน</span>
+                </button>
+                <button 
+                    type="button" 
+                    onclick="focusStaffManualInput()" 
+                    class="py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-gray-200 text-xs sm:text-sm font-semibold flex items-center justify-center gap-1.5 hover:bg-slate-50 dark:hover:bg-slate-700 transition cursor-pointer">
+                    <i data-lucide="keyboard" class="w-4 h-4"></i>
+                    <span>กรอกรหัส</span>
+                </button>
+            </div>
+
+            <!-- พื้นที่แสดงกล้องสแกน QR Code -->
+            <div id="scannerCameraWrapper" class="hidden mb-3 bg-black rounded-2xl overflow-hidden relative">
+                <div id="qrReader" class="w-full"></div>
+                <p class="text-[11px] text-gray-300 text-center py-1.5 bg-black/60">นำกล้องส่องที่ QR Code บนตั๋วของผู้เข้าร่วมงาน</p>
+            </div>
+
+            <!-- กล่องกรอกรหัสแบบแมนนวล -->
+            <div class="mb-4">
+                <div class="flex gap-2">
+                    <input 
+                        type="text" 
+                        id="staffManualInput" 
+                        maxlength="7" 
+                        inputmode="numeric"
+                        placeholder="กรอกรหัสนักศึกษา 7 หลัก..."
+                        onkeydown="if(event.key === 'Enter') handleStaffManualSearch()"
+                        class="flex-1 px-3.5 py-2.5 bg-slate-50 dark:bg-slate-700/80 border border-slate-300 dark:border-slate-600 rounded-xl text-slate-900 dark:text-white tabular-nums text-sm outline-none focus:ring-2 focus:ring-indigo-500">
+                    <button 
+                        type="button" 
+                        onclick="handleStaffManualSearch()" 
+                        class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-white text-xs sm:text-sm font-bold rounded-xl transition cursor-pointer">
+                        ค้นหา
+                    </button>
+                </div>
+            </div>
+
+            <!-- กล่องผลลัพธ์การสแกน / การ์ดโปรไฟล์ผู้เข้าร่วมงาน -->
+            <div id="staffScanResultCard" class="hidden p-4 rounded-2xl border transition-all mb-3">
+                <div class="flex justify-between items-start mb-2">
+                    <div>
+                        <span id="staffResultStatusBadge" class="inline-block px-2.5 py-0.5 rounded-full text-xs font-bold mb-1"></span>
+                        <h4 id="staffResultName" class="text-base sm:text-lg font-bold text-slate-900 dark:text-white"></h4>
+                        <p id="staffResultId" class="text-xs sm:text-sm text-slate-500 dark:text-gray-300 tabular-nums"></p>
+                    </div>
+                    <span id="staffResultYearBadge" class="px-2.5 py-1 rounded-full text-xs font-bold"></span>
+                </div>
+
+                <div class="p-2.5 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 mb-3 text-xs sm:text-sm">
+                    <p class="text-slate-500 dark:text-gray-400 text-xs mb-0.5">อาหาร & การดูแลพิเศษ:</p>
+                    <p id="staffResultDietary" class="font-bold text-slate-800 dark:text-white"></p>
+                </div>
+
+                <!-- ปุ่มกดยืนยันเช็กอินเข้างาน -->
+                <button 
+                    type="button" 
+                    id="btnConfirmCheckin" 
+                    onclick="executeAttendeeCheckin()" 
+                    class="w-full min-h-[46px] bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 px-4 rounded-xl shadow transition text-sm flex items-center justify-center gap-2 cursor-pointer active:scale-95">
+                    <i data-lucide="user-check" class="w-4 h-4"></i>
+                    <span>ยืนยันเช็กอินเข้างาน</span>
+                </button>
+            </div>
+
+            <!-- ข้อความแจ้งเตือนผลลัพธ์ -->
+            <div id="staffScanAlert" class="hidden p-3 rounded-xl text-xs sm:text-sm font-medium mb-3"></div>
+
+            <div class="mt-auto pt-3 border-t border-slate-200 dark:border-slate-700 text-right">
+                <button 
+                    type="button" 
+                    onclick="closeStaffScannerModal()" 
+                    class="px-4 py-2 rounded-xl border border-slate-300 dark:border-slate-600 text-slate-600 dark:text-gray-300 text-xs font-medium hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer">
+                    ปิดหน้าต่าง
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- MODAL 3: ประกาศความเป็นส่วนตัว PDPA ฉบับเต็ม -->
     <div id="privacyPolicyModal" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4">
         <div class="bg-white dark:bg-slate-800 rounded-2xl sm:rounded-3xl max-w-lg w-full p-5 sm:p-7 shadow-2xl border border-slate-200 dark:border-slate-700 text-left animate-pop-in flex flex-col max-h-[85vh]">
             
             <div class="flex justify-between items-center mb-3 pb-3 border-b border-slate-200 dark:border-slate-700">
-                <h3 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                    <span>🛡️</span> <span>ประกาศความเป็นส่วนตัว (Privacy Notice)</span>
+                <h3 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    <i data-lucide="shield-check" class="w-5 h-5 text-indigo-500"></i>
+                    <span>ประกาศความเป็นส่วนตัว (Privacy Notice)</span>
                 </h3>
                 <button 
                     type="button" 
@@ -684,21 +810,21 @@
                 </button>
             </div>
 
-            <div class="text-xs text-slate-600 dark:text-gray-300 space-y-3 overflow-y-auto pr-1 custom-scrollbar leading-relaxed">
+            <div class="text-xs sm:text-sm text-slate-600 dark:text-gray-300 space-y-3.5 overflow-y-auto pr-1 custom-scrollbar leading-relaxed">
                 <div>
-                    <h4 class="font-bold text-slate-800 dark:text-white mb-0.5">1. วัตถุประสงค์ในการเก็บรวบรวมข้อมูล</h4>
+                    <h4 class="font-bold text-slate-900 dark:text-white mb-1">1. วัตถุประสงค์ในการเก็บรวบรวมข้อมูล</h4>
                     <p>คณะผู้จัดงาน Welcome SAN Party 2026 เก็บรวบรวมข้อมูลเพื่อใช้ในการยืนยันสิทธิ์เข้าร่วมงาน, การจัดทำป้ายชื่อกิจกรรม, การจัดเตรียมอาหารที่สอดคล้องกับความต้องการของผู้เข้าร่วม และการดูแลความปลอดภัยในการปฐมพยาบาลเบื้องต้นเท่านั้น</p>
                 </div>
                 <div>
-                    <h4 class="font-bold text-slate-800 dark:text-white mb-0.5">2. ข้อมูลส่วนบุคคลที่จัดเก็บ</h4>
+                    <h4 class="font-bold text-slate-900 dark:text-white mb-1">2. ข้อมูลส่วนบุคคลที่จัดเก็บ</h4>
                     <p>ชื่อ-นามสกุล, รหัสนักศึกษา, ชั้นปี, ชื่อเล่น, อีเมลมหาวิทยาลัย และข้อจำกัดด้านอาหารหรือข้อมูลสุขภาพสำคัญที่ระบุโดยความสมัครใจ</p>
                 </div>
                 <div>
-                    <h4 class="font-bold text-slate-800 dark:text-white mb-0.5">3. ระยะเวลาการเก็บรักษาข้อมูล (Data Retention)</h4>
-                    <p>ข้อมูลทั้งหมดจะถูกจัดเก็บบนระบบฐานข้อมูลที่มีการควบคุมสิทธิ์อย่างปลอดภัย และจะถูกลบหรือทำลายอย่างถาวรภายใน <strong class="text-slate-800 dark:text-white font-semibold">30 วัน</strong> หลังเสร็จสิ้นกิจกรรม Welcome SAN Party 2026</p>
+                    <h4 class="font-bold text-slate-900 dark:text-white mb-1">3. ระยะเวลาการเก็บรักษาข้อมูล (Data Retention)</h4>
+                    <p>ข้อมูลทั้งหมดจะถูกจัดเก็บบนระบบฐานข้อมูลที่มีการควบคุมสิทธิ์อย่างปลอดภัย และจะถูกลบหรือทำลายอย่างถาวรภายใน <strong class="text-slate-900 dark:text-white font-semibold">30 วัน</strong> หลังเสร็จสิ้นกิจกรรม</p>
                 </div>
                 <div>
-                    <h4 class="font-bold text-slate-800 dark:text-white mb-0.5">4. สิทธิของเจ้าของข้อมูลส่วนบุคคล</h4>
+                    <h4 class="font-bold text-slate-900 dark:text-white mb-1">4. สิทธิของเจ้าของข้อมูลส่วนบุคคล</h4>
                     <p>ท่านมีสิทธิ์ในการเข้าถึง ขอแก้ไข หรือขอให้ลบข้อมูลส่วนบุคคลของท่านได้ตลอดเวลาก่อนเริ่มงาน โดยสามารถติดต่อผ่านคณะผู้จัดงานสโมสรนักศึกษา</p>
                 </div>
             </div>
@@ -707,7 +833,7 @@
                 <button 
                     type="button" 
                     onclick="closePrivacyPolicyModal()" 
-                    class="min-h-[40px] px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow transition cursor-pointer">
+                    class="min-h-[42px] px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs sm:text-sm font-semibold shadow transition cursor-pointer">
                     เข้าใจและปิดหน้าต่าง
                 </button>
             </div>
@@ -715,44 +841,45 @@
         </div>
     </div>
 
-    <!-- ป๊อปอัปยืนยันก่อนบันทึกข้อมูล (PDPA CONFIRM MODAL) -->
+    <!-- MODAL 4: ยืนยันข้อมูลก่อนบันทึก -->
     <div id="pdpaModal" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-slate-800 rounded-2xl sm:rounded-3xl max-w-sm sm:max-w-md w-full p-5 sm:p-6 shadow-2xl border border-slate-200 dark:border-slate-700 text-left animate-pop-in">
-            <h3 class="text-sm sm:text-base font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
-                <span>📋</span> <span>ยืนยันความถูกต้องและลงทะเบียน</span>
+        <div class="bg-white dark:bg-slate-800 rounded-2xl sm:rounded-3xl max-w-sm sm:max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700 text-left animate-pop-in">
+            <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
+                <i data-lucide="clipboard-check" class="w-5 h-5 text-indigo-500"></i>
+                <span>ยืนยันความถูกต้องและลงทะเบียน</span>
             </h3>
-            <div class="text-xs text-slate-600 dark:text-gray-300 space-y-2 mb-5 bg-slate-50 dark:bg-slate-900/60 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 leading-relaxed">
-                <p>ข้อมูลของท่านจะถูกส่งไปยังระบบลงทะเบียนกลางของงาน Welcome SAN Party 2026 เพื่อจัดทำ E-Ticket ประจำตัว และสำรองอาหารตามที่ท่านระบุ โปรดตรวจสอบให้แน่ใจว่ารหัสนักศึกษาและชื่อถูกต้อง</p>
+            <div class="text-xs sm:text-sm text-slate-600 dark:text-gray-300 space-y-2 mb-5 bg-slate-50 dark:bg-slate-900/60 p-4 rounded-xl border border-slate-200 dark:border-slate-700 leading-relaxed">
+                <p>ข้อมูลของท่านจะถูกส่งไปยังระบบลงทะเบียนกลางของงาน Welcome SAN Party 2026 เพื่อจัดทำ E-Ticket ประจำตัว และสำรองอาหารตามที่ระบุ โปรดตรวจสอบให้แน่ใจว่ารหัสนักศึกษาและชื่อสะกดถูกต้อง</p>
             </div>
             <div class="flex gap-2.5">
                 <button 
                     type="button" 
                     onclick="closePdpaModal()" 
-                    class="flex-1 min-h-[42px] py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-gray-300 text-xs font-medium hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer">
-                    แก้ไขข้อมูล
+                    class="flex-1 min-h-[44px] py-2 px-3 rounded-xl border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-gray-300 text-xs sm:text-sm font-medium hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer">
+                    กลับไปตรวจทาน
                 </button>
                 <button 
                     type="button" 
                     onclick="confirmAndExecuteSubmit()" 
-                    class="flex-1 min-h-[42px] py-2 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow transition cursor-pointer active:scale-95">
+                    class="flex-1 min-h-[44px] py-2 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs sm:text-sm font-bold shadow transition cursor-pointer active:scale-95">
                     ยืนยันและออกตั๋ว
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- JAVASCRIPT LOGIC & STATE MACHINE -->
     <script>
         /**
          * 1. CONFIGURATION & STATE
          */
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx3WnV1pH8DTtslZvkDgfovRUXRSvzLXk3QIVBxMggbOz-bFYD5PQUQk2EameAxDs0l/exec"; 
 
+        // ตั้งค่าเวลาเริ่มต้น (Fallback เผื่อเซิร์ฟเวอร์ยังตอบไม่ทัน เพื่อไม่ให้เวลากะพริบ)
         const eventConfig = {
             title: "Welcome SAN Party 2026",
             dateStr: "20 ธันวาคม 2026 • อาคาร 6 ชั้น 2",
-            openTime: null,
-            closeTime: null,
+            openTime: new Date("2026-10-13T12:30:00+07:00").getTime(),
+            closeTime: new Date("2026-12-19T23:59:00+07:00").getTime(),
             maxCapacity: 0,
             currentSignups: 0
         };
@@ -761,52 +888,60 @@
         let isSubmitting = false;
         let serverTimeOffset = 0;
         let stateInterval = null;
+        let qrScannerInstance = null;
+        let currentScannedAttendee = null;
 
         /**
          * 2. INITIALIZATION ON LOAD
          */
         window.onload = function() {
             initTheme();
+            refreshLucide();
             fetchSystemConfigAndData();
             checkSavedLocalTicket();
+            updateStaffCheckinDisplay();
 
+            // รันประเมินหน้าจอทันทีและอัปเดตทุก 1 วินาที
+            evaluateScreenState();
             stateInterval = setInterval(evaluateScreenState, 1000);
         };
 
+        function refreshLucide() {
+            if (window.lucide) {
+                window.lucide.createIcons();
+            }
+        }
+
         /**
-         * 3. SPA SCREEN STATE SWITCHER
+         * 3. SPA SCREEN STATE SWITCHER (สลับหน้าจอตามเวลาและความจุอย่างแม่นยำ)
          */
         function evaluateScreenState() {
             if (currentActiveTicket || isSubmitting) return;
 
             const now = Date.now() + serverTimeOffset;
 
-            if (!eventConfig.openTime || !eventConfig.closeTime) {
-                return;
-            }
-
-            if (now < eventConfig.openTime) {
+            // 1. ยังไม่ถึงเวลาเปิดรับสมัคร
+            if (eventConfig.openTime && now < eventConfig.openTime) {
                 switchActiveScreen('countdown');
                 updateCountdownClock(now, eventConfig.openTime);
                 return;
             }
 
-            if (now > eventConfig.closeTime) {
+            // 2. หมดเวลาลงทะเบียนแล้ว
+            if (eventConfig.closeTime && now > eventConfig.closeTime) {
                 switchActiveScreen('closed');
-                document.getElementById('closedTitleText').innerText = 'ปิดรับสมัครเข้าร่วมงานแล้ว';
-                document.getElementById('closedSubText').innerText = 'กิจกรรมหมดเขตรับสมัครตามกำหนดเวลามาตรฐานเรียบร้อยแล้วครับ';
-                document.getElementById('closedIconEmoji').innerText = '⏳';
+                setClosedScreenContent('closed');
                 return;
             }
 
+            // 3. โควตาที่นั่งเต็มแล้ว
             if (eventConfig.maxCapacity > 0 && eventConfig.currentSignups >= eventConfig.maxCapacity) {
                 switchActiveScreen('closed');
-                document.getElementById('closedTitleText').innerText = 'ขออภัย ที่นั่งเต็มตามจำนวนแล้ว';
-                document.getElementById('closedSubText').innerText = `ระบบได้ปิดรับสมัครเนื่องจากมีผู้ลงทะเบียนครบโควตา ${eventConfig.maxCapacity} คนแล้วครับ`;
-                document.getElementById('closedIconEmoji').innerText = '🈵';
+                setClosedScreenContent('full');
                 return;
             }
 
+            // 4. อยู่ในช่วงเปิดรับสมัครปกติ
             switchActiveScreen('register');
             updateFooterCloseCountdown(now, eventConfig.closeTime);
         }
@@ -830,8 +965,28 @@
             }
         }
 
+        function setClosedScreenContent(type) {
+            const titleEl = document.getElementById('closedTitleText');
+            const subEl = document.getElementById('closedSubText');
+            const iconContainer = document.getElementById('closedIconContainer');
+            const iconEl = document.getElementById('closedIcon');
+
+            if (type === 'full') {
+                if (titleEl) titleEl.innerText = 'ขออภัย ที่นั่งเต็มตามจำนวนแล้ว';
+                if (subEl) subEl.innerText = `ระบบปิดรับสมัครเนื่องจากมีผู้ลงทะเบียนครบโควตา ${eventConfig.maxCapacity} คนเรียบร้อยแล้ว สำหรับผู้ที่ลงทะเบียนแล้วสามารถตรวจสอบตั๋วของคุณได้ด้านล่าง`;
+                if (iconContainer) iconContainer.className = 'w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-5 bg-amber-500/10 border border-amber-500/20 text-amber-500 shadow-inner';
+                if (iconEl) iconEl.setAttribute('data-lucide', 'flame');
+            } else {
+                if (titleEl) titleEl.innerText = 'ปิดรับสมัครเข้าร่วมงานแล้ว';
+                if (subEl) subEl.innerText = 'กิจกรรมหมดเขตรับสมัครตามกำหนดเวลามาตรฐานเรียบร้อยแล้ว ขอขอบคุณทุกท่านที่ให้ความสนใจครับ';
+                if (iconContainer) iconContainer.className = 'w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-5 bg-rose-500/10 border border-rose-500/20 text-rose-500 shadow-inner';
+                if (iconEl) iconEl.setAttribute('data-lucide', 'clock-alert');
+            }
+            refreshLucide();
+        }
+
         /**
-         * 4. COUNTDOWN CLOCK LOGIC
+         * 4. COUNTDOWN CLOCK LOGIC (แก้ไขบั๊กเวลานิ่ง/ไม่เดิน)
          */
         function updateCountdownClock(now, targetTime) {
             const diff = Math.max(0, targetTime - now);
@@ -852,20 +1007,25 @@
         }
 
         function updateFooterCloseCountdown(now, targetTime) {
+            const el = document.getElementById('eventCountdownText');
+            if (!el) return;
+
+            if (!targetTime) {
+                el.innerText = 'เปิดรับสมัครเข้าร่วมกิจกรรม';
+                return;
+            }
+
             const diff = Math.max(0, targetTime - now);
             const days = Math.floor(diff / (1000 * 60 * 60 * 24));
             const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             const minutes = Math.floor((diff % (1000 * 60)) / (1000 * 60));
             const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
-            const el = document.getElementById('eventCountdownText');
-            if (el) {
-                el.innerText = `ปิดรับสมัครในอีก: ${days} วัน ${hours} ชม ${minutes} น ${seconds} วิ`;
-            }
+            el.innerText = `ปิดรับสมัครในอีก: ${days} วัน ${hours} ชม ${minutes} น ${seconds} วิ`;
         }
 
         /**
-         * 5. SYNC BACKEND DATA
+         * 5. SYNC BACKEND DATA (GOOGLE APPS SCRIPT)
          */
         function fetchSystemConfigAndData() {
             if (!GOOGLE_SCRIPT_URL) return;
@@ -899,7 +1059,7 @@
                     evaluateScreenState();
                 })
                 .catch(err => {
-                    console.log('Using fallback config:', err);
+                    console.log('Using active offline settings:', err);
                 });
         }
 
@@ -930,7 +1090,7 @@
         }
 
         /**
-         * 6. INPUT HELPERS
+         * 6. INPUT HELPERS & REAL-TIME VALIDATION
          */
         function applyEmailPill(domain) {
             const emailInput = document.getElementById('email');
@@ -959,7 +1119,7 @@
                 input.classList.add('border-emerald-500', 'ring-1', 'ring-emerald-500');
                 if (hint) {
                     hint.innerText = 'รหัสถูกต้อง (7 หลัก)';
-                    hint.className = 'text-[11px] text-emerald-600 dark:text-emerald-400 font-medium';
+                    hint.className = 'text-xs text-emerald-600 dark:text-emerald-400 font-medium';
                 }
                 if (checkIcon) checkIcon.classList.remove('hidden');
             } else {
@@ -967,7 +1127,7 @@
                 input.classList.add('border-slate-300', 'dark:border-slate-600');
                 if (hint) {
                     hint.innerText = `ยังไม่ครบ 7 หลัก (${input.value.length}/7)`;
-                    hint.className = 'text-[11px] text-slate-500 dark:text-gray-400';
+                    hint.className = 'text-xs text-slate-500 dark:text-gray-400';
                 }
                 if (checkIcon) checkIcon.classList.add('hidden');
             }
@@ -997,23 +1157,10 @@
             openPdpaModal();
         }
 
-        function openPdpaModal() { 
-            const m = document.getElementById('pdpaModal');
-            if (m) m.classList.remove('hidden'); 
-        }
-        function closePdpaModal() { 
-            const m = document.getElementById('pdpaModal');
-            if (m) m.classList.add('hidden'); 
-        }
-
-        function openPrivacyPolicyModal() {
-            const m = document.getElementById('privacyPolicyModal');
-            if (m) m.classList.remove('hidden');
-        }
-        function closePrivacyPolicyModal() {
-            const m = document.getElementById('privacyPolicyModal');
-            if (m) m.classList.add('hidden');
-        }
+        function openPdpaModal() { document.getElementById('pdpaModal')?.classList.remove('hidden'); }
+        function closePdpaModal() { document.getElementById('pdpaModal')?.classList.add('hidden'); }
+        function openPrivacyPolicyModal() { document.getElementById('privacyPolicyModal')?.classList.remove('hidden'); }
+        function closePrivacyPolicyModal() { document.getElementById('privacyPolicyModal')?.classList.add('hidden'); }
 
         async function confirmAndExecuteSubmit() {
             closePdpaModal();
@@ -1023,10 +1170,7 @@
                 return;
             }
 
-            const getVal = (id) => {
-                const el = document.getElementById(id);
-                return el ? el.value.trim() : '';
-            };
+            const getVal = (id) => document.getElementById(id)?.value.trim() || '';
 
             const dataObj = {
                 firstName: getVal('firstName'),
@@ -1082,7 +1226,7 @@
         }
 
         /**
-         * 8. DYNAMIC TICKET GENERATOR
+         * 8. DYNAMIC TICKET GENERATOR & QR CODE FIX
          */
         function renderDynamicTicket(attendee) {
             currentActiveTicket = attendee;
@@ -1097,95 +1241,93 @@
             const titleEl = document.getElementById('ticketEventTitle');
             if (titleEl) titleEl.innerText = eventConfig.title;
 
+            // ชั้นปี Badge
             const yearBadge = document.getElementById('ticketYearBadge');
             const y = attendee.yearLevel || '';
             if (yearBadge) {
                 if (y.includes('1')) {
-                    yearBadge.innerText = '🌟 ปี 1 (Freshman)';
-                    yearBadge.className = 'px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40';
+                    yearBadge.innerText = 'ปี 1 (Freshman)';
+                    yearBadge.className = 'px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40';
                 } else if (y.includes('2')) {
-                    yearBadge.innerText = '⚡ ปี 2 (Sophomore)';
-                    yearBadge.className = 'px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold bg-sky-500/20 text-sky-300 border border-sky-500/40';
+                    yearBadge.innerText = 'ปี 2 (Sophomore)';
+                    yearBadge.className = 'px-2.5 py-1 rounded-full text-xs font-bold bg-sky-500/20 text-sky-300 border border-sky-500/40';
                 } else if (y.includes('3')) {
-                    yearBadge.innerText = '🔥 ปี 3 (Junior)';
-                    yearBadge.className = 'px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold bg-purple-500/20 text-purple-300 border border-purple-500/40';
+                    yearBadge.innerText = 'ปี 3 (Junior)';
+                    yearBadge.className = 'px-2.5 py-1 rounded-full text-xs font-bold bg-purple-500/20 text-purple-300 border border-purple-500/40';
                 } else if (y.includes('4')) {
-                    yearBadge.innerText = '👑 ปี 4 (Senior)';
-                    yearBadge.className = 'px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40';
+                    yearBadge.innerText = 'ปี 4 (Senior)';
+                    yearBadge.className = 'px-2.5 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40';
                 } else {
                     yearBadge.innerText = y || 'VIP Attendee';
-                    yearBadge.className = 'px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/40';
+                    yearBadge.className = 'px-2.5 py-1 rounded-full text-xs font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/40';
                 }
             }
 
+            // สวัสดิการอาหาร & สุขภาพ
             const dietContainer = document.getElementById('ticketDietaryBadgeContainer');
             if (dietContainer) {
                 const d = (attendee.dietary || '').trim().toLowerCase();
                 let badgeHtml = '';
 
                 if (d.includes('อิสลาม') || d.includes('ฮาลาล') || d.includes('halal')) {
-                    badgeHtml = '<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">☪️ ฮาลาล (Halal Food)</span>';
+                    badgeHtml = '<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">☪️ ฮาลาล (Halal Food)</span>';
                 } else if (d.includes('มังสวิรัติ') || d.includes('vegan') || d.includes('เจ')) {
-                    badgeHtml = '<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold bg-teal-500/20 text-teal-300 border border-teal-500/40">🥗 มังสวิรัติ (Vegetarian)</span>';
+                    badgeHtml = '<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold bg-teal-500/20 text-teal-300 border border-teal-500/40">🥗 มังสวิรัติ (Vegetarian)</span>';
                 } else if (d.includes('แพ้') || d.includes('allergy')) {
-                    badgeHtml = `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40">⚠️ ข้อจำกัด: ${attendee.dietary}</span>`;
+                    badgeHtml = `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40">⚠️ ข้อจำกัด: ${attendee.dietary}</span>`;
                 } else if (d) {
-                    badgeHtml = `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/40">🍽️ ${attendee.dietary}</span>`;
+                    badgeHtml = `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/40">🍽️ ${attendee.dietary}</span>`;
                 } else {
-                    badgeHtml = '<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-700 text-gray-300 border border-slate-600">🍗 ทั่วไป (Standard)</span>';
+                    badgeHtml = '<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold bg-slate-700 text-gray-300 border border-slate-600">🍗 ทั่วไป (Standard)</span>';
                 }
                 dietContainer.innerHTML = badgeHtml;
             }
 
-            const qrWrapper = document.getElementById('ticketQrCodeWrapper');
-            if (qrWrapper) {
-                qrWrapper.innerHTML = '';
-                const qrPayload = JSON.stringify({
-                    id: attendee.studentId,
-                    name: `${attendee.firstName} ${attendee.lastName}`,
-                    year: attendee.yearLevel,
-                    diet: attendee.dietary || 'Standard'
-                });
-
-                new QRCode(qrWrapper, {
-                    text: qrPayload,
-                    width: 120,
-                    height: 120,
-                    colorDark: "#0f172a",
-                    colorLight: "#ffffff",
-                    correctLevel: QRCode.CorrectLevel.M
+            // QR Code (ใช้ QRCode.toCanvas ซึ่งทำงานตรงกับแคนวาส ไม่ติดปัญหาซ่อนหน้าจอ)
+            const qrCanvas = document.getElementById('ticketQrCanvas');
+            if (qrCanvas && window.QRCode) {
+                // เข้ารหัสข้อมูลสั้นกระชับ เพื่อให้กล้องสแกนได้เร็วที่สุด
+                const qrText = `SAN2026:${attendee.studentId}:${attendee.firstName}:${attendee.yearLevel || ''}`;
+                QRCode.toCanvas(qrCanvas, qrText, {
+                    width: 140,
+                    margin: 1,
+                    color: {
+                        dark: "#0f172a",
+                        light: "#ffffff"
+                    }
+                }, function (error) {
+                    if (error) console.error('QR Render Error:', error);
                 });
             }
 
             const tokenEl = document.getElementById('ticketTokenText');
             if (tokenEl) tokenEl.innerText = `SAN-${attendee.studentId}`;
 
+            refreshLucide();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         /**
-         * 9. SMART UTILITIES
+         * 9. SMART CALENDAR & IMAGE DOWNLOAD
          */
         function addToGoogleCalendar() {
-            if (!currentActiveTicket) return;
             const title = encodeURIComponent(eventConfig.title || "Welcome SAN Party 2026 🎉");
-            const details = encodeURIComponent(`บัตรเข้าร่วมงานอย่างเป็นทางการ\nชื่อ: ${currentActiveTicket.firstName} ${currentActiveTicket.lastName}\nรหัสนักศึกษา: ${currentActiveTicket.studentId}\nชั้นปี: ${currentActiveTicket.yearLevel}`);
+            const details = encodeURIComponent(currentActiveTicket 
+                ? `บัตรเข้าร่วมงานอย่างเป็นทางการ\nชื่อ: ${currentActiveTicket.firstName} ${currentActiveTicket.lastName}\nรหัส: ${currentActiveTicket.studentId}`
+                : "งาน Welcome SAN Party 2026 คณะสาธารณสุขศาสตร์ มหาวิทยาลัยมหิดล");
             const location = encodeURIComponent("อาคาร 6 ชั้น 2 คณะสาธารณสุขศาสตร์ มหาวิทยาลัยมหิดล");
             
             const gCalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=20261220T103000Z/20261220T150000Z&details=${details}&location=${location}`;
-            
             window.open(gCalUrl, '_blank');
         }
 
         function downloadIcsCalendar() {
-            if (!currentActiveTicket) return;
             const icsContent = 
                 "BEGIN:VCALENDAR\n" +
                 "VERSION:2.0\n" +
                 "PRODID:-//Welcome SAN Party//TH\n" +
                 "BEGIN:VEVENT\n" +
                 "SUMMARY:" + (eventConfig.title || "Welcome SAN Party 2026") + " 🎉\n" +
-                "DESCRIPTION:บัตรสำหรับ " + currentActiveTicket.firstName + " " + currentActiveTicket.lastName + " (" + currentActiveTicket.studentId + ")\n" +
                 "LOCATION:อาคาร 6 ชั้น 2 คณะสาธารณสุขศาสตร์ มหาวิทยาลัยมหิดล\n" +
                 "DTSTART:20261220T103000Z\n" +
                 "DTEND:20261220T150000Z\n" +
@@ -1217,7 +1359,7 @@
                 logging: false
             }).then(canvas => {
                 ticketEl.classList.add('ticket-shine');
-                if (downloadBtnText) downloadBtnText.innerText = 'บันทึกตั๋วเป็นรูปภาพลงเครื่อง (PNG)';
+                if (downloadBtnText) downloadBtnText.innerText = 'บันทึกรูปภาพตั๋วลงเครื่อง (PNG)';
                 
                 const link = document.createElement('a');
                 link.download = `SAN_Ticket_${currentActiveTicket ? currentActiveTicket.studentId : 'Pass'}.png`;
@@ -1225,13 +1367,13 @@
                 link.click();
             }).catch(() => {
                 ticketEl.classList.add('ticket-shine');
-                if (downloadBtnText) downloadBtnText.innerText = 'บันทึกตั๋วเป็นรูปภาพลงเครื่อง (PNG)';
+                if (downloadBtnText) downloadBtnText.innerText = 'บันทึกรูปภาพตั๋วลงเครื่อง (PNG)';
                 alert('ไม่สามารถสร้างรูปภาพได้ กรุณาใช้วิธีแคปเจอร์หน้าจอแทนครับ');
             });
         }
 
         /**
-         * 10. TICKET LOOKUP & LOCAL STORAGE
+         * 10. TICKET LOOKUP MODAL (สไตล์เดิมที่คุ้นเคย)
          */
         function openFindTicketModal() {
             const m = document.getElementById('findTicketModal');
@@ -1239,6 +1381,7 @@
             const alertEl = document.getElementById('lookupAlert');
             if (alertEl) alertEl.classList.add('hidden');
             checkSavedLocalTicket();
+            refreshLucide();
         }
 
         function closeFindTicketModal() {
@@ -1334,7 +1477,253 @@
         }
 
         /**
-         * 11. UI HELPERS & CONFETTI
+         * 11. STAFF CHECK-IN SCANNER SYSTEM (โหมดสแกนเช็กชื่อหน้างาน)
+         */
+        function openStaffScannerModal() {
+            document.getElementById('staffScannerModal')?.classList.remove('hidden');
+            updateStaffCheckinDisplay();
+            refreshLucide();
+        }
+
+        function closeStaffScannerModal() {
+            stopCameraScanner();
+            document.getElementById('staffScannerModal')?.classList.add('hidden');
+        }
+
+        function focusStaffManualInput() {
+            stopCameraScanner();
+            const inp = document.getElementById('staffManualInput');
+            if (inp) {
+                inp.focus();
+                inp.select();
+            }
+        }
+
+        function getCheckedInList() {
+            try {
+                return JSON.parse(localStorage.getItem('san_checkins') || '{}');
+            } catch (e) {
+                return {};
+            }
+        }
+
+        function updateStaffCheckinDisplay() {
+            const list = getCheckedInList();
+            const count = Object.keys(list).length;
+            const el = document.getElementById('staffCheckinCount');
+            if (el) el.innerText = `${count} คน`;
+        }
+
+        function toggleCameraScanner() {
+            const wrapper = document.getElementById('scannerCameraWrapper');
+            const btnLabel = document.getElementById('cameraBtnLabel');
+
+            if (!wrapper) return;
+
+            if (wrapper.classList.contains('hidden')) {
+                wrapper.classList.remove('hidden');
+                if (btnLabel) btnLabel.innerText = 'ปิดกล้อง';
+                startCameraScanner();
+            } else {
+                stopCameraScanner();
+            }
+        }
+
+        function startCameraScanner() {
+            if (!window.Html5Qrcode) {
+                showStaffAlert('ไม่พบโมดูลกล้องสแกนเนอร์ในอุปกรณ์นี้', 'error');
+                return;
+            }
+
+            const qrConfig = { fps: 10, qrbox: { width: 220, height: 220 } };
+
+            try {
+                qrScannerInstance = new Html5Qrcode("qrReader");
+                qrScannerInstance.start(
+                    { facingMode: "environment" },
+                    qrConfig,
+                    onQrCodeScanned,
+                    (errorMessage) => { /* scanning */ }
+                ).catch(err => {
+                    showStaffAlert('ไม่สามารถเข้าถึงกล้องได้: ' + err, 'error');
+                });
+            } catch (err) {
+                showStaffAlert('เกิดข้อผิดพลาดในการเปิดกล้อง: ' + err, 'error');
+            }
+        }
+
+        function stopCameraScanner() {
+            const wrapper = document.getElementById('scannerCameraWrapper');
+            const btnLabel = document.getElementById('cameraBtnLabel');
+            if (wrapper) wrapper.classList.add('hidden');
+            if (btnLabel) btnLabel.innerText = 'เปิดกล้องสแกน';
+
+            if (qrScannerInstance) {
+                qrScannerInstance.stop().then(() => {
+                    qrScannerInstance.clear();
+                    qrScannerInstance = null;
+                }).catch(() => {
+                    qrScannerInstance = null;
+                });
+            }
+        }
+
+        function onQrCodeScanned(decodedText) {
+            // เล่นเสียงบี๊บเบาๆ ตอบรับ
+            playBeepSound();
+
+            let targetSid = '';
+            if (decodedText.startsWith('SAN2026:')) {
+                const parts = decodedText.split(':');
+                targetSid = parts[1];
+            } else {
+                try {
+                    const parsed = JSON.parse(decodedText);
+                    targetSid = parsed.id || parsed.studentId;
+                } catch(e) {
+                    targetSid = decodedText.replace(/[^0-9]/g, '');
+                }
+            }
+
+            if (targetSid && targetSid.length === 7) {
+                loadAndDisplayStaffAttendee(targetSid);
+            } else {
+                showStaffAlert('รูปแบบ QR Code ไม่ถูกต้องสำหรับงานนี้: ' + decodedText, 'error');
+            }
+        }
+
+        async function handleStaffManualSearch() {
+            const inp = document.getElementById('staffManualInput');
+            const sid = inp ? inp.value.trim() : '';
+            if (sid.length !== 7) {
+                showStaffAlert('กรุณากรอกรหัสนักศึกษา 7 หลัก', 'error');
+                return;
+            }
+            loadAndDisplayStaffAttendee(sid);
+        }
+
+        async function loadAndDisplayStaffAttendee(sid) {
+            showStaffAlert('กำลังดึงข้อมูลผู้เข้าร่วมงาน...', 'info');
+
+            try {
+                const resp = await fetch(`${GOOGLE_SCRIPT_URL}?action=lookup&studentId=${encodeURIComponent(sid)}&t=${Date.now()}`);
+                const res = await resp.json();
+
+                if (res.result === 'success' && res.data) {
+                    hideStaffAlert();
+                    displayStaffResultCard({
+                        studentId: sid,
+                        firstName: res.data.firstName,
+                        lastName: res.data.lastName,
+                        yearLevel: res.data.yearLevel,
+                        dietary: res.data.dietary || 'ทั่วไป (Standard)'
+                    });
+                } else {
+                    showStaffAlert(res.message || 'ไม่พบข้อมูลรหัสนักศึกษานี้ในระบบ', 'error');
+                }
+            } catch (err) {
+                showStaffAlert('ไม่สามารถเชื่อมต่อฐานข้อมูลได้: ' + err.message, 'error');
+            }
+        }
+
+        function displayStaffResultCard(attendee) {
+            currentScannedAttendee = attendee;
+            const card = document.getElementById('staffScanResultCard');
+            if (!card) return;
+
+            const nameEl = document.getElementById('staffResultName');
+            const idEl = document.getElementById('staffResultId');
+            const yearBadge = document.getElementById('staffResultYearBadge');
+            const dietEl = document.getElementById('staffResultDietary');
+            const statusBadge = document.getElementById('staffResultStatusBadge');
+            const checkinBtn = document.getElementById('btnConfirmCheckin');
+
+            if (nameEl) nameEl.innerText = `${attendee.firstName} ${attendee.lastName}`;
+            if (idEl) idEl.innerText = `รหัสนักศึกษา: ${attendee.studentId}`;
+            if (dietEl) dietEl.innerText = attendee.dietary || 'ทั่วไป (Standard)';
+
+            if (yearBadge) {
+                yearBadge.innerText = attendee.yearLevel || 'Attendee';
+                yearBadge.className = 'px-2.5 py-1 rounded-full text-xs font-bold bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border border-indigo-500/40';
+            }
+
+            const checkinList = getCheckedInList();
+            const checkedTime = checkinList[attendee.studentId];
+
+            if (checkedTime) {
+                card.className = 'p-4 rounded-2xl border border-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 mb-3';
+                if (statusBadge) {
+                    statusBadge.innerText = `✓ เช็กอินแล้วเมื่อ ${new Date(checkedTime).toLocaleTimeString('th-TH')}`;
+                    statusBadge.className = 'inline-block px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/40 mb-1';
+                }
+                if (checkinBtn) {
+                    checkinBtn.innerText = 'เช็กอินซ้ำ / อัปเดตเวลา';
+                    checkinBtn.className = 'w-full min-h-[44px] bg-slate-700 hover:bg-slate-600 text-white font-semibold py-2 px-4 rounded-xl text-xs transition cursor-pointer';
+                }
+            } else {
+                card.className = 'p-4 rounded-2xl border border-indigo-300 dark:border-indigo-600 bg-indigo-50/50 dark:bg-indigo-950/30 mb-3';
+                if (statusBadge) {
+                    statusBadge.innerText = '⚪ ยังไม่ได้เช็กอินหน้างาน';
+                    statusBadge.className = 'inline-block px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-gray-300 mb-1';
+                }
+                if (checkinBtn) {
+                    checkinBtn.innerHTML = '<span>✓ ยืนยันเช็กอินเข้างาน</span>';
+                    checkinBtn.className = 'w-full min-h-[46px] bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 px-4 rounded-xl shadow transition text-sm flex items-center justify-center gap-2 cursor-pointer active:scale-95';
+                }
+            }
+
+            card.classList.remove('hidden');
+            refreshLucide();
+        }
+
+        function executeAttendeeCheckin() {
+            if (!currentScannedAttendee) return;
+
+            const checkins = getCheckedInList();
+            checkins[currentScannedAttendee.studentId] = Date.now();
+            localStorage.setItem('san_checkins', JSON.stringify(checkins));
+
+            updateStaffCheckinDisplay();
+            displayStaffResultCard(currentScannedAttendee);
+            triggerConfetti();
+            showStaffAlert(`✅ เช็กอิน ${currentScannedAttendee.firstName} ${currentScannedAttendee.lastName} เรียบร้อยแล้ว!`, 'success');
+        }
+
+        function showStaffAlert(msg, type) {
+            const el = document.getElementById('staffScanAlert');
+            if (!el) return;
+            el.innerText = msg;
+            el.classList.remove('hidden');
+            if (type === 'error') {
+                el.className = 'p-3 rounded-xl text-xs sm:text-sm font-medium mb-3 bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800';
+            } else if (type === 'success') {
+                el.className = 'p-3 rounded-xl text-xs sm:text-sm font-medium mb-3 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800';
+            } else {
+                el.className = 'p-3 rounded-xl text-xs sm:text-sm font-medium mb-3 bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800';
+            }
+        }
+
+        function hideStaffAlert() {
+            document.getElementById('staffScanAlert')?.classList.add('hidden');
+        }
+
+        function playBeepSound() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(880, ctx.currentTime);
+                gain.gain.setValueAtTime(0.15, ctx.currentTime);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.12);
+            } catch(e) {}
+        }
+
+        /**
+         * 12. GENERAL UI HELPERS
          */
         function setLoadingState(isLoading) {
             isSubmitting = isLoading;
@@ -1364,8 +1753,7 @@
         }
 
         function hideAlert() {
-            const container = document.getElementById('alertContainer');
-            if (container) container.classList.add('hidden');
+            document.getElementById('alertContainer')?.classList.add('hidden');
         }
 
         function resetToRegisterForm() {
@@ -1375,47 +1763,24 @@
             const sidInput = document.getElementById('studentId');
             if (sidInput) validateStudentIdInput(sidInput);
             evaluateScreenState();
+            refreshLucide();
         }
 
         function triggerConfetti() {
-            const duration = 2.5 * 1000;
-            const end = Date.now() + duration;
-
-            (function frame() {
-                confetti({
-                    particleCount: 3,
-                    angle: 60,
-                    spread: 55,
-                    origin: { x: 0 }
-                });
-                confetti({
-                    particleCount: 3,
-                    angle: 120,
-                    spread: 55,
-                    origin: { x: 1 }
-                });
-
-                if (Date.now() < end) {
-                    requestAnimationFrame(frame);
-                }
-            }());
+            confetti({
+                particleCount: 50,
+                spread: 60,
+                origin: { y: 0.7 }
+            });
         }
 
         function initTheme() {
             const isDark = localStorage.getItem('theme') !== 'light';
-            if (isDark) {
-                document.documentElement.classList.add('dark');
-                const sun = document.getElementById('sun-icon');
-                const moon = document.getElementById('moon-icon');
-                if (sun) sun.classList.remove('hidden');
-                if (moon) moon.classList.add('hidden');
-            } else {
-                document.documentElement.classList.remove('dark');
-                const sun = document.getElementById('sun-icon');
-                const moon = document.getElementById('moon-icon');
-                if (sun) sun.classList.add('hidden');
-                if (moon) moon.classList.remove('hidden');
-            }
+            document.documentElement.classList.toggle('dark', isDark);
+            const sun = document.getElementById('sun-icon');
+            const moon = document.getElementById('moon-icon');
+            if (sun) sun.classList.toggle('hidden', !isDark);
+            if (moon) moon.classList.toggle('hidden', isDark);
         }
 
         function toggleTheme() {
