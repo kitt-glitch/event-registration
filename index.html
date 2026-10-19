@@ -157,15 +157,6 @@
 
     <!-- แถบปุ่มควบคุมมุมบน (โหมดสตาฟ & สลับธีม) -->
     <div class="fixed top-3 right-3 sm:top-5 sm:right-5 z-50 flex items-center gap-2">
-        <!-- ปุ่มเปิดโหมดสตาฟสแกนเช็กชื่อหน้างาน -->
-        <button 
-            type="button" 
-            onclick="openStaffScannerModal()" 
-            title="ระบบสแกนเช็กชื่อ (สำหรับทีมงาน)"
-            class="px-3 py-2 sm:px-3.5 sm:py-2.5 rounded-full bg-white/90 dark:bg-slate-800/90 backdrop-blur-md shadow-lg text-slate-700 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400 hover:scale-105 active:scale-95 transition border border-slate-200 dark:border-slate-700 cursor-pointer flex items-center gap-1.5 text-xs font-bold">
-            <i data-lucide="scan-line" class="w-4 h-4 text-indigo-500"></i>
-            <span class="hidden sm:inline">scan</span>
-        </button>
 
         <!-- ปุ่มสลับธีม สว่าง / มืด -->
         <button 
@@ -221,7 +212,7 @@
             </div>
             <p id="capacityWarningNotice" class="hidden text-xs text-amber-600 dark:text-amber-400 font-semibold mt-1.5 flex items-center justify-end gap-1">
                 <i data-lucide="flame" class="w-3.5 h-3.5"></i>
-                <span>ที่นั่งใกล้เต็มแล้ว รีบยืนยันสิทธิ์เข้าร่วมงาน!</span>
+                <span>ที่นั่งเต็มแล้ว!</span>
             </p>
         </section>
 
@@ -234,7 +225,7 @@
                 ระบบเปิดรับสมัครเร็วๆ นี้
             </h2>
             <p class="text-slate-600 dark:text-gray-300 text-sm sm:text-base max-w-md mx-auto mb-6 leading-relaxed">
-                เตรียมนับถอยหลังสู่งานเลี้ยงต้อนรับที่สนุกที่สุดแห่งปี ระบบจะเปิดให้ลงทะเบียนพร้อมกัน
+                เตรียมนับถอยหลังสู่งานเลี้ยงต้อนรับที่สนุกที่สุดแห่งปี ระบบจะเปิดให้ลงทะเบียนพร้อมกันเร็วๆนี้
             </p>
 
             <!-- กล่องนาฬิกาดิจิทัล -->
@@ -1555,27 +1546,39 @@
             }
         }
 
+        let isScannerPaused = false;
+
         function onQrCodeScanned(decodedText) {
-            // เล่นเสียงบี๊บเบาๆ ตอบรับ
+            if (isScannerPaused) return; // ป้องกันการสแกนรัวซ้ำซ้อน
+
             playBeepSound();
+            isScannerPaused = true;
+            if (qrScannerInstance) {
+                qrScannerInstance.pause(true); // พักกล้องชั่วคราว ไม่ทำให้จอค้าง
+            }
 
             let targetSid = '';
             if (decodedText.startsWith('SAN2026:')) {
                 const parts = decodedText.split(':');
                 targetSid = parts[1];
             } else {
-                try {
-                    const parsed = JSON.parse(decodedText);
-                    targetSid = parsed.id || parsed.studentId;
-                } catch(e) {
-                    targetSid = decodedText.replace(/[^0-9]/g, '');
-                }
+                targetSid = decodedText.replace(/[^0-9]/g, '');
             }
 
             if (targetSid && targetSid.length === 7) {
                 loadAndDisplayStaffAttendee(targetSid);
             } else {
-                showStaffAlert('รูปแบบ QR Code ไม่ถูกต้องสำหรับงานนี้: ' + decodedText, 'error');
+                showStaffAlert('รูปแบบ QR Code ไม่ถูกต้อง: ' + decodedText, 'error');
+                resumeCameraScanner();
+            }
+        }
+
+        function resumeCameraScanner() {
+            isScannerPaused = false;
+            if (qrScannerInstance) {
+                try {
+                    qrScannerInstance.resume();
+                } catch(e) {}
             }
         }
 
@@ -1667,13 +1670,11 @@
             if (!currentScannedAttendee) return;
 
             const btn = document.getElementById('btnConfirmCheckin');
-            if (btn) {
-                btn.disabled = true;
-                btn.innerText = 'กำลังบันทึกลงชีต...';
-            }
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<div class="loader"></div> กำลังบันทึกลง Google Sheet...';
 
             try {
-                // ส่งคำสั่ง checkin ไปยัง Google Sheet
                 const resp = await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
@@ -1685,6 +1686,7 @@
                 const res = await resp.json();
 
                 if (res.result === 'success') {
+                    // 1. บันทึกในเครื่อง
                     const checkins = getCheckedInList();
                     checkins[currentScannedAttendee.studentId] = Date.now();
                     localStorage.setItem('san_checkins', JSON.stringify(checkins));
@@ -1692,20 +1694,32 @@
                     updateStaffCheckinDisplay();
                     displayStaffResultCard(currentScannedAttendee);
                     triggerConfetti();
-                    showStaffAlert(`✅ บันทึกลงชีตและเช็กอิน ${currentScannedAttendee.firstName} เรียบร้อย!`, 'success');
+                    showStaffAlert(`บันทึกลง Google Sheet สำเร็จ: ${currentScannedAttendee.firstName} เข้างานแล้ว!`, 'success');
+
+                    // 2. ปรับปุ่มเป็น "สแกนคนถัดไป" เพื่อคืนค่ากล้องทันที
+                    btn.innerHTML = '<span>สแกนคนถัดไป</span>';
+                    btn.className = 'w-full min-h-[46px] bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 px-4 rounded-xl shadow transition text-sm flex items-center justify-center gap-2 cursor-pointer';
+                    btn.onclick = function() {
+                        document.getElementById('staffScanResultCard').classList.add('hidden');
+                        hideStaffAlert();
+                        btn.onclick = executeAttendeeCheckin;
+                        resumeCameraScanner(); // เปิดกล้องต่อทันที จอไม่ค้าง
+                    };
                 } else {
-                    showStaffAlert(res.message || 'บันทึกลงชีตไม่สำเร็จ', 'error');
+                    showStaffAlert(res.message || 'บันทึกไม่สำเร็จ', 'error');
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
                 }
             } catch (err) {
-                // หากอินเทอร์เน็ตหลุด ให้บันทึกออฟไลน์ในเครื่องไว้ก่อน
+                // บันทึกออฟไลน์สำรองเผื่อเน็ตหลุด
                 const checkins = getCheckedInList();
                 checkins[currentScannedAttendee.studentId] = Date.now();
                 localStorage.setItem('san_checkins', JSON.stringify(checkins));
                 updateStaffCheckinDisplay();
                 displayStaffResultCard(currentScannedAttendee);
-                showStaffAlert('⚠️ ออฟไลน์: บันทึกในเครื่องแล้ว (รอต่อเน็ตเพื่อซิงก์ชีต)', 'info');
-            } finally {
-                if (btn) btn.disabled = false;
+                showStaffAlert('⚠️ อินเทอร์เน็ตมีปัญหา: บันทึกในเครื่องแล้ว (ยังไม่ลงชีต)', 'info');
+                btn.disabled = false;
+                btn.innerHTML = originalText;
             }
         }
 
@@ -1811,6 +1825,35 @@
             if (sun) sun.classList.toggle('hidden', !isDark);
             if (moon) moon.classList.toggle('hidden', isDark);
         }
+
+        // แตะที่หัวข้องาน 3 ครั้งติดกันเพื่อเปิดหน้าสแกนเนอร์
+        let titleTapCount = 0;
+        let titleTapTimer = null;
+        const titleEl = document.getElementById('eventTitleDisplay');
+        if (titleEl) {
+            titleEl.addEventListener('click', () => {
+                titleTapCount++;
+                clearTimeout(titleTapTimer);
+        if (titleTapCount >= 3) {
+            titleTapCount = 0;
+            openStaffScannerModal();
+        } else {
+            titleTapTimer = setTimeout(() => { titleTapCount = 0; }, 600);
+        }
+             });
+    }
+
     </script>
+
+        <!-- 🔒 ปุ่มลับสำหรับสตาฟ: โปร่งแสงกลืนกับพื้นหลัง อยู่มุมขวาล่างสุด แตะ 1 ครั้งเปิดหน้าสแกนทันที -->
+    <button 
+        type="button" 
+        onclick="openStaffScannerModal()" 
+        title="Staff Only"
+        aria-label="Staff Scanner"
+        class="fixed bottom-2.5 right-2.5 z-40 p-2 rounded-lg text-slate-400 dark:text-slate-600 opacity-20 hover:opacity-90 active:opacity-100 transition-opacity cursor-pointer">
+        <i data-lucide="lock" class="w-3.5 h-3.5"></i>
+    </button>
+
 </body>
 </html>
