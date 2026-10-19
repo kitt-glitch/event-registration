@@ -161,10 +161,10 @@
         <button 
             type="button" 
             onclick="openStaffScannerModal()" 
-            title="ระบบสแกนเช็กชื่อหน้างาน (สำหรับทีมงาน)"
+            title="ระบบสแกนเช็กชื่อ (สำหรับทีมงาน)"
             class="px-3 py-2 sm:px-3.5 sm:py-2.5 rounded-full bg-white/90 dark:bg-slate-800/90 backdrop-blur-md shadow-lg text-slate-700 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400 hover:scale-105 active:scale-95 transition border border-slate-200 dark:border-slate-700 cursor-pointer flex items-center gap-1.5 text-xs font-bold">
             <i data-lucide="scan-line" class="w-4 h-4 text-indigo-500"></i>
-            <span class="hidden sm:inline">สแกนหน้างาน</span>
+            <span class="hidden sm:inline">scan</span>
         </button>
 
         <!-- ปุ่มสลับธีม สว่าง / มืด -->
@@ -234,7 +234,7 @@
                 ระบบเปิดรับสมัครเร็วๆ นี้
             </h2>
             <p class="text-slate-600 dark:text-gray-300 text-sm sm:text-base max-w-md mx-auto mb-6 leading-relaxed">
-                เตรียมนับถอยหลังสู่งานเลี้ยงต้อนรับที่สนุกที่สุดแห่งปี ระบบจะเปิดให้ลงทะเบียนพร้อมกันตามเวลามาตรฐาน
+                เตรียมนับถอยหลังสู่งานเลี้ยงต้อนรับที่สนุกที่สุดแห่งปี ระบบจะเปิดให้ลงทะเบียนพร้อมกัน
             </p>
 
             <!-- กล่องนาฬิกาดิจิทัล -->
@@ -257,23 +257,6 @@
                 </div>
             </div>
 
-            <!-- ปุ่มบันทึกวันงานลงปฏิทินล่วงหน้า -->
-            <div class="flex flex-col sm:flex-row items-center justify-center gap-3 mb-6">
-                <button 
-                    type="button" 
-                    onclick="addToGoogleCalendar()" 
-                    class="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-900/40 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-2 cursor-pointer">
-                    <i data-lucide="calendar-plus" class="w-4 h-4"></i>
-                    <span>บันทึกลง Google Calendar</span>
-                </button>
-                <button 
-                    type="button" 
-                    onclick="openFindTicketModal()" 
-                    class="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-gray-300 hover:bg-slate-50 dark:hover:bg-slate-700 text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-2 cursor-pointer">
-                    <i data-lucide="search" class="w-4 h-4 text-slate-400"></i>
-                    <span>ค้นหาตั๋วเดิมที่ลงไว้</span>
-                </button>
-            </div>
         </section>
 
         <!-- SCREEN 2: แบบฟอร์มลงทะเบียน (ACTIVE REGISTRATION FORM) -->
@@ -298,7 +281,7 @@
                                 type="text" 
                                 id="firstName" 
                                 required
-                                placeholder="เช่น กานดา"
+                                placeholder="เช่น อนามัย"
                                 class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700/60 border border-slate-300 dark:border-slate-600 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-base">
                         </div>
                         <div>
@@ -309,7 +292,7 @@
                                 type="text" 
                                 id="lastName" 
                                 required
-                                placeholder="เช่น รักเรียน"
+                                placeholder="เช่น สิ่งแวดล้อม"
                                 class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700/60 border border-slate-300 dark:border-slate-600 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-base">
                         </div>
                     </div>
@@ -319,9 +302,9 @@
                         <div>
                             <div class="flex justify-between items-center mb-1.5">
                                 <label for="studentId" class="block text-sm font-semibold text-slate-700 dark:text-gray-200">
-                                    รหัสนักศึกษา 7 หลัก <span class="text-rose-500">*</span>
+                                    รหัสนักศึกษา (Student ID) <span class="text-rose-500">*</span>
                                 </label>
-                                <span id="studentIdHint" class="text-xs text-slate-500 dark:text-gray-400">ต้องครบ 7 หลัก</span>
+                                <span id="studentIdHint" class="text-xs text-slate-500 dark:text-gray-400">7 หลัก</span>
                             </div>
                             <div class="relative">
                                 <input 
@@ -330,7 +313,7 @@
                                     required 
                                     maxlength="7"
                                     inputmode="numeric"
-                                    placeholder="เช่น 6808012"
+                                    placeholder="เช่น 6808xxx"
                                     oninput="validateStudentIdInput(this)"
                                     class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700/60 border border-slate-300 dark:border-slate-600 rounded-xl text-slate-900 dark:text-white tabular-nums tracking-wide placeholder-slate-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-base">
                                 <div id="studentIdCheckIcon" class="hidden absolute right-3.5 top-3.5 text-emerald-500">
@@ -352,7 +335,7 @@
                                 <option value="ปี 2">ปี 2 (Sophomore)</option>
                                 <option value="ปี 3">ปี 3 (Junior)</option>
                                 <option value="ปี 4">ปี 4 (Senior)</option>
-                                <option value="อื่นๆ">อื่นๆ / บัณฑิตศึกษา</option>
+                                <option value="อื่นๆ">อื่นๆ / บัณฑิตศึกษา (Graduated)</option>
                             </select>
                         </div>
                     </div>
@@ -361,13 +344,13 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label for="nickname" class="block text-sm font-semibold text-slate-700 dark:text-gray-200 mb-1.5">
-                                ชื่อเล่น (สำหรับทำป้ายชื่อ) <span class="text-rose-500">*</span>
+                                ชื่อเล่น (Nickname) <span class="text-rose-500">*</span>
                             </label>
                             <input 
                                 type="text" 
                                 id="nickname" 
                                 required
-                                placeholder="เช่น มุก"
+                                placeholder="เช่น แซน"
                                 class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700/60 border border-slate-300 dark:border-slate-600 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-base">
                         </div>
 
@@ -388,7 +371,7 @@
                                 id="email" 
                                 required 
                                 inputmode="email"
-                                placeholder="name@student.mahidol.ac.th"
+                                placeholder="name.sur@student.mahidol.ac.th"
                                 class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700/60 border border-slate-300 dark:border-slate-600 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-base">
                         </div>
                     </div>
@@ -401,7 +384,7 @@
                         <input 
                             type="text" 
                             id="dietary" 
-                            placeholder="เช่น ฮาลาล (อิสลาม), มังสวิรัติ, แพ้อาหารทะเล, มีโรคหอบหืด"
+                            placeholder="เช่น ฮาลาล, แพ้อาหารทะเล, มีโรคหอบหืด"
                             class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700/60 border border-slate-300 dark:border-slate-600 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition text-base">
                     </div>
 
@@ -591,7 +574,7 @@
                         type="button" 
                         onclick="resetToRegisterForm()" 
                         class="text-slate-600 dark:text-gray-300 hover:underline cursor-pointer py-1">
-                        ลงทะเบียนบุคคลอื่นเพิ่ม
+                        กลับสู่หน้าลงทะเบียน
                     </button>
                     <button 
                         type="button" 
@@ -682,7 +665,7 @@
                     </div>
                     <div>
                         <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white leading-tight">
-                            ระบบเช็กชื่อหน้างาน (Staff Gate)
+                            ระบบแสกนเช็กชื่อ (Staff Gate)
                         </h3>
                         <p class="text-xs text-slate-500 dark:text-gray-400">
                             สแกน QR Code หรือกรอกรหัสเพื่อเช็กอิน
@@ -812,20 +795,10 @@
 
             <div class="text-xs sm:text-sm text-slate-600 dark:text-gray-300 space-y-3.5 overflow-y-auto pr-1 custom-scrollbar leading-relaxed">
                 <div>
-                    <h4 class="font-bold text-slate-900 dark:text-white mb-1">1. วัตถุประสงค์ในการเก็บรวบรวมข้อมูล</h4>
-                    <p>คณะผู้จัดงาน Welcome SAN Party 2026 เก็บรวบรวมข้อมูลเพื่อใช้ในการยืนยันสิทธิ์เข้าร่วมงาน, การจัดทำป้ายชื่อกิจกรรม, การจัดเตรียมอาหารที่สอดคล้องกับความต้องการของผู้เข้าร่วม และการดูแลความปลอดภัยในการปฐมพยาบาลเบื้องต้นเท่านั้น</p>
-                </div>
-                <div>
-                    <h4 class="font-bold text-slate-900 dark:text-white mb-1">2. ข้อมูลส่วนบุคคลที่จัดเก็บ</h4>
-                    <p>ชื่อ-นามสกุล, รหัสนักศึกษา, ชั้นปี, ชื่อเล่น, อีเมลมหาวิทยาลัย และข้อจำกัดด้านอาหารหรือข้อมูลสุขภาพสำคัญที่ระบุโดยความสมัครใจ</p>
-                </div>
-                <div>
-                    <h4 class="font-bold text-slate-900 dark:text-white mb-1">3. ระยะเวลาการเก็บรักษาข้อมูล (Data Retention)</h4>
-                    <p>ข้อมูลทั้งหมดจะถูกจัดเก็บบนระบบฐานข้อมูลที่มีการควบคุมสิทธิ์อย่างปลอดภัย และจะถูกลบหรือทำลายอย่างถาวรภายใน <strong class="text-slate-900 dark:text-white font-semibold">30 วัน</strong> หลังเสร็จสิ้นกิจกรรม</p>
-                </div>
-                <div>
-                    <h4 class="font-bold text-slate-900 dark:text-white mb-1">4. สิทธิของเจ้าของข้อมูลส่วนบุคคล</h4>
-                    <p>ท่านมีสิทธิ์ในการเข้าถึง ขอแก้ไข หรือขอให้ลบข้อมูลส่วนบุคคลของท่านได้ตลอดเวลาก่อนเริ่มงาน โดยสามารถติดต่อผ่านคณะผู้จัดงานสโมสรนักศึกษา</p>
+                    <p>กิจกรรม Welcome SAN Party 2026 จะเก็บรวบรวมข้อมูลส่วนบุคคลของผู้สมัคร ได้แก่ ชื่อ–นามสกุล รหัสนักศึกษา ชั้นปี ชื่อเล่น อีเมล ข้อมูลการแพ้อาหารหรือข้อจำกัดด้านอาหาร และข้อมูลอื่น ๆ ที่ผู้สมัครระบุ เพื่อใช้ในการลงทะเบียน ตรวจสอบสิทธิ์ จัดเตรียมอาหาร ติดต่อประสานงาน และบริหารจัดการกิจกรรม 
+                        ข้อมูลของผู้สมัครจะเข้าถึงได้เฉพาะผู้จัดงานและผู้ที่เกี่ยวข้องตามความจำเป็น โดยจะไม่เปิดเผยแก่บุคคลภายนอก เว้นแต่จำเป็นต่อการดำเนินงานหรือเป็นไปตามกฎหมาย และจะเก็บรักษาข้อมูลไว้เท่าที่จำเป็นต่อวัตถุประสงค์ดังกล่าว ก่อนลบหรือทำให้ไม่สามารถระบุตัวบุคคลได้ตามความเหมาะสม 
+                        ผู้สมัครมีสิทธิตามกฎหมายคุ้มครองข้อมูลส่วนบุคคล เช่น ขอเข้าถึง แก้ไข หรือลบข้อมูล คัดค้านหรือจำกัดการใช้ข้อมูล และถอนความยินยอมในกรณีที่ใช้ความยินยอมเป็นฐานในการประมวลผล โดยสามารถติดต่อผู้รับผิดชอบข้อมูลส่วนบุคคลได้ที่ [อีเมลผู้จัดงาน] 
+                        ผู้สมัครสามารถสอบถามรายละเอียดเพิ่มเติมเกี่ยวกับการใช้ข้อมูลส่วนบุคคลได้ผ่านช่องทางติดต่อข้างต้น</p>
                 </div>
             </div>
 
@@ -1269,9 +1242,9 @@
 
                 if (d.includes('อิสลาม') || d.includes('ฮาลาล') || d.includes('halal')) {
                     badgeHtml = '<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">☪️ ฮาลาล (Halal Food)</span>';
-                } else if (d.includes('มังสวิรัติ') || d.includes('vegan') || d.includes('เจ')) {
+                } else if (d.includes('มังสวิรัติ') || d.includes('vegan') || d.includes('เจ')) || d.includes('ไม่กิน') {
                     badgeHtml = '<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold bg-teal-500/20 text-teal-300 border border-teal-500/40">🥗 มังสวิรัติ (Vegetarian)</span>';
-                } else if (d.includes('แพ้') || d.includes('allergy')) {
+                } else if (d.includes('แพ้') || d.includes('allergy')) || d.includes('โรค') {
                     badgeHtml = `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40">⚠️ ข้อจำกัด: ${attendee.dietary}</span>`;
                 } else if (d) {
                     badgeHtml = `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/40">🍽️ ${attendee.dietary}</span>`;
