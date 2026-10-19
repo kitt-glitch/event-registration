@@ -1443,6 +1443,7 @@
                         lastName: res.data.lastName,
                         yearLevel: res.data.yearLevel,
                         studentId: sid,
+                        nickname: res.data.nickname || '',
                         dietary: res.data.dietary || ''
                     };
                     renderDynamicTicket(attendee);
