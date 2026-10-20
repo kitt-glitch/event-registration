@@ -80,7 +80,7 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* รอยเว้าตั๋ว E-Ticket */
+        /* รอยเว้าตั๋ว E-Ticket แก้ไขให้แสดงผลถูกตามธีม */
         .ticket-notches {
             position: relative;
         }
@@ -93,13 +93,12 @@
             top: 52%;
             transform: translateY(-50%);
             z-index: 20;
+            background-color: #ffffff;
             transition: background-color 0.3s ease;
         }
-        .dark .ticket-notches::before, .dark .ticket-notches::after {
+        .dark .ticket-notches::before, 
+        .dark .ticket-notches::after {
             background-color: #0f172a;
-        }
-        .ticket-notches::before, .ticket-notches::after {
-            background-color: #ffffff;
         }
         .ticket-notches::before { left: -14px; }
         .ticket-notches::after { right: -14px; }
@@ -186,12 +185,30 @@
                     <i data-lucide="calendar" class="w-4 h-4"></i>
                     <span>20 ธันวาคม 2026 • อาคาร 6 ชั้น 2</span>
                 </p>
-                <p class="text-indigo-200/90 text-xs sm:text-sm flex items-center justify-center gap-1 mt-1">
+                <a href="https://maps.google.com/?cid=502455620693534776" target="_blank" rel="noopener noreferrer" class="text-indigo-200 hover:text-white text-xs sm:text-sm inline-flex items-center justify-center gap-1 mt-1 transition underline-offset-2 hover:underline">
                     <i data-lucide="map-pin" class="w-3.5 h-3.5 text-indigo-300"></i>
-                    <span>คณะสาธารณสุขศาสตร์ มหาวิทยาลัยมหิดล</span>
-                </p>
+                    <span>คณะสาธารณสุขศาสตร์ มหาวิทยาลัยมหิดล(วิทยาเขตพญาไท)</span>
+                </a>
             </div>
         </header>
+
+        <!-- LIVE SEATING CAPACITY BAR -->
+        <section id="capacitySection" class="hidden px-6 sm:px-8 py-3 bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700/80">
+            <div class="flex justify-between items-center text-xs sm:text-sm font-semibold mb-1.5">
+                <span class="flex items-center gap-2 text-slate-700 dark:text-gray-300">
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span>สถานะความจุที่นั่ง</span>
+                </span>
+                <span id="capacityStatusText" class="text-indigo-600 dark:text-indigo-400 tabular-nums text-xs sm:text-sm font-bold">0 / 0 คน</span>
+            </div>
+            <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2.5 overflow-hidden p-0.5">
+                <div id="capacityBarFill" class="bg-gradient-to-r from-emerald-500 via-indigo-500 to-purple-600 h-2 rounded-full transition-all duration-700" style="width: 0%"></div>
+            </div>
+            <p id="capacityWarningNotice" class="hidden text-xs text-amber-600 dark:text-amber-400 font-semibold mt-1.5 flex items-center justify-end gap-1">
+                <i data-lucide="flame" class="w-3.5 h-3.5"></i>
+                <span>ที่นั่งใกล้เต็มแล้ว!</span>
+            </p>
+        </section>
 
         <!-- SCREEN 1: หน้านับถอยหลังก่อนเปิดรับสมัคร (TEASER / COUNTDOWN) -->
         <section id="screenCountdown" class="hidden p-6 sm:p-10 text-center animate-pop-in">
@@ -202,7 +219,7 @@
                 ระบบเปิดรับลงทะเบียนเร็ว ๆ นี้
             </h2>
             <p class="text-slate-600 dark:text-gray-300 text-sm sm:text-base max-w-md mx-auto mb-6 leading-relaxed">
-                เตรียมนับถอยหลังสู่งานเลี้ยงต้อนรับสุดพิเศษ ระบบจะเปิดให้ลงทะเบียนพร้อมกันในอีก...
+                เตรียมนับถอยหลังเข้าสู่งาน <span class="sync-event-title font-semibold">Welcome SAN Party 2026</span> ระบบจะเปิดให้ลงทะเบียนพร้อมกันในอีก...
             </p>
 
             <!-- กล่องนาฬิกาดิจิทัล -->
@@ -376,7 +393,7 @@
                                 required
                                 class="mt-1 w-4 h-4 text-indigo-600 rounded border-slate-300 dark:border-slate-500 bg-white dark:bg-slate-800 focus:ring-indigo-500 cursor-pointer">
                             <span class="text-xs sm:text-sm text-slate-600 dark:text-gray-300 leading-relaxed">
-                                ข้าพเจ้าได้อ่านและรับทราบประกาศความเป็นส่วนตัวตามพระราชบัญญัติคุ้มครองข้อมูลส่วนบุคคล พ.ศ.2562 (PDPA) สำหรับกิจกรรม Welcome SAN Party 2026 แล้ว
+                                ข้าพเจ้าได้อ่านและรับทราบประกาศความเป็นส่วนตัวตามพระราชบัญญัติคุ้มครองข้อมูลส่วนบุคคล พ.ศ.2562 (PDPA) สำหรับกิจกรรม <strong id="pdpaTitleDisplay" class="text-slate-900 dark:text-white font-semibold">Welcome SAN Party 2026</strong> แล้ว
                                 <button 
                                     type="button" 
                                     onclick="openPrivacyPolicyModal()" 
@@ -443,7 +460,7 @@
 
             <!-- กล่องข้อมูลติดต่อ -->
             <p class="text-xs text-slate-400 dark:text-gray-500">
-                หากมีข้อสงสัยหรือต้องการสอบถามเพิ่มเติม กรุณาติดต่อ…
+                หากมีข้อสงสัยหรือต้องการสอบถามเพิ่มเติม กรุณาติดต่อ name.sur@student.mahidol.ac.th หรือ คณะผู้จัดกิจกรรม
             </p>
         </section>
 
@@ -487,9 +504,9 @@
                         <div id="ticketDietaryBadgeContainer"></div>
                     </div>
 
-                    <!-- QR Code -->
+                    <!-- QR Code (Rendered as Base64/SVG to prevent CORS issues with html2canvas) -->
                     <div class="bg-white p-3.5 rounded-2xl flex flex-col items-center justify-center mb-4 shadow-inner">
-                        <img id="ticketQrImg" class="w-36 h-36 rounded mx-auto object-contain" alt="Ticket QR Code" />
+                        <img id="ticketQrImg" class="w-36 h-36 rounded mx-auto object-contain" alt="Ticket QR Code" crossOrigin="anonymous" />
                         <span class="text-xs tabular-nums text-slate-800 mt-1 font-bold" id="ticketTokenText">SAN-CONFIRMED</span>
                     </div>
 
@@ -507,17 +524,17 @@
             <!-- ชุดปุ่ม Smart Actions -->
             <div class="flex flex-col gap-2.5 max-w-xs sm:max-w-sm mx-auto mb-4">
                 
-                <!-- ปุ่มบันทึกตั๋วเป็นรูปภาพ -->
+                <!-- ปุ่มบันทึกตั๋วเป็นรูปภาพ (รองรับ Web Share & Direct Download) -->
                 <button 
                     type="button" 
                     id="btnDownloadTicket"
                     onclick="downloadTicketImage()" 
                     class="w-full min-h-[46px] bg-slate-800 hover:bg-slate-700 active:scale-[0.99] text-white font-semibold py-2.5 px-4 rounded-xl text-xs sm:text-sm transition flex items-center justify-center gap-2 cursor-pointer border border-slate-700 shadow-sm">
                     <i data-lucide="download" class="w-4 h-4 text-indigo-400"></i>
-                    <span id="downloadBtnText">บันทึกรูปภาพตั๋วลงเครื่อง (PNG)</span>
+                    <span id="downloadBtnText">บันทึกรูปภาพตั๋วลงเครื่อง</span>
                 </button>
 
-                <!-- ปุ่มเพิ่มลงปฏิทิน Google / Apple Calendar -->
+                <!-- ปุ่มเพิ่มลงปฏิทิน Google / Apple Calendar พร้อมพิกัดแผนที่จริง -->
                 <div class="grid grid-cols-2 gap-2">
                     <button 
                         type="button" 
@@ -556,7 +573,7 @@
 
     </div>
 
-    <!-- MODAL 1: ค้นหาตั๋ว E-Ticket เดิม (สไตล์เดิม เรียบง่าย เสถียร 100%) -->
+    <!-- MODAL 1: ค้นหาตั๋ว E-Ticket เดิม -->
     <div id="findTicketModal" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-white dark:bg-slate-800 rounded-2xl sm:rounded-3xl max-w-sm sm:max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700 text-left animate-pop-in">
             
@@ -632,7 +649,7 @@
                     </div>
                     <div>
                         <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white leading-tight">
-                            ระบบแสกนเช็กชื่อ (Staff Gate)
+                            ระบบสแกนเช็กชื่อ (Staff Gate)
                         </h3>
                         <p class="text-xs text-slate-500 dark:text-gray-400">
                             สแกน QR Code หรือกรอกรหัสเพื่อเช็กอิน
@@ -760,7 +777,7 @@
                 </button>
             </div>
 
-                        <!-- ส่วนเนื้อหาประกาศ PDPA ตรงตามแบบฉบับย่อ 4 ข้อ อ่านสบายตา -->
+            <!-- ส่วนเนื้อหาประกาศ PDPA -->
             <div class="text-xs sm:text-sm text-slate-600 dark:text-gray-300 space-y-4 overflow-y-auto pr-1.5 custom-scrollbar leading-relaxed">
                 
                 <!-- 1. ข้อมูลที่เก็บรวบรวมและวัตถุประสงค์ -->
@@ -769,7 +786,7 @@
                         1. ข้อมูลที่เก็บรวบรวมและวัตถุประสงค์
                     </h4>
                     <p class="text-slate-600 dark:text-gray-300 leading-relaxed">
-                        กิจกรรม Welcome SAN Party 2026 จะเก็บรวบรวมข้อมูลส่วนบุคคลของผู้สมัคร ได้แก่ ชื่อ–นามสกุล รหัสนักศึกษา ชั้นปี ชื่อเล่น อีเมล ข้อมูลการแพ้อาหารหรือข้อจำกัดด้านอาหาร และข้อมูลอื่น ๆ ที่ผู้สมัครระบุ เพื่อใช้ในการลงทะเบียน ตรวจสอบสิทธิ์ จัดเตรียมอาหาร ติดต่อประสานงาน ออกบัตรเข้างาน (E-Ticket) บริหารจัดการกิจกรรม และจัดทำเอกสารประกอบการขอรับชั่วโมงกิจกรรม (AT) โดยใช้ข้อมูลเท่าที่จำเป็นสำหรับแต่ละวัตถุประสงค์
+                        กิจกรรม <span class="sync-event-title font-semibold">Welcome SAN Party 2026</span> จะเก็บรวบรวมข้อมูลส่วนบุคคลของผู้สมัคร ได้แก่ ชื่อ–นามสกุล รหัสนักศึกษา ชั้นปี ชื่อเล่น อีเมล ข้อมูลการแพ้อาหารหรือข้อจำกัดด้านอาหาร และข้อมูลอื่น ๆ ที่ผู้สมัครระบุ เพื่อใช้ในการลงทะเบียน ตรวจสอบสิทธิ์ จัดเตรียมอาหาร ติดต่อประสานงาน ออกบัตรเข้างาน (E-Ticket) บริหารจัดการกิจกรรม และจัดทำเอกสารประกอบการขอรับชั่วโมงกิจกรรม (AT) โดยใช้ข้อมูลเท่าที่จำเป็นสำหรับแต่ละวัตถุประสงค์
                     </p>
                 </div>
 
@@ -802,7 +819,7 @@
                         ผู้สมัครมีสิทธิตามกฎหมายคุ้มครองข้อมูลส่วนบุคคล เช่น ขอเข้าถึงและรับสำเนาข้อมูล ขอแก้ไขหรือลบข้อมูล คัดค้านหรือจำกัดการใช้ข้อมูล รวมถึงถอนความยินยอมในกรณีที่การประมวลผลอาศัยความยินยอม ทั้งนี้ เป็นไปตามเงื่อนไขของกฎหมาย
                     </p>
                     <p class="text-xs text-slate-500 dark:text-gray-400 bg-slate-50 dark:bg-slate-700/50 p-2.5 rounded-xl border border-slate-200 dark:border-slate-600/60">
-                        หากมีข้อสงสัยหรือต้องการใช้สิทธิเกี่ยวกับข้อมูลส่วนบุคคล สามารถติดต่อผู้รับผิดชอบได้ที่ <span class="text-indigo-600 dark:text-indigo-400 font-medium underline">name.sur@student.mahidol.ac.th</span>
+                        หากมีข้อสงสัยหรือต้องการใช้สิทธิเกี่ยวกับข้อมูลส่วนบุคคล สามารถติดต่อผู้รับผิดชอบได้ที่ <span class="text-indigo-600 dark:text-indigo-400 font-medium underline">sanparty2026@gmail.com</span>
                     </p>
                 </div>
 
@@ -828,7 +845,7 @@
                 <span>ยืนยันความถูกต้องและลงทะเบียน</span>
             </h3>
             <div class="text-xs sm:text-sm text-slate-600 dark:text-gray-300 space-y-2 mb-5 bg-slate-50 dark:bg-slate-900/60 p-4 rounded-xl border border-slate-200 dark:border-slate-700 leading-relaxed">
-                <p>ข้อมูลของท่านจะถูกส่งไปยังระบบลงทะเบียนกลางของงาน Welcome SAN Party 2026 เพื่อจัดทำ E-Ticket ประจำตัว และสำรองอาหารตามที่ระบุ โปรดตรวจสอบให้แน่ใจว่ารหัสนักศึกษาและชื่อสะกดถูกต้อง</p>
+                <p>ข้อมูลของท่านจะถูกส่งไปยังระบบลงทะเบียนกลางของงาน <span class="sync-event-title font-semibold">Welcome SAN Party 2026</span> เพื่อจัดทำ E-Ticket ประจำตัว และสำรองอาหารตามที่ระบุ โปรดตรวจสอบให้แน่ใจว่ารหัสนักศึกษาและชื่อสะกดถูกต้อง</p>
             </div>
             <div class="flex gap-2.5">
                 <button 
@@ -879,7 +896,7 @@
         let stateInterval = null;
         let qrScannerInstance = null;
         let currentScannedAttendee = null;
-        let canScanQr = true; // ตัวแปรคุมสแกน QR อัจฉริยะ (ไม่ให้แฮงก์)
+        let canScanQr = true; // ตัวแปรคุมสแกน QR อัจฉริยะ
 
         /**
          * 2. INITIALIZATION ON LOAD
@@ -903,7 +920,7 @@
         }
 
         /**
-         * 3. SPA SCREEN STATE SWITCHER (สลับหน้าจอตามเวลาและความจุอย่างแม่นยำ)
+         * 3. SPA SCREEN STATE SWITCHER
          */
         function evaluateScreenState() {
             if (currentActiveTicket || isSubmitting) return;
@@ -968,7 +985,7 @@
                 if (iconEl) iconEl.setAttribute('data-lucide', 'flame');
             } else {
                 if (titleEl) titleEl.innerText = 'ปิดรับลงทะเบียนออนไลน์แล้ว';
-                if (subEl) subEl.innerText = 'สำหรับผู้ที่ลงทะเบียนไม่ทัน สามารถติดต่อขอลงทะเบียนแบบ Walk-in ณ หน้างานได้ ทั้งนี้ การเข้าร่วมขึ้นอยู่กับจำนวนที่นั่ง ความพร้อมในการรองรับ และเงื่อนไขที่ผู้จัดงานกำหนด ขออภัยในความไม่สะดวก และขอบคุณทุกคนที่สนใจเข้าร่วมกิจกรรมครับ';
+                if (subEl) subEl.innerText = 'สำหรับผู้ที่ลงทะเบียนไม่ทัน สามารถติดต่อขอลงทะเบียนแบบ Walk-in ที่หน้างานได้ ทั้งนี้ การเข้าร่วมขึ้นอยู่กับจำนวนที่นั่ง ความพร้อมในการรองรับ และเงื่อนไขที่ผู้จัดงานกำหนด ขออภัยในความไม่สะดวก และขอบคุณทุกคนที่สนใจเข้าร่วมกิจกรรมครับ';
                 if (iconContainer) iconContainer.className = 'w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-5 bg-rose-500/10 border border-rose-500/20 text-rose-500 shadow-inner';
                 if (iconEl) iconEl.setAttribute('data-lucide', 'clock-alert');
             }
@@ -1029,16 +1046,36 @@
                     if (data.count !== undefined) {
                         eventConfig.currentSignups = Number(data.count) || 0;
                     }
+
+                    // ⭐️ ซิงก์ชื่องานไปยังทุกจุดของเว็บอัตโนมัติ
                     if (data.eventTitle) {
                         eventConfig.title = data.eventTitle;
-                        const tEl = document.getElementById('eventTitleDisplay');
-                        if (tEl) tEl.innerText = data.eventTitle;
+                        document.title = data.eventTitle;
+                        
+                        const tHeader = document.getElementById('eventTitleDisplay');
+                        if (tHeader) tHeader.innerText = data.eventTitle;
+
+                        const tTicket = document.getElementById('ticketEventTitle');
+                        if (tTicket) tTicket.innerText = data.eventTitle;
+
+                        const tPdpa = document.getElementById('pdpaTitleDisplay');
+                        if (tPdpa) tPdpa.innerText = data.eventTitle;
+
+                        // บรรทัดเดียวซิงก์ชื่องานลงทุกจุดที่มีคลาส sync-event-title ทั่วทั้งหน้าเว็บ
+                        document.querySelectorAll('.sync-event-title').forEach(el => el.innerText = data.eventTitle);
+
                     }
+
+                    // ⭐️ ซิงก์วันเวลาและสถานที่จัดงานไปยังทุกจุดของเว็บ
                     if (data.eventDate) {
                         eventConfig.dateStr = data.eventDate;
                         const dEl = document.getElementById('eventDateDisplay');
                         if (dEl) dEl.innerText = data.eventDate;
+
+                        const dTicket = document.getElementById('ticketDateText');
+                        if (dTicket) dTicket.innerText = data.eventDate;
                     }
+
                     if (data.openTime) eventConfig.openTime = Number(data.openTime);
                     if (data.closeTime) eventConfig.closeTime = Number(data.closeTime);
                     if (data.maxCapacity !== undefined) {
@@ -1272,7 +1309,7 @@
 
                 // 2. หมวดแพ้อาหาร
                 if (lower.includes('แพ้') && !hasMedical) {
-                    badges.push(`<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40"><i data-lucide="alert-triangle" class="w-3.5 h-3.5"></i> <span>แพ้อาหาร: ${raw}</span></span>`);
+                    badges.push(`<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40"><i data-lucide="alert-triangle" class="w-3.5 h-3.5"></i> <span>อาหาร: ${raw}</span></span>`);
                 }
 
                 // 3. หมวดฮาลาล / มุสลิม
@@ -1302,11 +1339,23 @@
                 dietContainer.innerHTML = `<div class="flex flex-wrap gap-1.5">${badges.join('')}</div>`;
             }
 
-            // สร้าง QR Code ด้วยภาพ SVG คมชัด โหลดติดทันที 100%
+            // สร้าง QR Code ผ่าน Blob Data URL ป้องกันปัญหา CORS Taint กับ html2canvas 100%
             const qrImg = document.getElementById('ticketQrImg');
-            const qrData = encodeURIComponent(`SAN2026:${attendee.studentId}:${attendee.firstName}:${attendee.yearLevel || ''}`);
+            const qrData = `SAN2026:${attendee.studentId}:${attendee.firstName}:${attendee.yearLevel || ''}`;
+            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&format=png&data=${encodeURIComponent(qrData)}`;
+            
             if (qrImg) {
-                qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&format=svg&data=${qrData}`;
+                // พยายามดึงเป็น Blob แปลงเป็น DataURL เพื่อไม่ให้ Canvas โดนบล็อก
+                fetch(qrUrl)
+                    .then(res => res.blob())
+                    .then(blob => {
+                        const reader = new FileReader();
+                        reader.onloadend = () => { qrImg.src = reader.result; };
+                        reader.readAsDataURL(blob);
+                    })
+                    .catch(() => {
+                        qrImg.src = qrUrl;
+                    });
             }
 
             const tokenEl = document.getElementById('ticketTokenText');
@@ -1320,11 +1369,13 @@
          * 9. SMART CALENDAR & IMAGE DOWNLOAD
          */
         function addToGoogleCalendar() {
-            const title = encodeURIComponent(eventConfig.title || "Welcome SAN Party 2026 🎉");
+            const title = encodeURIComponent(eventConfig.title || "Welcome SAN Party 2026");
             const details = encodeURIComponent(currentActiveTicket 
-                ? `บัตรเข้าร่วมงานอย่างเป็นทางการ\nชื่อ: ${currentActiveTicket.firstName} ${currentActiveTicket.lastName}\nรหัส: ${currentActiveTicket.studentId}`
-                : "Welcome SAN Party 2026");
-            const location = encodeURIComponent("อาคาร 6 ชั้น 2 คณะสาธารณสุขศาสตร์ มหาวิทยาลัยมหิดล");
+                ? `บัตรเข้าร่วมงานอย่างเป็นทางการ\nชื่อ: ${currentActiveTicket.firstName} ${currentActiveTicket.lastName}\nรหัส: ${currentActiveTicket.studentId}\n\n📍 แผนที่เดินทาง: https://maps.google.com/?cid=502455620693534776`
+                : `${eventConfig.title}\n\n📍 แผนที่เดินทาง: https://maps.google.com/?cid=502455620693534776`);
+            
+            // ปักหมุดที่อยู่จริง พร้อมชื่ออาคารและมหาวิทยาลัย
+            const location = encodeURIComponent("อาคาร 6 ชั้น 2 คณะสาธารณสุขศาสตร์ มหาวิทยาลัยมหิดล, 420/1 ถ.ราชวิถี แขวงทุ่งพญาไท เขตราชเทวี กรุงเทพมหานคร 10400");
             
             const gCalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=20261220T103000Z/20261220T150000Z&details=${details}&location=${location}`;
             window.open(gCalUrl, '_blank');
@@ -1336,8 +1387,10 @@
                 "VERSION:2.0\n" +
                 "PRODID:-//Welcome SAN Party//TH\n" +
                 "BEGIN:VEVENT\n" +
-                "SUMMARY:" + (eventConfig.title || "Welcome SAN Party 2026") + " 🎉\n" +
-                "LOCATION:อาคาร 6 ชั้น 2 คณะสาธารณสุขศาสตร์ มหาวิทยาลัยมหิดล\n" +
+                "SUMMARY:" + (eventConfig.title || "Welcome SAN Party 2026") +
+                "LOCATION:อาคาร 6 ชั้น 2 คณะสาธารณสุขศาสตร์ มหาวิทยาลัยมหิดล\\, 420/1 ถ.ราชวิถี แขวงทุ่งพญาไท เขตราชเทวี กรุงเทพมหานคร 10400\n" +
+                "GEO:13.7663;100.5348\n" +
+                "DESCRIPTION:บัตรและรายละเอียดงาน Welcome SAN Party 2026\\nแผนที่นำทาง: https://maps.google.com/?cid=502455620693534776\n" +
                 "DTSTART:20261220T103000Z\n" +
                 "DTEND:20261220T150000Z\n" +
                 "END:VEVENT\n" +
@@ -1352,7 +1405,7 @@
             document.body.removeChild(link);
         }
 
-        function downloadTicketImage() {
+        async function downloadTicketImage() {
             const ticketEl = document.getElementById('dynamicTicketCard');
             const downloadBtnText = document.getElementById('downloadBtnText');
             if (!ticketEl) return;
@@ -1361,24 +1414,49 @@
 
             ticketEl.classList.remove('ticket-shine');
 
-            html2canvas(ticketEl, {
-                scale: 2.5,
-                backgroundColor: null,
-                useCORS: true,
-                logging: false
-            }).then(canvas => {
+            try {
+                const canvas = await html2canvas(ticketEl, {
+                    scale: 2.5,
+                    backgroundColor: null,
+                    useCORS: true,
+                    allowTaint: false,
+                    logging: false
+                });
+
                 ticketEl.classList.add('ticket-shine');
-                if (downloadBtnText) downloadBtnText.innerText = 'บันทึกรูปภาพตั๋วลงเครื่อง (PNG)';
-                
-                const link = document.createElement('a');
-                link.download = `SAN_Ticket_${currentActiveTicket ? currentActiveTicket.studentId : 'Pass'}.png`;
-                link.href = canvas.toDataURL('image/png');
-                link.click();
-            }).catch(() => {
+                if (downloadBtnText) downloadBtnText.innerText = 'บันทึกรูปภาพตั๋วลงเครื่อง';
+
+                const filename = `SAN_Ticket_${currentActiveTicket ? currentActiveTicket.studentId : 'Pass'}.png`;
+
+                // ถ้าเป็นมือถือที่รองรับ Web Share API ให้เปิดหน้าต่างบันทึกลงเครื่อง / ส่งแชร์
+                canvas.toBlob(async (blob) => {
+                    if (blob && navigator.canShare && navigator.canShare({ files: [new File([blob], filename, { type: 'image/png' })] })) {
+                        try {
+                            await navigator.share({
+                                files: [new File([blob], filename, { type: 'image/png' })],
+                                title: eventConfig.title || 'บัตรเข้าร่วมงาน Welcome SAN Party 2026',
+                                text: 'บัตรเข้าร่วมงานอย่างเป็นทางการ'
+                            });
+                            return;
+                        } catch (err) {
+                            if (err.name !== 'AbortError') console.log('Share dismissed');
+                        }
+                    }
+
+                    // Fallback ดาวน์โหลดไฟล์โดยตรง (Desktop หรือเบราว์เซอร์ที่ไม่รองรับ Web Share)
+                    const link = document.createElement('a');
+                    link.download = filename;
+                    link.href = canvas.toDataURL('image/png');
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }, 'image/png');
+
+            } catch (err) {
                 ticketEl.classList.add('ticket-shine');
-                if (downloadBtnText) downloadBtnText.innerText = 'บันทึกรูปภาพตั๋วลงเครื่อง (PNG)';
-                alert('ไม่สามารถสร้างรูปภาพได้ กรุณาใช้วิธีแคปเจอร์หน้าจอแทนครับ');
-            });
+                if (downloadBtnText) downloadBtnText.innerText = 'บันทึกรูปภาพตั๋วลงเครื่อง';
+                alert('ไม่สามารถสร้างรูปภาพได้ กรุณาใช้วิธีจับภาพหน้าจอ (Screenshot) แทน');
+            }
         }
 
         /**
@@ -1487,7 +1565,7 @@
         }
 
         /**
-         * 11. STAFF CHECK-IN SCANNER SYSTEM (โหมดสแกนเช็กชื่อหน้างาน)
+         * 11. STAFF CHECK-IN SCANNER SYSTEM
          */
         function openStaffScannerModal() {
             document.getElementById('staffScannerModal')?.classList.remove('hidden');
@@ -1554,7 +1632,7 @@
                     { facingMode: "environment" },
                     qrConfig,
                     onQrCodeScanned,
-                    (errorMessage) => { /* scanning */ }
+                    () => { /* scanning */ }
                 ).catch(err => {
                     showStaffAlert('ไม่สามารถเข้าถึงกล้องได้: ' + err, 'error');
                 });
@@ -1580,7 +1658,6 @@
         }
 
         function onQrCodeScanned(decodedText) {
-            // ถ้าอยู่ในระหว่างตรวจคนก่อนหน้า หรือยังไม่ได้กดสแกนคนถัดไป ให้ข้ามการสแกนซ้ำ
             if (!canScanQr) return;
 
             let targetSid = '';
@@ -1597,7 +1674,7 @@
             }
 
             if (targetSid && targetSid.length === 7) {
-                canScanQr = false; // พักการอ่านชั่วคราว เพื่อแสดงผลคนนี้
+                canScanQr = false;
                 playBeepSound();
                 loadAndDisplayStaffAttendee(targetSid);
             } else {
@@ -1725,7 +1802,7 @@
                     updateStaffCheckinDisplay();
                     displayStaffResultCard(currentScannedAttendee);
                     triggerConfetti();
-                    showStaffAlert(`✅ เช็กอิน ${currentScannedAttendee.firstName} ลงชีตเรียบร้อย!`, 'success');
+                    showStaffAlert(`เช็กอิน ${currentScannedAttendee.firstName} ลงชีตเรียบร้อย!`, 'success');
 
                     // ปลดล็อกปุ่มและเปลี่ยนเป็น "สแกนคนถัดไป" ทันที
                     btn.disabled = false;
@@ -1755,7 +1832,6 @@
             }
         }
 
-        // ฟังก์ชันล้างหน้าจอเพื่อเตรียมสแกนคนต่อไป
         function prepareNextScan() {
             const card = document.getElementById('staffScanResultCard');
             if (card) card.classList.add('hidden');
@@ -1773,7 +1849,7 @@
             if (input) input.value = '';
 
             currentScannedAttendee = null;
-            canScanQr = true; // ปลดล็อกให้กล้องจับ QR คนใหม่ได้ทันที
+            canScanQr = true;
             refreshLucide();
         }
 
