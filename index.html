@@ -193,34 +193,16 @@
             </div>
         </header>
 
-        <!-- LIVE SEATING CAPACITY BAR -->
-        <section id="capacitySection" class="hidden px-6 sm:px-8 py-3 bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700/80">
-            <div class="flex justify-between items-center text-xs sm:text-sm font-semibold mb-1.5">
-                <span class="flex items-center gap-2 text-slate-700 dark:text-gray-300">
-                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <span>สถานะความจุที่นั่ง</span>
-                </span>
-                <span id="capacityStatusText" class="text-indigo-600 dark:text-indigo-400 tabular-nums text-xs sm:text-sm font-bold">0 / 0 คน</span>
-            </div>
-            <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2.5 overflow-hidden p-0.5">
-                <div id="capacityBarFill" class="bg-gradient-to-r from-emerald-500 via-indigo-500 to-purple-600 h-2 rounded-full transition-all duration-700" style="width: 0%"></div>
-            </div>
-            <p id="capacityWarningNotice" class="hidden text-xs text-amber-600 dark:text-amber-400 font-semibold mt-1.5 flex items-center justify-end gap-1">
-                <i data-lucide="flame" class="w-3.5 h-3.5"></i>
-                <span>ที่นั่งเต็มแล้ว!</span>
-            </p>
-        </section>
-
         <!-- SCREEN 1: หน้านับถอยหลังก่อนเปิดรับสมัคร (TEASER / COUNTDOWN) -->
         <section id="screenCountdown" class="hidden p-6 sm:p-10 text-center animate-pop-in">
             <div class="inline-flex p-4 bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800/80 rounded-3xl mb-4 shadow-sm text-indigo-600 dark:text-indigo-400">
                 <i data-lucide="clock" class="w-10 h-10 animate-pulse"></i>
             </div>
             <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mb-2">
-                ระบบเปิดรับสมัครเร็วๆนี้
+                ระบบเปิดรับลงทะเบียนเร็ว ๆ นี้
             </h2>
             <p class="text-slate-600 dark:text-gray-300 text-sm sm:text-base max-w-md mx-auto mb-6 leading-relaxed">
-                เตรียมนับถอยหลังสู่งานเลี้ยงต้อนรับที่สนุกที่สุดแห่งปี ระบบจะเปิดให้ลงทะเบียนพร้อมกันเร็วๆนี้
+                เตรียมนับถอยหลังสู่งานเลี้ยงต้อนรับสุดพิเศษ ระบบจะเปิดให้ลงทะเบียนพร้อมกันในอีก...
             </p>
 
             <!-- กล่องนาฬิกาดิจิทัล -->
@@ -394,7 +376,7 @@
                                 required
                                 class="mt-1 w-4 h-4 text-indigo-600 rounded border-slate-300 dark:border-slate-500 bg-white dark:bg-slate-800 focus:ring-indigo-500 cursor-pointer">
                             <span class="text-xs sm:text-sm text-slate-600 dark:text-gray-300 leading-relaxed">
-                                ข้าพเจ้าได้อ่านและรับทราบประกาศความเป็นส่วนตัวตามพระราชบัญญัติคุ้มครองข้อมูลส่วนบุคคล พ.ศ. 2562 (PDPA) สำหรับกิจกรรม Welcome SAN Party 2026 แล้ว
+                                ข้าพเจ้าได้อ่านและรับทราบประกาศความเป็นส่วนตัวตามพระราชบัญญัติคุ้มครองข้อมูลส่วนบุคคล พ.ศ.2562 (PDPA) สำหรับกิจกรรม Welcome SAN Party 2026 แล้ว
                                 <button 
                                     type="button" 
                                     onclick="openPrivacyPolicyModal()" 
@@ -441,15 +423,15 @@
             </div>
             
             <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mb-2" id="closedTitleText">
-                ปิดรับสมัครเข้าร่วมงานแล้ว
+                ปิดรับลงทะเบียนเข้าร่วมงานแล้ว
             </h2>
             <p class="text-slate-600 dark:text-gray-300 text-sm sm:text-base max-w-md mx-auto mb-7 leading-relaxed" id="closedSubText">
-                ขอขอบคุณทุกท่านที่ให้ความสนใจ สำหรับผู้ที่ลงทะเบียนแล้วสามารถกดค้นหาและเปิดตั๋ว E-Ticket ของคุณได้ตลอดเวลา
+                ขอขอบคุณทุกท่านที่ให้ความสนใจ สำหรับผู้ที่ลงทะเบียนแล้วสามารถค้นหาและเปิดตั๋ว E-Ticket ของคุณได้
             </p>
 
             <!-- กล่องทางลัดค้นหาตั๋ว -->
             <div class="p-6 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-2xl max-w-sm sm:max-w-md mx-auto mb-6 shadow-sm">
-                <p class="text-xs sm:text-sm text-slate-500 dark:text-gray-400 mb-3 font-medium">มีตั๋วอยู่แล้ว? เปิดบัตรเข้าร่วมของคุณ:</p>
+                <p class="text-xs sm:text-sm text-slate-500 dark:text-gray-400 mb-3 font-medium">ตรวจสอบบัตรเข้าร่วมงานของคุณที่นี่:</p>
                 <button 
                     type="button" 
                     onclick="openFindTicketModal()" 
@@ -981,12 +963,12 @@
 
             if (type === 'full') {
                 if (titleEl) titleEl.innerText = 'ขออภัย ผู้ลงทะเบียนครบตามจำนวนแล้ว';
-                if (subEl) subEl.innerText = `ระบบปิดรับสมัครเนื่องจากมีผู้ลงทะเบียนครบโควตา ${eventConfig.maxCapacity} คนแล้ว ขอขอบคุณทุกท่านที่ให้ความสนใจ สำหรับผู้ที่ลงทะเบียนแล้วสามารถตรวจสอบตั๋วของคุณได้ด้านล่าง`;
+                if (subEl) subEl.innerText = `ขอขอบคุณทุกท่านที่ให้ความสนใจ ขณะนี้มีผู้ลงทะเบียนครบตามจำนวนแล้ว สำหรับผู้ที่ลงทะเบียนสำเร็จสามารถตรวจสอบบัตรเข้าร่วมงานได้ที่ด้านล่าง`;
                 if (iconContainer) iconContainer.className = 'w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-5 bg-amber-500/10 border border-amber-500/20 text-amber-500 shadow-inner';
                 if (iconEl) iconEl.setAttribute('data-lucide', 'flame');
             } else {
-                if (titleEl) titleEl.innerText = 'ปิดรับสมัครเข้าร่วมงานแล้ว';
-                if (subEl) subEl.innerText = 'กิจกรรมหมดเขตรับสมัครตามกำหนดเวลาแล้ว ขอขอบคุณทุกท่านที่ให้ความสนใจครับ';
+                if (titleEl) titleEl.innerText = 'ปิดลงทะเบียนเข้าร่วมงานแล้ว';
+                if (subEl) subEl.innerText = 'กิจกรรมปิดรับลงทะเบียนตามกำหนดเวลา ขอขอบคุณทุกท่านที่ให้ความสนใจ';
                 if (iconContainer) iconContainer.className = 'w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-5 bg-rose-500/10 border border-rose-500/20 text-rose-500 shadow-inner';
                 if (iconEl) iconEl.setAttribute('data-lucide', 'clock-alert');
             }
@@ -1150,7 +1132,7 @@
 
             const consent = document.getElementById('pdpaConsentCheckbox');
             if (!consent.checked) {
-                showAlert('กรุณาทำเครื่องหมายยินยอมข้อตกลง PDPA ก่อนยืนยันลงทะเบียน', 'error');
+                showAlert('กรุณาทำเครื่องหมายรับทราบข้อตกลง PDPA ก่อนยืนยันลงทะเบียน', 'error');
                 consent.focus();
                 return;
             }
@@ -1341,7 +1323,7 @@
             const title = encodeURIComponent(eventConfig.title || "Welcome SAN Party 2026 🎉");
             const details = encodeURIComponent(currentActiveTicket 
                 ? `บัตรเข้าร่วมงานอย่างเป็นทางการ\nชื่อ: ${currentActiveTicket.firstName} ${currentActiveTicket.lastName}\nรหัส: ${currentActiveTicket.studentId}`
-                : "งาน Welcome SAN Party 2026 คณะสาธารณสุขศาสตร์ มหาวิทยาลัยมหิดล");
+                : "Welcome SAN Party 2026");
             const location = encodeURIComponent("อาคาร 6 ชั้น 2 คณะสาธารณสุขศาสตร์ มหาวิทยาลัยมหิดล");
             
             const gCalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=20261220T103000Z/20261220T150000Z&details=${details}&location=${location}`;
